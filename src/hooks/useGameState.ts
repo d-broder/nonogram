@@ -149,6 +149,17 @@ export function useGameState(puzzle: Puzzle | null) {
 
         // Check if puzzle is complete
         const isComplete = checkSolution(newGrid, puzzle.solution);
+        
+        // If puzzle is complete, clear all "x" marks for better visualization
+        if (isComplete) {
+          for (let row = 0; row < newGrid.length; row++) {
+            for (let col = 0; col < newGrid[row].length; col++) {
+              if (newGrid[row][col] === 'x') {
+                newGrid[row][col] = 'white';
+              }
+            }
+          }
+        }
 
         return {
           ...prev,

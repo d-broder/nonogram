@@ -1,16 +1,8 @@
-/* Controls styling - based on reference project */
-.container {
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  align-items: center;
-}
-
 .controlGroup {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-direction: column;
 }
 
 
@@ -18,6 +10,8 @@
 .button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.1);
@@ -29,6 +23,7 @@
   border: 2px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
   cursor: pointer;
+  width: 100%;
 }
 
 .button:hover:not(:disabled) {
@@ -49,38 +44,4 @@
 
 .solutionButton.active {
   background: #c05621;
-}
-
-
-@media (max-width: 768px) {
-  .container {
-    margin: 15px 0;
-    gap: 10px;
-  }
-  .controlGroup {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .button {
-    padding: 0.5rem 1rem;
-    font-size: 13px;
-  }
-}
-
-
-@media (max-width: 480px) {
-  .container {
-    width: 100%;
-    padding: 0 1rem;
-  }
-  .controlGroup {
-    width: 100%;
-    justify-content: center;
-  }
-  .button {
-    flex: 1;
-    min-width: 100px;
-    max-width: 150px;
-    justify-content: center;
-  }
 }

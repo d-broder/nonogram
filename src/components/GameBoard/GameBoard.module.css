@@ -6,8 +6,8 @@
   padding: 1rem;
 }
 
-/* Main picross container - matching reference layout */
-.picrossContainer {
+/* Main nonogram container - matching reference layout */
+.nonogramContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -69,6 +69,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.clueNumber:hover {
+  background: #d0d0d0;
+  transform: scale(1.05);
+}
+
+.clueNumberClicked {
+  background: #4a90e2 !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+}
+
+.clueNumberClicked:hover {
+  background: #357abd !important;
 }
 
 .colClueContainer .clueNumber {
@@ -81,17 +99,34 @@
   width: 25px;
 }
 
-/* Mega clue number styling - from reference project */
-.megaClueNumber {
+/* Super clue number styling - from reference project */
+.superClueNumber {
   color: #f5f5f5;
   background: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.colClueContainer .megaClueNumber {
+.superClueNumber:hover {
+  background: #555;
+  transform: scale(1.05);
+}
+
+.superClueNumber.clueNumberClicked {
+  background: #6b46c1 !important;
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(107, 70, 193, 0.3);
+}
+
+.superClueNumber.clueNumberClicked:hover {
+  background: #553c9a !important;
+}
+
+.colClueContainer .superClueNumber {
   width: 70px;
 }
 
-.rowClueContainer .megaClueNumber {
+.rowClueContainer .superClueNumber {
   height: 70px;
 }
 
@@ -129,14 +164,16 @@
   background: #222;
 }
 
-.cell.x {
-  color: red;
-  font-weight: bold;
+/* Cell icon styling */
+.cellIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: all 0.3s ease;
 }
 
-.cell.o {
-  color: #afafaf;
-  padding-bottom: 5px;
+.cell:hover .cellIcon {
+  transform: scale(1.1);
 }
 
 .solutionFilled {
@@ -187,6 +224,11 @@
     width: 30px;
     height: 30px;
     font-size: 30px;
+  }
+
+  .cellIcon {
+    width: 18px;
+    height: 18px;
   }
 
   .colClueContainer {

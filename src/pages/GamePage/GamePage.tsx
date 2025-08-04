@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useGameState } from '../../hooks/useGameState';
 import { GameBoard } from '../../components/GameBoard';
-import { GameControls } from '../../components/GameControls';
-import { PaintModeButtons } from '../../components/PaintModeButtons';
+import { Sidebar } from '../../components/Sidebar';
+import { SuccessModal } from '../../components/SuccessModal';
 import styles from './GamePage.module.css';
 
 export function GamePage() {
@@ -23,6 +23,7 @@ export function GamePage() {
   } = useGameState(puzzle);
   
   const completionRef = useRef(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Load puzzle when params change
   useEffect(() => {
@@ -45,6 +46,7 @@ export function GamePage() {
     if (puzzle) {
       initializeGame(puzzle);
       completionRef.current = false;
+      setShowSuccessModal(false);
     }
   }, [puzzle, initializeGame]);
 
@@ -71,9 +73,10 @@ export function GamePage() {
         }
       }, 500);
 
-      // Reset background after animation
+      // Reset background after animation and show modal
       setTimeout(() => {
         document.body.style.backgroundColor = originalBg;
+        setShowSuccessModal(true);
       }, 5000);
     }
   }, [gameState.isComplete]);
@@ -124,47 +127,36 @@ export function GamePage() {
   }
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>🎯 Nonogram Clássico</h1>
-        <div className={styles.puzzleInfo}>
-          <span>
-            {type === 'classic' ? 'Picross Clássico' : 'Mega Picross'} - 
-            Puzzle {puzzle.id} ({puzzle.size.width}x{puzzle.size.height})
-          </span>
-        </div>
-      </header>
-
-      <main className={styles.main}>
-        <GameControls
-          onShowSolution={toggleSolution}
-          onClearGrid={clearGameGrid}
+    <div className={styles.gamePageContainer}>
+      <Sidebar
+        puzzle={puzzle}
+        currentType={type}
+        paintMode={gameState.paintMode}
+        showSolution={gameState.showSolution}
+        isComplete={gameState.isComplete}
+        onShowSolution={toggleSolution}
+        onClearGrid={clearGameGrid}
+        onModeChange={setPaintMode}
+      />
+      
+      <main className={styles.gameBoardArea}>
+        <GameBoard
+          puzzle={puzzle}
+          grid={gameState.grid}
           showSolution={gameState.showSolution}
-          puzzleType={type}
+          onCellMouseDown={handleCellMouseDown}
+          onCellMouseEnter={handleCellMouseEnter}
+          onCellMouseUp={handleCellMouseUp}
           isComplete={gameState.isComplete}
         />
-
-        <PaintModeButtons
-          currentMode={gameState.paintMode}
-          onModeChange={setPaintMode}
-        />
-
-        <div className={styles.gameAreaWrapper}>
-          <GameBoard
-            puzzle={puzzle}
-            grid={gameState.grid}
-            showSolution={gameState.showSolution}
-            onCellMouseDown={handleCellMouseDown}
-            onCellMouseEnter={handleCellMouseEnter}
-            onCellMouseUp={handleCellMouseUp}
-            isComplete={gameState.isComplete}
-          />
-        </div>
-
-        <div className={styles.controlsInfo}>
-          🖱️ Esquerdo: ⬛ | 🖱️ Direito: ❌
-        </div>
       </main>
+      
+      <SuccessModal
+        isVisible={showSuccessModal}
+        puzzleType={type}
+        puzzleId={puzzle.id}
+        onClose={() => setShowSuccessModal(false)}
+      />
     </div>
   );
 }

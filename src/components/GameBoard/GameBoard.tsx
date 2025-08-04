@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Puzzle, CellState, CellPosition, ClueElement } from '../../types';
+import iconX from '../../assets/icon-x.png';
+import iconO from '../../assets/icon-o.png';
 import styles from './GameBoard.module.css';
 
 interface GameBoardProps {
@@ -23,6 +25,37 @@ export function GameBoard({
 }: GameBoardProps) {
   const colCluesRef = useRef<HTMLDivElement>(null);
   const rowCluesRef = useRef<HTMLDivElement>(null);
+  
+  // State to track which clues are clicked/highlighted
+  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
+  const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
+
+  // Handle clue clicking
+  const handleRowClueClick = useCallback((rowIndex: number, clueIndex: number) => {
+    const clueId = `row-${rowIndex}-${clueIndex}`;
+    setClickedRowClues(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(clueId)) {
+        newSet.delete(clueId);
+      } else {
+        newSet.add(clueId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const handleColClueClick = useCallback((colIndex: number, clueIndex: number) => {
+    const clueId = `col-${colIndex}-${clueIndex}`;
+    setClickedColClues(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(clueId)) {
+        newSet.delete(clueId);
+      } else {
+        newSet.add(clueId);
+      }
+      return newSet;
+    });
+  }, []);
 
   const handleCellMouseDown = useCallback((e: React.MouseEvent, row: number, col: number) => {
     e.preventDefault();
@@ -120,16 +153,16 @@ export function GameBoard({
   };
 
   const getCellContent = (row: number, col: number) => {
-    if (showSolution) return '';
+    if (showSolution) return null;
     
     const cellState = grid[row][col];
     switch (cellState) {
       case 'x':
-        return '⨯';
+        return <img src={iconX} alt="X mark" className={styles.cellIcon} />;
       case 'o':
-        return '●';
+        return <img src={iconO} alt="O mark" className={styles.cellIcon} />;
       default:
-        return '';
+        return null;
     }
   };
 
@@ -137,39 +170,39 @@ export function GameBoard({
     const colClues = puzzle.colClues;
     const rowClues = puzzle.rowClues;
 
-    // Detect mega columns for super puzzles
-    const megaCols: number[] = [];
+    // Detect super columns for super puzzles
+    const superCols: number[] = [];
     if (puzzle.type === 'super') {
       for (let i = 0; i < colClues.length; i++) {
         const clues = colClues[i];
-        if (clues && (clues.includes('mega') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
-          megaCols.push(i);
+        if (clues && (clues.includes('super') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
+          superCols.push(i);
         }
       }
     }
 
-    // Render column clues with proper mega handling
+    // Render column clues with proper super handling
     const colClueElements: React.ReactElement[] = [];
     for (let index = 0; index < colClues.length; index++) {
       const clues = colClues[index];
-      const isMegaCol = megaCols.includes(index);
+      const isSuperCol = superCols.includes(index);
 
-      if (isMegaCol) {
-        // Skip next index for mega columns (they take double space)
+      if (isSuperCol) {
+        // Skip next index for super columns (they take double space)
         index++;
       }
 
       const clueElements: React.ReactElement[] = [];
       clues.forEach((block: ClueElement, blockIndex: number) => {
-        if (isMegaCol) {
+        if (isSuperCol) {
           if (typeof block === 'number') {
             clueElements.push(
-              <div key={blockIndex} className={`${styles.clueNumber} ${styles.megaClueNumber}`}>
+              <div key={blockIndex} className={`${styles.clueNumber} ${styles.superClueNumber}`}>
                 {block}
               </div>
             );
           } else if (Array.isArray(block)) {
-            // Handle nested array structure for mega clues
+            // Handle nested array structure for super clues
             clueElements.push(
               <div key={blockIndex} style={{ display: 'flex', flexDirection: 'row' }}>
                 {(block as number[][]).map((line: number[], lineIndex: number) => (
@@ -191,8 +224,14 @@ export function GameBoard({
             );
           }
         } else {
+          const clueId = `col-${index}-${blockIndex}`;
+          const isClicked = clickedColClues.has(clueId);
           clueElements.push(
-            <div key={blockIndex} className={styles.clueNumber}>
+            <div 
+              key={blockIndex} 
+              className={`${styles.clueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
+              onClick={() => handleColClueClick(index, blockIndex)}
+            >
               {block}
             </div>
           );
@@ -203,46 +242,46 @@ export function GameBoard({
         <div
           key={index}
           className={styles.colClueContainer}
-          style={{ width: isMegaCol ? '80px' : '40px' }}
+          style={{ width: isSuperCol ? '80px' : '40px' }}
         >
           {clueElements}
         </div>
       );
     }
 
-    // Detect mega rows for super puzzles
-    const megaRows: number[] = [];
+    // Detect super rows for super puzzles
+    const superRows: number[] = [];
     if (puzzle.type === 'super') {
       for (let i = 0; i < rowClues.length; i++) {
         const clues = rowClues[i];
-        if (clues && (clues.includes('mega') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
-          megaRows.push(i);
+        if (clues && (clues.includes('super') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
+          superRows.push(i);
         }
       }
     }
 
-    // Render row clues with proper mega handling
+    // Render row clues with proper super handling
     const rowClueElements: React.ReactElement[] = [];
     for (let index = 0; index < rowClues.length; index++) {
       const clues = rowClues[index];
-      const isMegaRow = megaRows.includes(index);
+      const isSuperRow = superRows.includes(index);
 
-      if (isMegaRow) {
-        // Skip next index for mega rows (they take double space)
+      if (isSuperRow) {
+        // Skip next index for super rows (they take double space)
         index++;
       }
 
       const clueElements: React.ReactElement[] = [];
       clues.forEach((block: ClueElement, blockIndex: number) => {
-        if (isMegaRow) {
+        if (isSuperRow) {
           if (typeof block === 'number') {
             clueElements.push(
-              <div key={blockIndex} className={`${styles.clueNumber} ${styles.megaClueNumber}`}>
+              <div key={blockIndex} className={`${styles.clueNumber} ${styles.superClueNumber}`}>
                 {block}
               </div>
             );
           } else if (Array.isArray(block)) {
-            // Handle nested array structure for mega clues
+            // Handle nested array structure for super clues
             clueElements.push(
               <div key={blockIndex} style={{ display: 'flex', flexDirection: 'column' }}>
                 {(block as number[][]).map((line: number[], lineIndex: number) => (
@@ -264,8 +303,14 @@ export function GameBoard({
             );
           }
         } else {
+          const clueId = `row-${index}-${blockIndex}`;
+          const isClicked = clickedRowClues.has(clueId);
           clueElements.push(
-            <div key={blockIndex} className={styles.clueNumber}>
+            <div 
+              key={blockIndex} 
+              className={`${styles.clueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
+              onClick={() => handleRowClueClick(index, blockIndex)}
+            >
               {block}
             </div>
           );
@@ -276,7 +321,7 @@ export function GameBoard({
         <div
           key={index}
           className={styles.rowClueContainer}
-          style={{ height: isMegaRow ? '80px' : '40px' }}
+          style={{ height: isSuperRow ? '80px' : '40px' }}
         >
           {clueElements}
         </div>
@@ -290,7 +335,7 @@ export function GameBoard({
 
   return (
     <div className={styles.container}>
-      <div className={styles.picrossContainer}>
+      <div className={styles.nonogramContainer}>
         {/* Column clues */}
         <div ref={colCluesRef} className={styles.colClues}>
           <div className={styles.cornerSpace}></div>

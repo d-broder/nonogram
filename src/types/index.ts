@@ -3,7 +3,7 @@ export interface PuzzleSize {
   height: number;
 }
 
-// Type for mega clues - can be number, 'mega' string, or nested arrays
+// Type for super clues - can be number, 'super' string, or nested arrays
 export type ClueElement = number | string | number[][] | (number | number[])[];
 
 export interface Puzzle {
