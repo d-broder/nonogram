@@ -1,0 +1,225 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+/* Main picross container - matching reference layout */
+.picrossContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+/* Column clues container */
+.colClues {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin-bottom: 2px;
+}
+
+.cornerSpace {
+  /* Space in top-left corner to align clues properly */
+  background: transparent;
+}
+
+.colClueContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 40px;
+}
+
+/* Game area with row clues and grid */
+.gameArea {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.rowClues {
+  display: flex;
+  flex-direction: column;
+  margin-right: 2px;
+}
+
+.rowClueContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  height: 40px;
+}
+
+/* Clue number styling - from reference */
+.clueNumber {
+  font-family: 'Verdana', Arial, sans-serif;
+  font-size: 16px;
+  color: #333;
+  background: #e0e0e0;
+  margin: 2px;
+  border-radius: 2px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colClueContainer .clueNumber {
+  width: 30px;
+  height: 18px;
+}
+
+.rowClueContainer .clueNumber {
+  height: 30px;
+  width: 18px;
+}
+
+/* Mega clue number styling - from reference project */
+.megaClueNumber {
+  background: #d0d0d0;
+  font-weight: bold;
+  border: 1px solid #a0a0a0;
+}
+
+.colClueContainer .megaClueNumber {
+  width: 50px;
+  height: 30px;
+  font-size: 18px;
+}
+
+.rowClueContainer .megaClueNumber {
+  height: 50px;
+  width: 30px;
+  font-size: 18px;
+}
+
+/* Grid styling - from reference */
+.grid {
+  display: grid;
+  /* Grid template will be set inline based on puzzle size */
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid #808080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+  box-sizing: border-box;
+}
+
+.cell:disabled {
+  cursor: not-allowed;
+}
+
+/* Cell states - from reference */
+.cell.white {
+  background: #fff;
+}
+
+.cell.black {
+  background: #222;
+}
+
+.cell.x {
+  color: red;
+  font-weight: bold;
+}
+
+.cell.o {
+  color: #afafaf;
+  padding-bottom: 5px;
+}
+
+.solutionFilled {
+  background: #68d391 !important;
+  color: white;
+}
+
+/* Thick borders for 5x5 sections - from reference */
+.cell.thickRight {
+  border-right: 2px solid #808080;
+}
+
+.cell.thickLeft {
+  border-left: 2px solid #808080;
+}
+
+.cell.thickBottom {
+  border-bottom: 2px solid #808080;
+}
+
+.cell.thickTop {
+  border-top: 2px solid #808080;
+}
+
+/* Success modal - from reference */
+.successModal {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  text-align: center;
+  font-size: 2rem;
+  background-color: #b6f5c1;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.25);
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem;
+    overflow-x: auto;
+  }
+
+  .cell {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+  }
+
+  .colClueContainer {
+    width: 30px;
+  }
+
+  .rowClueContainer {
+    height: 30px;
+  }
+
+  .clueNumber {
+    font-size: 12px;
+  }
+
+  .colClueContainer .clueNumber {
+    width: 24px;
+    height: 14px;
+  }
+
+  .rowClueContainer .clueNumber {
+    height: 24px;
+    width: 14px;
+  }
+
+  .successModal {
+    padding: 1rem;
+    font-size: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+  }
+}
