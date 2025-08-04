@@ -73,31 +73,26 @@
 
 .colClueContainer .clueNumber {
   width: 30px;
-  height: 18px;
+  height: 25px;
 }
 
 .rowClueContainer .clueNumber {
   height: 30px;
-  width: 18px;
+  width: 25px;
 }
 
 /* Mega clue number styling - from reference project */
 .megaClueNumber {
-  background: #d0d0d0;
-  font-weight: bold;
-  border: 1px solid #a0a0a0;
+  color: #f5f5f5;
+  background: #333;
 }
 
 .colClueContainer .megaClueNumber {
-  width: 50px;
-  height: 30px;
-  font-size: 18px;
+  width: 70px;
 }
 
 .rowClueContainer .megaClueNumber {
-  height: 50px;
-  width: 30px;
-  font-size: 18px;
+  height: 70px;
 }
 
 /* Grid styling - from reference */

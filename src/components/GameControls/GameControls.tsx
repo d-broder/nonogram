@@ -21,13 +21,10 @@ export function GameControls({
       <div className={styles.controlGroup}>
         <Link 
           to={`/puzzles/${puzzleType}`} 
-          className={`${styles.button} ${styles.backButton}`}
+          className={styles.button}
         >
           ← Back to Puzzles
         </Link>
-      </div>
-
-      <div className={styles.controlGroup}>
         <button
           onClick={onShowSolution}
           className={`${styles.button} ${styles.solutionButton} ${showSolution ? styles.active : ''}`}
@@ -38,7 +35,7 @@ export function GameControls({
 
         <button
           onClick={onClearGrid}
-          className={`${styles.button} ${styles.clearButton}`}
+          className={styles.button}
           disabled={isComplete}
           type="button"
         >
