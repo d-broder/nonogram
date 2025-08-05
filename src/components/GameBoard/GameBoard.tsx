@@ -19,6 +19,7 @@ interface GameBoardProps {
     clueGap: number;
     superClueWidth: number;
     superClueHeight: number;
+    clueFontSize: number;
   };
 }
 
@@ -93,42 +94,50 @@ export function GameBoard({
     };
   }, [onCellMouseUp]);
 
-  // Calculate proper cornerSpace dimensions after render
+  const [maxRowClues, setMaxRowClues] = useState(0);
+  const [maxColClues, setMaxColClues] = useState(0);
+
   useEffect(() => {
-    if (colCluesRef.current && rowCluesRef.current) {
+    if (!puzzle) return;
+    function getMaxClues(clues: any[], type: 'classic' | 'super') {
+      let max = 0;
+      for (const clue of clues) {
+        if (type === 'classic') {
+          // Array de números
+          max = Math.max(max, Array.isArray(clue) ? clue.length : 0);
+        } else {
+          // Super: pode ser número, array, ou "super"
+          if (clue === 'super') continue;
+          if (typeof clue === 'number') {
+            max = Math.max(max, 1);
+          } else if (Array.isArray(clue)) {
+            // Se for array de duas arrays
+            if (clue.length === 2 && Array.isArray(clue[0]) && Array.isArray(clue[1])) {
+              max = Math.max(max, Math.max(clue[0].length, clue[1].length));
+            } else {
+              max = Math.max(max, clue.length);
+            }
+          }
+        }
+      }
+      return max;
+    }
+    setMaxRowClues(getMaxClues(puzzle.rowClues, puzzle.type));
+    setMaxColClues(getMaxClues(puzzle.colClues, puzzle.type));
+  }, [puzzle]);
+
+  useEffect(() => {
+    if (colCluesRef.current) {
       const cornerSpace = colCluesRef.current.querySelector(`.${styles.cornerSpace}`) as HTMLElement;
       if (cornerSpace) {
-        const rowClueContainers = rowCluesRef.current.querySelectorAll(`.${styles.rowClueContainer}`);
-        const colClueContainers = colCluesRef.current.querySelectorAll(`.${styles.colClueContainer}`);
-        
-        let maxRowWidth = 0;
-        rowClueContainers.forEach(container => {
-          const width = (container as HTMLElement).scrollWidth;
-          if (width > maxRowWidth) maxRowWidth = width;
-        });
-        
-        let maxColHeight = 0;
-        colClueContainers.forEach(container => {
-          const height = (container as HTMLElement).scrollHeight;
-          if (height > maxColHeight) maxColHeight = height;
-        });
-        
-        // Set cornerSpace dimensions to match reference project logic
-        cornerSpace.style.width = `${maxRowWidth + 2}px`;
-        cornerSpace.style.height = `${maxColHeight}px`;
-        
-        // Ensure all column containers have the same height
-        colClueContainers.forEach(container => {
-          (container as HTMLElement).style.height = `${maxColHeight}px`;
-        });
-        
-        // Ensure all row containers have the same width
-        rowClueContainers.forEach(container => {
-          (container as HTMLElement).style.width = `${maxRowWidth}px`;
-        });
+        // Calcula dimensões
+        const clueHeight = zoomConfig.clueHeight;
+        const clueGap = zoomConfig.clueGap;
+        cornerSpace.style.width = `${maxRowClues * clueHeight + maxRowClues * clueGap + 2}px`;
+        cornerSpace.style.height = `${maxColClues * clueHeight + maxColClues * clueGap}px`;
       }
     }
-  }, [puzzle]);
+  }, [puzzle, zoomConfig, maxRowClues, maxColClues]);
 
   const getCellClass = (row: number, col: number) => {
     const classes = [styles.cell];
@@ -358,7 +367,8 @@ export function GameBoard({
         '--clue-gap': `${zoomConfig.clueGap}px`,
         '--super-clue-width': `${zoomConfig.superClueWidth}px`,
         '--super-clue-height': `${zoomConfig.superClueHeight}px`,
-        '--icon-size': `${Math.round(zoomConfig.cellSize * 0.6)}px`
+        '--icon-size': `${Math.round(zoomConfig.cellSize * 0.6)}px`,
+        '--clue-font-size': `${zoomConfig.clueFontSize}px`
       } as React.CSSProperties}
     >
       {/* Column clues */}

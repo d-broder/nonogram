@@ -7,6 +7,7 @@ interface ZoomConfig {
   clueGap: number;
   superClueWidth: number;
   superClueHeight: number;
+  clueFontSize: number;
 }
 
 const MIN_CELL_SIZE = 20;
@@ -23,6 +24,7 @@ export function useZoom() {
     clueGap: size * 0.1,
     superClueWidth: size * 1.75,
     superClueHeight: size * 1.75,
+    clueFontSize: size * 0.55,
   }), []);
 
   const zoomIn = useCallback(() => {

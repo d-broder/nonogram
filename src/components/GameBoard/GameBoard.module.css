@@ -52,7 +52,7 @@
 /* Clue number styling - from reference */
 .clueNumber {
   font-family: 'Verdana', Arial, sans-serif;
-  font-size: 16px;
+  font-size: var(--clue-font-size, 14px);
   color: #333;
   background: #e0e0e0;
   margin: calc(var(--clue-gap, 4px) / 2);
