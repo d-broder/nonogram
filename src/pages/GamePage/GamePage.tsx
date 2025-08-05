@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useGameState } from '../../hooks/useGameState';
+import { useZoom } from '../../hooks/useZoom';
 import { GameBoard } from '../../components/GameBoard';
 import { Sidebar } from '../../components/Sidebar';
 import { SuccessModal } from '../../components/SuccessModal';
@@ -21,6 +22,7 @@ export function GamePage() {
     clearGameGrid, 
     toggleSolution 
   } = useGameState(puzzle);
+  const { config: zoomConfig, zoomIn, zoomOut, canZoomIn, canZoomOut } = useZoom();
   
   const completionRef = useRef(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -55,14 +57,14 @@ export function GamePage() {
     if (gameState.isComplete && !completionRef.current) {
       completionRef.current = true;
       
-      // Success animation from reference project
+      // Success animation from reference project - enhanced
       let flashes = 0;
-      const maxFlashes = 10;
+      const maxFlashes = 8;
       const originalBg = document.body.style.backgroundColor || '';
       const green = '#b6f5c1';
       
       // Ensure smooth transition
-      document.body.style.transition = 'background-color 1s cubic-bezier(.4,1.3,.5,1)';
+      document.body.style.transition = 'background-color 0.8s ease-in-out';
       
       const flashInterval = setInterval(() => {
         document.body.style.backgroundColor = (flashes % 2 === 0) ? green : originalBg;
@@ -70,14 +72,10 @@ export function GamePage() {
         if (flashes > maxFlashes) {
           clearInterval(flashInterval);
           document.body.style.backgroundColor = originalBg;
+          // Show modal immediately after animation completes
+          setShowSuccessModal(true);
         }
-      }, 500);
-
-      // Reset background after animation and show modal
-      setTimeout(() => {
-        document.body.style.backgroundColor = originalBg;
-        setShowSuccessModal(true);
-      }, 5000);
+      }, 400);
     }
   }, [gameState.isComplete]);
 
@@ -137,6 +135,10 @@ export function GamePage() {
         onShowSolution={toggleSolution}
         onClearGrid={clearGameGrid}
         onModeChange={setPaintMode}
+        onZoomIn={zoomIn}
+        onZoomOut={zoomOut}
+        canZoomIn={canZoomIn}
+        canZoomOut={canZoomOut}
       />
       
       <main className={styles.gameBoardArea}>
@@ -148,6 +150,7 @@ export function GamePage() {
           onCellMouseEnter={handleCellMouseEnter}
           onCellMouseUp={handleCellMouseUp}
           isComplete={gameState.isComplete}
+          zoomConfig={zoomConfig}
         />
       </main>
       

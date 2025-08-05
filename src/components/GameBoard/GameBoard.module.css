@@ -1,11 +1,3 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  padding: 1rem;
-}
-
 /* Main nonogram container - matching reference layout */
 .nonogramContainer {
   display: flex;
@@ -33,7 +25,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  width: 40px;
+  width: var(--cell-size, 40px);
 }
 
 /* Game area with row clues and grid */
@@ -54,7 +46,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  height: 40px;
+  height: var(--cell-size, 40px);
 }
 
 /* Clue number styling - from reference */
@@ -63,7 +55,7 @@
   font-size: 16px;
   color: #333;
   background: #e0e0e0;
-  margin: 2px;
+  margin: calc(var(--clue-gap, 4px) / 2);
   border-radius: 2px;
   text-align: center;
   display: flex;
@@ -90,13 +82,13 @@
 }
 
 .colClueContainer .clueNumber {
-  width: 30px;
-  height: 25px;
+  width: var(--clue-width, 30px);
+  height: var(--clue-height, 25px);
 }
 
 .rowClueContainer .clueNumber {
-  height: 30px;
-  width: 25px;
+  height: var(--clue-width, 30px);
+  width: var(--clue-height, 25px);
 }
 
 /* Super clue number styling - from reference project */
@@ -123,11 +115,11 @@
 }
 
 .colClueContainer .superClueNumber {
-  width: 70px;
+  width: var(--super-clue-width, 70px);
 }
 
 .rowClueContainer .superClueNumber {
-  height: 70px;
+  height: var(--super-clue-height, 70px);
 }
 
 /* Grid styling - from reference */
@@ -137,14 +129,14 @@
 }
 
 .cell {
-  width: 40px;
-  height: 40px;
+  width: var(--cell-size, 40px);
+  height: var(--cell-size, 40px);
   background: #fff;
   border: 1px solid #808080;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
+  font-size: var(--cell-size, 40px);
   cursor: pointer;
   user-select: none;
   transition: background 0.2s;
@@ -166,14 +158,19 @@
 
 /* Cell icon styling */
 .cellIcon {
-  width: 24px;
-  height: 24px;
+  width: var(--icon-size, 24px);
+  height: var(--icon-size, 24px);
   object-fit: contain;
-  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
-.cell:hover .cellIcon {
-  transform: scale(1.1);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .solutionFilled {
@@ -198,59 +195,23 @@
   border-top: 2px solid #808080;
 }
 
-/* Success modal - from reference */
-.successModal {
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  text-align: center;
-  font-size: 2rem;
-  background-color: #b6f5c1;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.25);
-  color: #333;
-}
+/* Success modal styles removed - now handled by SuccessModal component */
 
 @media (max-width: 768px) {
-  .container {
-    padding: 0.5rem;
+  .nonogramContainer {
+    margin-top: 10px;
+    margin-bottom: 15px;
     overflow-x: auto;
-  }
-
-  .cell {
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-  }
-
-  .cellIcon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .colClueContainer {
-    width: 30px;
-  }
-
-  .rowClueContainer {
-    height: 30px;
+    --cell-size: 30px;
+    --clue-width: 24px;
+    --clue-height: 14px;
+    --super-clue-width: 52px;
+    --super-clue-height: 52px;
+    --icon-size: 18px;
   }
 
   .clueNumber {
     font-size: 12px;
-  }
-
-  .colClueContainer .clueNumber {
-    width: 24px;
-    height: 14px;
-  }
-
-  .rowClueContainer .clueNumber {
-    height: 24px;
-    width: 14px;
   }
 
   .successModal {

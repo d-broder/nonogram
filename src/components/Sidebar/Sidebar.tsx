@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { GameControls } from '../GameControls';
 import { PaintModeButtons } from '../PaintModeButtons';
+import { ZoomControls } from '../ZoomControls';
 import type { PaintMode, Puzzle } from '../../types';
 import styles from './Sidebar.module.css';
 
@@ -13,6 +14,10 @@ interface SidebarProps {
   onShowSolution: () => void;
   onClearGrid: () => void;
   onModeChange: (mode: PaintMode) => void;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  canZoomIn: boolean;
+  canZoomOut: boolean;
 }
 
 export function Sidebar({
@@ -23,7 +28,11 @@ export function Sidebar({
   isComplete,
   onShowSolution,
   onClearGrid,
-  onModeChange
+  onModeChange,
+  onZoomIn,
+  onZoomOut,
+  canZoomIn,
+  canZoomOut
 }: SidebarProps) {
   const navigate = useNavigate();
 
@@ -63,6 +72,17 @@ export function Sidebar({
         <PaintModeButtons
           currentMode={paintMode}
           onModeChange={onModeChange}
+        />
+      </div>
+
+      {/* Controles de zoom */}
+      <div className={styles.zoomPanel}>
+        <h3 className={styles.sectionTitle}>Zoom</h3>
+        <ZoomControls
+          onZoomIn={onZoomIn}
+          onZoomOut={onZoomOut}
+          canZoomIn={canZoomIn}
+          canZoomOut={canZoomOut}
         />
       </div>
     </aside>

@@ -12,15 +12,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
-}
-
-/* Preserve GameBoard styling when in the new layout */
-.gameBoardArea > * {
-  background: #f4f4f4;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #f0f2f5 0%, #ffffff 100%);
 }
 
 /* Loading and error states now need to be full-screen */
