@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { PlayerColor } from '../../types';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import styles from './JoinRoomPage.module.css';
 
 const AVAILABLE_COLORS: PlayerColor[] = [
@@ -22,8 +23,13 @@ export function JoinRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [playerName, setPlayerName] = useState('');
   const [selectedColor, setSelectedColor] = useState<PlayerColor>('blue');
-  const [usedColors] = useState<PlayerColor[]>(['red']); // Simulate some colors already taken
+  const [isJoining, setIsJoining] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { room, loading, error: roomError, joinRoom } = useFirebaseRoom(roomId || null);
+
+  // Get used colors from room data
+  const usedColors = room ? Object.values(room.players).map(player => player.color) : [];
 
   useEffect(() => {
     if (!roomId) {
@@ -38,37 +44,82 @@ export function JoinRoomPage() {
     }
   }, [roomId, navigate, usedColors]);
 
-  const handleJoinRoom = () => {
+  const handleJoinRoom = async () => {
     if (!playerName.trim()) {
-      alert('Please enter a display name');
+      setError('Please enter a display name');
       return;
     }
 
     if (usedColors.includes(selectedColor)) {
-      alert('This color is already taken. Please select another color.');
+      setError('This color is already taken. Please select another color.');
       return;
     }
 
-    // Store player info in sessionStorage
-    sessionStorage.setItem('playerInfo', JSON.stringify({
-      name: playerName.trim(),
-      color: selectedColor,
-      isCreator: false
-    }));
+    setIsJoining(true);
+    setError(null);
 
-    // Navigate to waiting room (creator hasn't selected puzzle yet)
-    navigate(`/multiplayer/room/${roomId}/waiting`);
+    try {
+      const playerId = Date.now().toString();
+      
+      const player = {
+        id: playerId,
+        name: playerName.trim(),
+        color: selectedColor,
+        isCreator: false
+      };
+
+      // Store player info in sessionStorage
+      sessionStorage.setItem('playerInfo', JSON.stringify(player));
+
+      // Join room in Firebase
+      await joinRoom(player);
+
+      // Navigate based on room status
+      if (room?.status === 'playing' && room.puzzleType && room.puzzleId) {
+        navigate(`/multiplayer/game/${roomId}/${room.puzzleType}/${room.puzzleId}`);
+      } else {
+        navigate(`/multiplayer/room/${roomId}/waiting`);
+      }
+    } catch (error) {
+      console.error('Error joining room:', error);
+      setError('Failed to join room. Please try again.');
+    } finally {
+      setIsJoining(false);
+    }
   };
 
   const isColorDisabled = (color: PlayerColor) => usedColors.includes(color);
 
-  if (!roomId) return null;
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading room...</div>
+      </div>
+    );
+  }
+
+  if (roomError || !room) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <h2>Room not found</h2>
+          <p>The room you're trying to join doesn't exist or has been removed.</p>
+          <button onClick={() => navigate('/')} className={styles.backButton}>
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Join Room: {roomId}</h1>
-        <p className={styles.subtitle}>Set up your player identity</p>
+        <h1 className={styles.title}>Join Room</h1>
+        <p className={styles.subtitle}>Room ID: {roomId}</p>
+        <p className={styles.info}>
+          {Object.keys(room.players).length} player(s) in room
+        </p>
       </header>
 
       <main className={styles.main}>
@@ -91,34 +142,40 @@ export function JoinRoomPage() {
           <div className={styles.field}>
             <label className={styles.label}>Player Color</label>
             <div className={styles.colorGrid}>
-              {AVAILABLE_COLORS.map((color) => {
-                const disabled = isColorDisabled(color);
-                return (
-                  <button
-                    key={color}
-                    type="button"
-                    className={`${styles.colorButton} ${selectedColor === color ? styles.selected : ''} ${disabled ? styles.disabled : ''}`}
-                    style={{ backgroundColor: COLOR_VALUES[color] }}
-                    onClick={() => !disabled && setSelectedColor(color)}
-                    disabled={disabled}
-                    aria-label={`${disabled ? 'Taken' : 'Select'} ${color} color`}
-                  >
-                    {disabled && <span className={styles.takenMark}>✓</span>}
-                  </button>
-                );
-              })}
+              {AVAILABLE_COLORS.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`${styles.colorButton} ${
+                    selectedColor === color ? styles.selected : ''
+                  } ${isColorDisabled(color) ? styles.disabled : ''}`}
+                  style={{ backgroundColor: COLOR_VALUES[color] }}
+                  onClick={() => !isColorDisabled(color) && setSelectedColor(color)}
+                  disabled={isColorDisabled(color)}
+                  aria-label={`Select ${color} color ${isColorDisabled(color) ? '(taken)' : ''}`}
+                />
+              ))}
             </div>
-            <p className={styles.colorHint}>Colors with ✓ are already taken by other players</p>
+            {usedColors.length > 0 && (
+              <p className={styles.colorNote}>
+                Grayed out colors are already taken by other players
+              </p>
+            )}
           </div>
 
           <div className={styles.actions}>
+            {error && (
+              <div className={styles.errorMessage}>
+                {error}
+              </div>
+            )}
             <button
               type="button"
               onClick={handleJoinRoom}
               className={styles.joinButton}
-              disabled={!playerName.trim() || usedColors.includes(selectedColor)}
+              disabled={!playerName.trim() || isJoining || isColorDisabled(selectedColor)}
             >
-              Join Room
+              {isJoining ? 'Joining Room...' : 'Join Room'}
             </button>
           </div>
         </div>

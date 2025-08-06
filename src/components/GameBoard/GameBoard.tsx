@@ -21,6 +21,11 @@ interface GameBoardProps {
     superClueHeight: number;
     clueFontSize: number;
   };
+  // Optional clue click handlers for multiplayer sync
+  onRowClueClick?: (rowIndex: number, clueIndex: number | string) => void;
+  onColClueClick?: (colIndex: number, clueIndex: number | string) => void;
+  clickedRowClues?: Set<string>;
+  clickedColClues?: Set<string>;
 }
 
 export function GameBoard({ 
@@ -31,45 +36,67 @@ export function GameBoard({
   onCellMouseEnter,
   onCellMouseUp,
   isComplete,
-  zoomConfig
+  zoomConfig,
+  onRowClueClick,
+  onColClueClick,
+  clickedRowClues: externalClickedRowClues,
+  clickedColClues: externalClickedColClues
 }: GameBoardProps) {
   const colCluesRef = useRef<HTMLDivElement>(null);
   const rowCluesRef = useRef<HTMLDivElement>(null);
   
   // State to track which clues are clicked/highlighted
-  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
-  const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
+  // Use external state if provided (for multiplayer), otherwise use internal state
+  const [internalClickedRowClues, setInternalClickedRowClues] = useState<Set<string>>(new Set());
+  const [internalClickedColClues, setInternalClickedColClues] = useState<Set<string>>(new Set());
+  
+  const clickedRowClues = externalClickedRowClues || internalClickedRowClues;
+  const clickedColClues = externalClickedColClues || internalClickedColClues;
 
   // Handle clue clicking
   const handleRowClueClick = useCallback((e: React.MouseEvent, rowIndex: number, clueIndex: number | string) => {
     e.preventDefault();
     e.stopPropagation();
-    const clueId = `row-${rowIndex}-${clueIndex}`;
-    setClickedRowClues(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(clueId)) {
-        newSet.delete(clueId);
-      } else {
-        newSet.add(clueId);
-      }
-      return newSet;
-    });
-  }, []);
+    
+    if (onRowClueClick) {
+      // Use external handler (for multiplayer)
+      onRowClueClick(rowIndex, clueIndex);
+    } else {
+      // Use internal state (for single player)
+      const clueId = `row-${rowIndex}-${clueIndex}`;
+      setInternalClickedRowClues(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(clueId)) {
+          newSet.delete(clueId);
+        } else {
+          newSet.add(clueId);
+        }
+        return newSet;
+      });
+    }
+  }, [onRowClueClick]);
 
   const handleColClueClick = useCallback((e: React.MouseEvent, colIndex: number, clueIndex: number | string) => {
     e.preventDefault();
     e.stopPropagation();
-    const clueId = `col-${colIndex}-${clueIndex}`;
-    setClickedColClues(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(clueId)) {
-        newSet.delete(clueId);
-      } else {
-        newSet.add(clueId);
-      }
-      return newSet;
-    });
-  }, []);
+    
+    if (onColClueClick) {
+      // Use external handler (for multiplayer)
+      onColClueClick(colIndex, clueIndex);
+    } else {
+      // Use internal state (for single player)
+      const clueId = `col-${colIndex}-${clueIndex}`;
+      setInternalClickedColClues(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(clueId)) {
+          newSet.delete(clueId);
+        } else {
+          newSet.add(clueId);
+        }
+        return newSet;
+      });
+    }
+  }, [onColClueClick]);
 
   const handleCellMouseDown = useCallback((e: React.MouseEvent, row: number, col: number) => {
     e.preventDefault();

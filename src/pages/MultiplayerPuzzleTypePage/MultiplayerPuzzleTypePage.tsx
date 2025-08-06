@@ -20,6 +20,13 @@ export function MultiplayerPuzzleTypePage() {
       return;
     }
 
+    // Check if user is the creator
+    const player = JSON.parse(playerInfo);
+    if (!player.isCreator) {
+      navigate(`/multiplayer/room/${roomId}/waiting`);
+      return;
+    }
+
     const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
     setRoomLink(fullRoomLink);
   }, [roomId, navigate]);

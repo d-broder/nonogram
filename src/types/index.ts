@@ -57,12 +57,17 @@ export interface Player {
 
 export interface Room {
   id: string;
-  creator: Player;
-  players: Player[];
-  gameState: GameState | null;
-  puzzle: Puzzle | null;
-  clickedRowClues: Set<string>;
-  clickedColClues: Set<string>;
+  createdAt: any; // Firebase timestamp
+  createdBy: string;
+  players: { [playerId: string]: Player };
+  status: 'waiting' | 'playing' | 'completed';
+  puzzleType: 'classic' | 'super' | null;
+  puzzleId: number | null;
+  grid: { [cellId: string]: CellState };
+  clues: {
+    rows: { [key: string]: boolean };
+    columns: { [key: string]: boolean };
+  };
 }
 
 export interface MultiplayerGameState extends GameState {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { PlayerColor } from '../../types';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import styles from './CreateRoomPage.module.css';
 
 const AVAILABLE_COLORS: PlayerColor[] = [
@@ -21,26 +22,51 @@ const COLOR_VALUES = {
 export function CreateRoomPage() {
   const [playerName, setPlayerName] = useState('');
   const [selectedColor, setSelectedColor] = useState<PlayerColor>('blue');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { createRoom } = useFirebaseRoom(null);
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     if (!playerName.trim()) {
-      alert('Please enter a display name');
+      setError('Please enter a display name');
       return;
     }
 
-    // Generate random room ID
-    const roomId = Math.random().toString(36).substr(2, 8).toUpperCase();
-    
-    // Store player info in sessionStorage
-    sessionStorage.setItem('playerInfo', JSON.stringify({
-      name: playerName.trim(),
-      color: selectedColor,
-      isCreator: true
-    }));
+    setIsCreating(true);
+    setError(null);
 
-    // Navigate to puzzle type selection with room context
-    navigate(`/multiplayer/room/${roomId}/select-type`);
+    try {
+      // Generate random room ID
+      const roomId = Math.random().toString(36).substr(2, 8).toUpperCase();
+      const playerId = Date.now().toString();
+      
+      const player = {
+        id: playerId,
+        name: playerName.trim(),
+        color: selectedColor,
+        isCreator: true
+      };
+
+      // Store player info in sessionStorage
+      sessionStorage.setItem('playerInfo', JSON.stringify({
+        id: playerId,
+        name: playerName.trim(),
+        color: selectedColor,
+        isCreator: true
+      }));
+
+      // Create room in Firebase
+      await createRoom(player, roomId);
+
+      // Navigate to puzzle type selection with room context
+      navigate(`/multiplayer/room/${roomId}/select-type`);
+    } catch (error) {
+      console.error('Error creating room:', error);
+      setError('Failed to create room. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -84,13 +110,18 @@ export function CreateRoomPage() {
           </div>
 
           <div className={styles.actions}>
+            {error && (
+              <div className={styles.error}>
+                {error}
+              </div>
+            )}
             <button
               type="button"
               onClick={handleCreateRoom}
               className={styles.createButton}
-              disabled={!playerName.trim()}
+              disabled={!playerName.trim() || isCreating}
             >
-              Create Room
+              {isCreating ? 'Creating Room...' : 'Create Room'}
             </button>
           </div>
         </div>

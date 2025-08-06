@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import type { Player } from '../../types';
 import styles from './WaitingRoomPage.module.css';
 
@@ -17,20 +18,10 @@ const COLOR_VALUES = {
 export function WaitingRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
-  const [players] = useState<Player[]>([
-    {
-      id: '1',
-      name: 'Creator Player',
-      color: 'red',
-      isCreator: true
-    },
-    {
-      id: '2',
-      name: 'Joined Player',
-      color: 'blue',
-      isCreator: false
-    }
-  ]);
+  const { room, loading, error } = useFirebaseRoom(roomId || null);
+
+  // Get players from room data
+  const players = room ? Object.values(room.players) : [];
 
   useEffect(() => {
     if (!roomId) {
@@ -45,16 +36,33 @@ export function WaitingRoomPage() {
       return;
     }
 
-    // Simulate checking if puzzle is selected by creator
-    // In real implementation, this would listen to room state changes
-    const timer = setTimeout(() => {
-      // Simulate creator selecting a puzzle
-      console.log('Creator selected puzzle, redirecting to game...');
-      // navigate(`/multiplayer/game/${roomId}/classic/1`);
-    }, 10000); // Simulate 10 seconds wait
+    // If room is ready and puzzle is selected, navigate to game
+    if (room?.status === 'playing' && room.puzzleType && room.puzzleId) {
+      navigate(`/multiplayer/game/${roomId}/${room.puzzleType}/${room.puzzleId}`);
+    }
+  }, [roomId, room, navigate]);
 
-    return () => clearTimeout(timer);
-  }, [roomId, navigate]);
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading room...</div>
+      </div>
+    );
+  }
+
+  if (error || !room) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <h2>Room not found</h2>
+          <p>The room doesn't exist or has been removed.</p>
+          <button onClick={() => navigate('/')} className={styles.backButton}>
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!roomId) return null;
 
@@ -69,7 +77,7 @@ export function WaitingRoomPage() {
         <div className={styles.playersContainer}>
           <h2 className={styles.playersTitle}>Players in Room</h2>
           <div className={styles.playersList}>
-            {players.map((player) => (
+            {players.map((player: Player) => (
               <div key={player.id} className={styles.playerCard}>
                 <div
                   className={styles.playerColor}
@@ -87,7 +95,7 @@ export function WaitingRoomPage() {
         <div className={styles.statusContainer}>
           <div className={styles.loadingSpinner}></div>
           <p className={styles.statusText}>
-            Waiting for {players.find(p => p.isCreator)?.name || 'creator'} to select a puzzle...
+            Waiting for {players.find((p: Player) => p.isCreator)?.name || 'creator'} to select a puzzle...
           </p>
         </div>
 

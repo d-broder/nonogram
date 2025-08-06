@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import styles from './PuzzleSelectionPage.module.css';
 
 export function PuzzleSelectionPage() {
@@ -8,6 +9,7 @@ export function PuzzleSelectionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
+  const { updatePuzzleSelection } = useFirebaseRoom(roomId || null);
 
   // Check if this is a multiplayer context
   const isMultiplayer = location.pathname.includes('/multiplayer/');
@@ -26,12 +28,23 @@ export function PuzzleSelectionPage() {
   const puzzles = availablePuzzles[type];
   const title = type === 'classic' ? 'Classic Nonogram' : 'Super Nonogram';
 
-  // Generate link based on context
-  const generatePuzzleLink = (puzzleId: number) => {
+  // Handle puzzle selection for multiplayer
+  const handlePuzzleClick = async (puzzleId: number) => {
     if (isMultiplayer && roomId) {
-      return `/multiplayer/game/${roomId}/${type}/${puzzleId}`;
+      try {
+        // Update Firebase with puzzle selection
+        await updatePuzzleSelection(type, puzzleId);
+        // Navigate to game
+        navigate(`/multiplayer/game/${roomId}/${type}/${puzzleId}`);
+      } catch (error) {
+        console.error('Error updating puzzle selection:', error);
+        // Fallback: navigate anyway
+        navigate(`/multiplayer/game/${roomId}/${type}/${puzzleId}`);
+      }
+    } else {
+      // Single player: navigate directly
+      navigate(`/game/${type}/${puzzleId}`);
     }
-    return `/game/${type}/${puzzleId}`;
   };
 
   // Generate back link based on context
@@ -71,13 +84,13 @@ export function PuzzleSelectionPage() {
       <main className={styles.main}>
         <div className={styles.puzzleGrid}>
           {puzzles.map((puzzleId) => (
-            <Link
+            <button
               key={puzzleId}
-              to={generatePuzzleLink(puzzleId)}
+              onClick={() => handlePuzzleClick(puzzleId)}
               className={styles.puzzleButton}
             >
               <span className={styles.puzzleNumber}>{puzzleId}</span>
-            </Link>
+            </button>
           ))}
         </div>
 

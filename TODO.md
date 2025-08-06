@@ -1,6 +1,6 @@
 - [ ] Fazer a implementação do modo multiplayer. Faça uma implementação básica do que foi pedido, mas que funcione. Se necessário refinamento, isso será feito posteriormente. O objetivo é que o modo multiplayer funcione, mesmo que de forma básica, para que possamos testar e iterar sobre ele.
-    - [ ] Implementação do Firebase (src/firebase.ts) no projeto.
-    - [ ] Implementar a lógica de criação e gerenciamento de salas, incluindo a capacidade de criar uma sala, entrar em uma sala existente e gerenciar o estado do jogo em tempo real.
+    - [x] Implementação do Firebase (src/firebase.ts) no projeto.
+    - [x] Implementar a lógica de criação e gerenciamento de salas, incluindo a capacidade de criar uma sala, entrar em uma sala existente e gerenciar o estado do jogo em tempo real.
     - [ ] Implementar a lógica de sincronização de estado entre os jogadores, garantindo que as ações de um jogador sejam refletidas em todos os outros jogadores na sala.
 - [ ] Na sidebar, será exibido o nome dos participantes da sala com as respectivas cores.
 

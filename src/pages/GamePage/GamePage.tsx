@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useGameState } from '../../hooks/useGameState';
 import { useZoom } from '../../hooks/useZoom';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import { GameBoard } from '../../components/GameBoard';
 import { Sidebar } from '../../components/Sidebar';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
+import type { CellState } from '../../types';
 import styles from './GamePage.module.css';
 
 export function GamePage() {
-  const { type, id } = useParams<{ type: 'classic' | 'super'; id: string }>();
+  const { type, id, roomId } = useParams<{ type: 'classic' | 'super'; id: string; roomId?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { puzzle, loading, error, loadSpecificPuzzle } = usePuzzleLoader();
   const { 
     gameState, 
@@ -23,9 +26,98 @@ export function GamePage() {
     toggleSolution 
   } = useGameState(puzzle);
   const { config: zoomConfig, zoomIn, zoomOut, resetZoom, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
+  const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
   
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
+
+  // Check if this is multiplayer mode
+  const isMultiplayer = location.pathname.includes('/multiplayer/');
+
+  // State for clue clicks (moved from GameBoard to sync with Firebase)
+  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
+  const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
+
+  // Wrapper functions for multiplayer sync
+  const handleMultiplayerCellMouseDown = async (position: { row: number; col: number }, button: number) => {
+    // Call original function
+    handleCellMouseDown(position, button);
+    
+    // If multiplayer, sync to Firebase
+    if (isMultiplayer && roomId) {
+      try {
+        const cellId = `${position.row}-${position.col}`;
+        // We need to get the updated state after the click
+        setTimeout(async () => {
+          const newState = gameState.grid[position.row][position.col];
+          await updateGridCell(cellId, newState);
+        }, 0);
+      } catch (error) {
+        console.error('Error syncing cell to Firebase:', error);
+      }
+    }
+  };
+
+  const handleMultiplayerCellMouseEnter = (position: { row: number; col: number }) => {
+    // Only call original function - no Firebase sync needed for hover
+    handleCellMouseEnter(position);
+  };
+
+  const handleMultiplayerCellMouseUp = async () => {
+    // Call original function
+    handleCellMouseUp();
+    
+    // Firebase sync happens in MouseDown, no additional sync needed here
+  };
+
+  // Clue click handlers for multiplayer sync
+  const handleRowClueClick = async (rowIndex: number, clueIndex: number | string) => {
+    const clueId = `row-${rowIndex}-${clueIndex}`;
+    const newSet = new Set(clickedRowClues);
+    const isAdding = !newSet.has(clueId);
+    
+    if (isAdding) {
+      newSet.add(clueId);
+    } else {
+      newSet.delete(clueId);
+    }
+    
+    setClickedRowClues(newSet);
+    
+    // If multiplayer, sync to Firebase
+    if (isMultiplayer && roomId) {
+      try {
+        const clueIndexNum = typeof clueIndex === 'string' ? parseInt(clueIndex) : clueIndex;
+        await updateClueState('rows', rowIndex, clueIndexNum, isAdding);
+      } catch (error) {
+        console.error('Error syncing clue to Firebase:', error);
+      }
+    }
+  };
+
+  const handleColClueClick = async (colIndex: number, clueIndex: number | string) => {
+    const clueId = `col-${colIndex}-${clueIndex}`;
+    const newSet = new Set(clickedColClues);
+    const isAdding = !newSet.has(clueId);
+    
+    if (isAdding) {
+      newSet.add(clueId);
+    } else {
+      newSet.delete(clueId);
+    }
+    
+    setClickedColClues(newSet);
+    
+    // If multiplayer, sync to Firebase
+    if (isMultiplayer && roomId) {
+      try {
+        const clueIndexNum = typeof clueIndex === 'string' ? parseInt(clueIndex) : clueIndex;
+        await updateClueState('columns', colIndex, clueIndexNum, isAdding);
+      } catch (error) {
+        console.error('Error syncing clue to Firebase:', error);
+      }
+    }
+  };
 
   // Clear grid with confirmation
   const handleClearGridClick = () => {
@@ -64,6 +156,43 @@ export function GamePage() {
       completionRef.current = false;
     }
   }, [puzzle, initializeGame]);
+
+  // Listen for Firebase updates in multiplayer mode
+  useEffect(() => {
+    if (!isMultiplayer || !room) return;
+
+    // Update grid based on Firebase room state
+    if (room.grid) {
+      Object.entries(room.grid).forEach(([cellId, cellState]) => {
+        const [row, col] = cellId.split('-').map(Number);
+        if (gameState.grid[row] && gameState.grid[row][col] !== cellState) {
+          // Update local grid state without triggering Firebase sync
+          gameState.grid[row][col] = cellState as CellState;
+        }
+      });
+    }
+
+    // Update clue states based on Firebase room state
+    if (room.clues) {
+      const newClickedRowClues = new Set<string>();
+      const newClickedColClues = new Set<string>();
+
+      Object.entries(room.clues.rows || {}).forEach(([clueId, isClicked]) => {
+        if (isClicked) {
+          newClickedRowClues.add(clueId);
+        }
+      });
+
+      Object.entries(room.clues.columns || {}).forEach(([clueId, isClicked]) => {
+        if (isClicked) {
+          newClickedColClues.add(clueId);
+        }
+      });
+
+      setClickedRowClues(newClickedRowClues);
+      setClickedColClues(newClickedColClues);
+    }
+  }, [room, isMultiplayer, gameState.grid]);
 
   // Handle puzzle completion with success animation (gameBoardArea instead of body)
   useEffect(() => {
@@ -182,11 +311,15 @@ export function GamePage() {
           puzzle={puzzle}
           grid={gameState.grid}
           showSolution={gameState.showSolution}
-          onCellMouseDown={handleCellMouseDown}
-          onCellMouseEnter={handleCellMouseEnter}
-          onCellMouseUp={handleCellMouseUp}
+          onCellMouseDown={isMultiplayer ? handleMultiplayerCellMouseDown : handleCellMouseDown}
+          onCellMouseEnter={isMultiplayer ? handleMultiplayerCellMouseEnter : handleCellMouseEnter}
+          onCellMouseUp={isMultiplayer ? handleMultiplayerCellMouseUp : handleCellMouseUp}
           isComplete={gameState.isComplete}
           zoomConfig={zoomConfig}
+          onRowClueClick={isMultiplayer ? handleRowClueClick : undefined}
+          onColClueClick={isMultiplayer ? handleColClueClick : undefined}
+          clickedRowClues={isMultiplayer ? clickedRowClues : undefined}
+          clickedColClues={isMultiplayer ? clickedColClues : undefined}
         />
       </main>
 
