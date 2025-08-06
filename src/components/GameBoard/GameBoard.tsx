@@ -41,7 +41,7 @@ export function GameBoard({
   const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
 
   // Handle clue clicking
-  const handleRowClueClick = useCallback((e: React.MouseEvent, rowIndex: number, clueIndex: number) => {
+  const handleRowClueClick = useCallback((e: React.MouseEvent, rowIndex: number, clueIndex: number | string) => {
     e.preventDefault();
     e.stopPropagation();
     const clueId = `row-${rowIndex}-${clueIndex}`;
@@ -56,7 +56,7 @@ export function GameBoard({
     });
   }, []);
 
-  const handleColClueClick = useCallback((e: React.MouseEvent, colIndex: number, clueIndex: number) => {
+  const handleColClueClick = useCallback((e: React.MouseEvent, colIndex: number, clueIndex: number | string) => {
     e.preventDefault();
     e.stopPropagation();
     const clueId = `col-${colIndex}-${clueIndex}`;
@@ -173,8 +173,14 @@ export function GameBoard({
       clues.forEach((block: ClueElement, blockIndex: number) => {
         if (isSuperCol) {
           if (typeof block === 'number') {
+            const clueId = `col-${index}-${blockIndex}`;
+            const isClicked = clickedColClues.has(clueId);
             clueElements.push(
-              <div key={blockIndex} className={`${styles.clueNumber} ${styles.superClueNumber}`}>
+              <div 
+                key={blockIndex} 
+                className={`${styles.clueNumber} ${styles.superClueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
+                onClick={(e) => handleColClueClick(e, index, blockIndex)}
+              >
                 {block}
               </div>
             );
@@ -190,11 +196,19 @@ export function GameBoard({
                     alignItems: 'center' 
                   }}>
                     {!(Array.isArray(line) && line.length === 1 && line[0] === 0) && 
-                     line.map((clue: number, clueIndex: number) => (
-                      <div key={clueIndex} className={styles.clueNumber}>
-                        {clue}
-                      </div>
-                    ))}
+                     line.map((clue: number, clueIndex: number) => {
+                       const nestedClueId = `col-${index}-${blockIndex}-${lineIndex}-${clueIndex}`;
+                       const isNestedClicked = clickedColClues.has(nestedClueId);
+                       return (
+                         <div 
+                           key={clueIndex} 
+                           className={`${styles.clueNumber} ${isNestedClicked ? styles.clueNumberClicked : ''}`}
+                           onClick={(e) => handleColClueClick(e, index, `${blockIndex}-${lineIndex}-${clueIndex}` as any)}
+                         >
+                           {clue}
+                         </div>
+                       );
+                     })}
                   </div>
                 ))}
               </div>
@@ -222,7 +236,6 @@ export function GameBoard({
           style={{ 
             width: isSuperCol ? `${zoomConfig.cellSize * 2}px` : `${zoomConfig.cellSize}px`
           }}
-          onClick={isSuperCol ? (e) => handleColClueClick(e, index, 0) : undefined}
         >
           {clueElements}
         </div>
@@ -255,8 +268,14 @@ export function GameBoard({
       clues.forEach((block: ClueElement, blockIndex: number) => {
         if (isSuperRow) {
           if (typeof block === 'number') {
+            const clueId = `row-${index}-${blockIndex}`;
+            const isClicked = clickedRowClues.has(clueId);
             clueElements.push(
-              <div key={blockIndex} className={`${styles.clueNumber} ${styles.superClueNumber}`}>
+              <div 
+                key={blockIndex} 
+                className={`${styles.clueNumber} ${styles.superClueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
+                onClick={(e) => handleRowClueClick(e, index, blockIndex)}
+              >
                 {block}
               </div>
             );
@@ -272,11 +291,19 @@ export function GameBoard({
                     alignItems: 'center' 
                   }}>
                     {!(Array.isArray(line) && line.length === 1 && line[0] === 0) && 
-                     line.map((clue: number, clueIndex: number) => (
-                      <div key={clueIndex} className={styles.clueNumber}>
-                        {clue}
-                      </div>
-                    ))}
+                     line.map((clue: number, clueIndex: number) => {
+                       const nestedClueId = `row-${index}-${blockIndex}-${lineIndex}-${clueIndex}`;
+                       const isNestedClicked = clickedRowClues.has(nestedClueId);
+                       return (
+                         <div 
+                           key={clueIndex} 
+                           className={`${styles.clueNumber} ${isNestedClicked ? styles.clueNumberClicked : ''}`}
+                           onClick={(e) => handleRowClueClick(e, index, `${blockIndex}-${lineIndex}-${clueIndex}` as any)}
+                         >
+                           {clue}
+                         </div>
+                       );
+                     })}
                   </div>
                 ))}
               </div>
@@ -304,7 +331,6 @@ export function GameBoard({
           style={{ 
             height: isSuperRow ? `${zoomConfig.cellSize * 2}px` : `${zoomConfig.cellSize}px`
           }}
-          onClick={isSuperRow ? (e) => handleRowClueClick(e, index, 0) : undefined}
         >
           {clueElements}
         </div>

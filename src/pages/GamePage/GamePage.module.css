@@ -1,6 +1,57 @@
 /* New GamePage structure */
 .gamePageContainer {
   display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.gameBoardArea {
+  flex: 1;
+  margin-left: 250px; /* compensate for fixed sidebar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f2f5;
+  min-height: 100vh;
+  overflow-x: auto;
+  position: relative;
+}
+
+/* Success message overlay */
+.successOverlay {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: transparent;
+  animation: slideInDown 1.5s ease-out;
+}
+
+.successMessage {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #22c55e;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin: 0;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.gamePageContainer {
+  display: flex;
   height: 100vh;
   background: #f8f9fa;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;

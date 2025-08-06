@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useGameState } from '../../hooks/useGameState';
 import { useZoom } from '../../hooks/useZoom';
 import { GameBoard } from '../../components/GameBoard';
 import { Sidebar } from '../../components/Sidebar';
+import { ConfirmationModal } from '../../components/ConfirmationModal';
 import styles from './GamePage.module.css';
 
 export function GamePage() {
@@ -21,9 +22,24 @@ export function GamePage() {
     clearGameGrid, 
     toggleSolution 
   } = useGameState(puzzle);
-  const { config: zoomConfig, zoomIn, zoomOut, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
+  const { config: zoomConfig, zoomIn, zoomOut, resetZoom, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
   
   const completionRef = useRef(false);
+  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
+
+  // Clear grid with confirmation
+  const handleClearGridClick = () => {
+    setShowClearConfirmation(true);
+  };
+
+  const handleConfirmClear = () => {
+    clearGameGrid();
+    setShowClearConfirmation(false);
+  };
+
+  const handleCancelClear = () => {
+    setShowClearConfirmation(false);
+  };
 
   // Load puzzle when params change
   useEffect(() => {
@@ -142,16 +158,26 @@ export function GamePage() {
         showSolution={gameState.showSolution}
         isComplete={gameState.isComplete}
         onShowSolution={toggleSolution}
-        onClearGrid={clearGameGrid}
+        onClearGrid={handleClearGridClick}
         onModeChange={setPaintMode}
         onZoomIn={zoomIn}
         onZoomOut={zoomOut}
+        onResetZoom={resetZoom}
         canZoomIn={canZoomIn}
         canZoomOut={canZoomOut}
         zoomPercentage={zoomPercentage}
       />
       
       <main className={styles.gameBoardArea}>
+        {/* Success message overlay */}
+        {gameState.isComplete && (
+          <div className={styles.successOverlay}>
+          <h1 className={styles.successMessage}>
+            {(type === 'classic' ? 'CLASSIC' : 'SUPER').toUpperCase()} PUZZLE {puzzle.id} SOLVED
+          </h1>
+          </div>
+        )}
+        
         <GameBoard
           puzzle={puzzle}
           grid={gameState.grid}
@@ -163,6 +189,17 @@ export function GamePage() {
           zoomConfig={zoomConfig}
         />
       </main>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showClearConfirmation}
+        title="Clear Grid"
+        message="Are you sure you want to clear the entire grid? This action cannot be undone."
+        onConfirm={handleConfirmClear}
+        onCancel={handleCancelClear}
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

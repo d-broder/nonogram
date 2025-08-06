@@ -3,11 +3,12 @@ import styles from './ZoomControls.module.css';
 interface ZoomControlsProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
+  onResetZoom: () => void;
   canZoomIn: boolean;
   canZoomOut: boolean;
 }
 
-export function ZoomControls({ onZoomIn, onZoomOut, canZoomIn, canZoomOut }: ZoomControlsProps) {
+export function ZoomControls({ onZoomIn, onZoomOut, onResetZoom, canZoomIn, canZoomOut }: ZoomControlsProps) {
   return (
     <div className={styles.zoomControls}>
       <button
@@ -27,6 +28,14 @@ export function ZoomControls({ onZoomIn, onZoomOut, canZoomIn, canZoomOut }: Zoo
         type="button"
       >
         <span className={styles.icon}>+</span>
+      </button>
+      <button
+        onClick={onResetZoom}
+        className={`${styles.zoomBtn} ${styles.resetBtn}`}
+        aria-label="Reset zoom"
+        type="button"
+      >
+        <span className={styles.icon}>⌂</span>
       </button>
     </div>
   );

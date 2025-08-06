@@ -9,8 +9,6 @@
   /* margin: 20px; */
   max-width: calc(100vw - 250px); /* Account for sidebar */
   max-height: 100vh;
-  overflow-y: visible;
-  overflow-x: auto;
 }
 
 /* Corner space */
@@ -33,10 +31,7 @@
   position: sticky;
   top: 0;
   z-index: 15;
-  /* background: white; */
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-  /* overflow-x: auto; */
-  /* overflow-y: visible; */
+  transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
   border-bottom: 1px solid #808080;
 }
@@ -44,7 +39,8 @@
 .colClues.hidden {
   height: 0;
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-30px);
+  overflow: hidden;
 }
 
 .colClueContainer {
@@ -64,9 +60,8 @@
   position: sticky;
   left: 0;
   z-index: 15;
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition: all 1.2s ease-in-out;
   overflow-y: auto;
-  /* overflow-x: visible; */
   background-color: #f0f2f5;
   border-right: 1px solid #808080;
 }
@@ -74,7 +69,8 @@
 .rowClues.hidden {
   width: 0;
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateX(-30px);
+  overflow: hidden;
 }
 
 .rowClueContainer {

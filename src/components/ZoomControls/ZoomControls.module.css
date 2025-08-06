@@ -47,3 +47,19 @@
 .zoomBtn:disabled .icon {
   color: #999;
 }
+
+.resetBtn {
+  background: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.resetBtn:not(:disabled):hover {
+  background: #ffe4b3;
+  border-color: #ffc107;
+  transform: translateY(-2px);
+}
+
+.resetBtn:not(:disabled):active {
+  background: #ffc107;
+  transform: translateY(0);
+}
