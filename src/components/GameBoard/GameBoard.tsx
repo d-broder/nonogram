@@ -133,11 +133,13 @@ export function GameBoard({
     if (showSolution) return null;
     
     const cellState = grid[row][col];
+    const iconClass = isComplete ? `${styles.cellIcon} ${styles.fadeOut}` : styles.cellIcon;
+    
     switch (cellState) {
       case 'x':
-        return <img src={iconX} alt="X mark" className={styles.cellIcon} />;
+        return <img src={iconX} alt="X mark" className={iconClass} />;
       case 'o':
-        return <img src={iconO} alt="O mark" className={styles.cellIcon} />;
+        return <img src={iconO} alt="O mark" className={iconClass} />;
       default:
         return null;
     }

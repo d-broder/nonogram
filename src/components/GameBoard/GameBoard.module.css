@@ -33,14 +33,12 @@
   z-index: 15;
   transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
-  border-bottom: 1px solid #808080;
 }
 
 .colClues.hidden {
   height: 0;
   opacity: 0;
   transform: translateY(-30px);
-  overflow: hidden;
 }
 
 .colClueContainer {
@@ -61,16 +59,13 @@
   left: 0;
   z-index: 15;
   transition: all 1.2s ease-in-out;
-  overflow-y: auto;
   background-color: #f0f2f5;
-  border-right: 1px solid #808080;
 }
 
 .rowClues.hidden {
   width: 0;
   opacity: 0;
   transform: translateX(-30px);
-  overflow: hidden;
 }
 
 .rowClueContainer {
@@ -97,6 +92,16 @@
   cursor: pointer;
   transition: all 0.3s ease;
   user-select: none;
+}
+
+.colClues.hidden .clueNumber,
+.rowClues.hidden .clueNumber {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+  transition-delay: 1.2s;
 }
 
 .clueNumber:hover {
@@ -197,12 +202,25 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
+.cellIcon.fadeOut {
+  animation: fadeOut 1.2s ease-in-out forwards;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 
@@ -227,29 +245,3 @@
 .cell.thickTop {
   border-top: 2px solid #808080;
 }
-
-/* Success modal styles removed - now handled by SuccessModal component */
-
-/* @media (max-width: 768px) {
-  .nonogramContainer {
-    margin-top: 10px;
-    margin-bottom: 15px;
-    --cell-size: 30px;
-    --clue-width: 24px;
-    --clue-height: 14px;
-    --super-clue-width: 52px;
-    --super-clue-height: 52px;
-    --icon-size: 18px;
-  }
-
-  .clueNumber {
-    font-size: 12px;
-  }
-
-  .successModal {
-    padding: 1rem;
-    font-size: 1.5rem;
-    width: 90%;
-    max-width: 400px;
-  }
-} */
