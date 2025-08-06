@@ -58,9 +58,32 @@ export function GamePage() {
     }
   };
 
-  const handleMultiplayerCellMouseEnter = (position: { row: number; col: number }) => {
-    // Only call original function - no Firebase sync needed for hover
+  const handleMultiplayerCellMouseEnter = async (position: { row: number; col: number }) => {
+    // Get grid state before the change
+    const gridBefore = gameState.grid.map(row => [...row]);
+    
+    // Call original function - this modifies multiple cells during drag
     handleCellMouseEnter(position);
+    
+    // If multiplayer, sync all changed cells to Firebase
+    if (isMultiplayer && roomId) {
+      try {
+        // Compare grid before and after to find all changed cells
+        setTimeout(async () => {
+          const gridAfter = gameState.grid;
+          for (let row = 0; row < gridAfter.length; row++) {
+            for (let col = 0; col < gridAfter[row].length; col++) {
+              if (gridBefore[row][col] !== gridAfter[row][col]) {
+                const cellId = `${row}-${col}`;
+                await updateGridCell(cellId, gridAfter[row][col]);
+              }
+            }
+          }
+        }, 0);
+      } catch (error) {
+        console.error('Error syncing drag cells to Firebase:', error);
+      }
+    }
   };
 
   const handleMultiplayerCellMouseUp = async () => {
@@ -73,48 +96,52 @@ export function GamePage() {
   // Clue click handlers for multiplayer sync
   const handleRowClueClick = async (rowIndex: number, clueIndex: number | string) => {
     const clueId = `row-${rowIndex}-${clueIndex}`;
-    const newSet = new Set(clickedRowClues);
-    const isAdding = !newSet.has(clueId);
+    const isCurrentlyClicked = clickedRowClues.has(clueId);
+    const newState = !isCurrentlyClicked; // Toggle state
     
-    if (isAdding) {
+    // Update local state immediately for responsive UI
+    const newSet = new Set(clickedRowClues);
+    if (newState) {
       newSet.add(clueId);
     } else {
       newSet.delete(clueId);
     }
-    
     setClickedRowClues(newSet);
     
     // If multiplayer, sync to Firebase
     if (isMultiplayer && roomId) {
       try {
-        const clueIndexNum = typeof clueIndex === 'string' ? parseInt(clueIndex) : clueIndex;
-        await updateClueState('rows', rowIndex, clueIndexNum, isAdding);
+        await updateClueState(clueId, newState);
       } catch (error) {
         console.error('Error syncing clue to Firebase:', error);
+        // Revert local state on error
+        setClickedRowClues(clickedRowClues);
       }
     }
   };
 
   const handleColClueClick = async (colIndex: number, clueIndex: number | string) => {
     const clueId = `col-${colIndex}-${clueIndex}`;
-    const newSet = new Set(clickedColClues);
-    const isAdding = !newSet.has(clueId);
+    const isCurrentlyClicked = clickedColClues.has(clueId);
+    const newState = !isCurrentlyClicked; // Toggle state
     
-    if (isAdding) {
+    // Update local state immediately for responsive UI
+    const newSet = new Set(clickedColClues);
+    if (newState) {
       newSet.add(clueId);
     } else {
       newSet.delete(clueId);
     }
-    
     setClickedColClues(newSet);
     
     // If multiplayer, sync to Firebase
     if (isMultiplayer && roomId) {
       try {
-        const clueIndexNum = typeof clueIndex === 'string' ? parseInt(clueIndex) : clueIndex;
-        await updateClueState('columns', colIndex, clueIndexNum, isAdding);
+        await updateClueState(clueId, newState);
       } catch (error) {
         console.error('Error syncing clue to Firebase:', error);
+        // Revert local state on error
+        setClickedColClues(clickedColClues);
       }
     }
   };
@@ -177,15 +204,13 @@ export function GamePage() {
       const newClickedRowClues = new Set<string>();
       const newClickedColClues = new Set<string>();
 
-      Object.entries(room.clues.rows || {}).forEach(([clueId, isClicked]) => {
+      Object.entries(room.clues).forEach(([clueId, isClicked]) => {
         if (isClicked) {
-          newClickedRowClues.add(clueId);
-        }
-      });
-
-      Object.entries(room.clues.columns || {}).forEach(([clueId, isClicked]) => {
-        if (isClicked) {
-          newClickedColClues.add(clueId);
+          if (clueId.startsWith('row-')) {
+            newClickedRowClues.add(clueId);
+          } else if (clueId.startsWith('col-')) {
+            newClickedColClues.add(clueId);
+          }
         }
       });
 

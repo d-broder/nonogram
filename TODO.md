@@ -12,3 +12,25 @@ Considerações:
     - Se o criador da sala já tiver selecionado o puzzle: para a tela de jogo, com o grid e as pistas, como já existe.
 - Os estados das "clueNumbers" (clicado ou não clicado), o estado de cada célula do grid (preto, "x" ou "o") serão compartilhados entre todos os usuários da sala, ou seja, se um usuário clicar numa "clueNumber", todos os outros usuários verão essa mudança. O mesmo vale para as células do grid.
 - O modo de zoom do grid e o paint mode não serão compartilhados entre os usuários da sala, ou seja, cada usuário poderá ter seu próprio zoom e paint mode.
+
+---
+
+está bem melhor, mas ainda estão acontecendo alguns bugs esquisitos:
+
+- Uma coisa estranha que eu reparei: ao clicar, o sistema "empurra" para o Firebase o estado atual daquela célula. A ação de clicar é a única forma de atualizar o estado do jogo online. E quando clicamos e arrastamos, as informações das células pintadas no movimento de arrastar não são enviadas para o Firebase, apenas a célula onde o clique foi feito. Mas as células continuam pintadas para mim, mas essa informação não aparece pros outros jogadores. Eu quero que isso seja arrumado
+
+- O grid é inicializado com informação nula sobre cada célula ("nula" é diferente de "white") (na verdade, nem aparece o estado de nenhuma cell no Firebase). Na prática, ao inicializar um novo jogo, o estado de todas as células é "white". Ao mandar a informação para o Firebase do estado da célula ele não está podendo mais ser alterado. Não é isso o que eu quero. Eu quero que todas as células possam ser alteradas
+
+---
+
+agora está acontecendo o seguinte: o grid está sendo inicializado com todas as células com estado "white"
+
+Por algum motivo, não sei se pela forma com está sendo lidado no código, tem algo prevenindo que células com algum estado definido não possam mais ser alterados. E, como está tudo white, nada que eu faça altera as células, nem visualmente. O estado das células deve poder sim ser alterado quantas vezes o usuário quiser
+
+além disso, em "gridUtils" temos a forma como o arraste do mouse lida com as células. As células pintadas depois do arraste e/ou clique são as informações que devem ser mandadas para o Firebase 
+
+não sei como o seu código está lidando, mas deveria acontecer da mesma lógica do que é exibido para o usuário durante/após o clique/arraste ser a mesma informação sendo enviada ao Firebase
+
+obs.: a mudança que você fez nas clues arrumou perfeitamente. Talvez você possa usar uma lógica similiar da que você usou nas clues para arrumar o problema das cells
+
+

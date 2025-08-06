@@ -64,10 +64,7 @@ export interface Room {
   puzzleType: 'classic' | 'super' | null;
   puzzleId: number | null;
   grid: { [cellId: string]: CellState };
-  clues: {
-    rows: { [key: string]: boolean };
-    columns: { [key: string]: boolean };
-  };
+  clues: { [clueId: string]: boolean }; // Simplified structure: "row-0-0": true, "col-1-2": false
 }
 
 export interface MultiplayerGameState extends GameState {

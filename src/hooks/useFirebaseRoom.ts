@@ -57,10 +57,7 @@ export function useFirebaseRoom(roomId: string | null) {
         puzzleType: null,
         puzzleId: null,
         grid: {},
-        clues: {
-          rows: {},
-          columns: {}
-        }
+        clues: {}
       };
 
       await setDoc(doc(firestore, 'rooms', roomId), roomData);
@@ -97,15 +94,31 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
-  // Update puzzle selection
+  // Update puzzle selection and initialize grid
   const updatePuzzleSelection = async (puzzleType: 'classic' | 'super', puzzleId: number): Promise<void> => {
     if (!roomId) throw new Error('No room ID provided');
     
     try {
+      // Load the puzzle to get dimensions
+      const puzzleResponse = await fetch(`/puzzles/${puzzleType}/${puzzleId}.json`);
+      const puzzle = await puzzleResponse.json();
+      
+      // Initialize grid with all cells as "white"
+      const initialGrid: { [cellId: string]: CellState } = {};
+      for (let row = 0; row < puzzle.size.height; row++) {
+        for (let col = 0; col < puzzle.size.width; col++) {
+          const cellId = `${row}-${col}`;
+          initialGrid[cellId] = 'white';
+        }
+      }
+      
       await updateDoc(doc(firestore, 'rooms', roomId), {
         puzzleType,
         puzzleId,
-        status: 'playing'
+        status: 'playing',
+        grid: initialGrid,
+        // Reset clues as well
+        clues: {}
       });
     } catch (error) {
       console.error('Error updating puzzle selection:', error);
@@ -127,13 +140,13 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
-  // Update clue state
-  const updateClueState = async (type: 'rows' | 'columns', index: number, clueIndex: number, clicked: boolean): Promise<void> => {
+  // Update clue state using clueId (e.g., "row-0-0", "col-1-2")
+  const updateClueState = async (clueId: string, clicked: boolean): Promise<void> => {
     if (!roomId) throw new Error('No room ID provided');
     
     try {
       await updateDoc(doc(firestore, 'rooms', roomId), {
-        [`clues.${type}.${index}.${clueIndex}`]: clicked
+        [`clues.${clueId}`]: clicked
       });
     } catch (error) {
       console.error('Error updating clue state:', error);
