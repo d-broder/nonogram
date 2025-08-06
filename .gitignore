@@ -22,7 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-.github/*
-.reference-project/*
-TODO.md

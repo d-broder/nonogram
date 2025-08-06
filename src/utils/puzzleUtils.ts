@@ -32,30 +32,10 @@ export async function getAvailablePuzzles(type: 'classic' | 'super'): Promise<nu
     // For now, we'll return a static list
   // In a real implementation, this could fetch from an index file
   if (type === 'classic') {
-    return [1, 2]; // Sample puzzle IDs
+    return [1, 2, 3]; // Sample puzzle IDs
   } else {
     return [1]; // Sample super puzzle IDs
   }
-  
-  // const puzzleIds: number[] = [];
-  // let id = 1;
-  
-  // // Try to fetch puzzles starting from 1 until we find one that doesn't exist
-  // while (true) {
-  //   try {
-  //     const response = await fetch(`/puzzles/${type}/${id}.json`);
-  //     if (response.ok) {
-  //       puzzleIds.push(id);
-  //       id++;
-  //     } else {
-  //       break; // No more puzzles found
-  //     }
-  //   } catch (error) {
-  //     break; // Error fetching, assume no more puzzles
-  //   }
-  // }
-  
-  // return puzzleIds;
 }
 
 /**

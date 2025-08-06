@@ -18,6 +18,7 @@ interface SidebarProps {
   onZoomOut: () => void;
   canZoomIn: boolean;
   canZoomOut: boolean;
+  zoomPercentage: number;
 }
 
 export function Sidebar({
@@ -32,12 +33,17 @@ export function Sidebar({
   onZoomIn,
   onZoomOut,
   canZoomIn,
-  canZoomOut
+  canZoomOut,
+  zoomPercentage
 }: SidebarProps) {
   const navigate = useNavigate();
 
   const handleBackToHome = () => {
     navigate('/');
+  };
+
+  const handleBackToPuzzles = () => {
+    navigate(`/puzzles/${currentType}`);
   };
 
   return (
@@ -72,6 +78,7 @@ export function Sidebar({
         <PaintModeButtons
           currentMode={paintMode}
           onModeChange={onModeChange}
+          isComplete={isComplete}
         />
       </div>
 
@@ -84,7 +91,34 @@ export function Sidebar({
           canZoomIn={canZoomIn}
           canZoomOut={canZoomOut}
         />
+        <div className={styles.zoomLevel}>
+          Zoom: {zoomPercentage}%
+        </div>
       </div>
+
+      {/* Mensagem de sucesso */}
+      {isComplete && (
+        <div className={styles.successMessage}>
+          <h2 className={styles.successTitle}>Congratulations!</h2>
+          <p className={styles.successSubtitle}>
+            You successfully solved {currentType === 'classic' ? 'Classic' : 'Super'} Nonogram Puzzle {puzzle.id}!
+          </p>
+          <div className={styles.successButtons}>
+            <button 
+              className={styles.successBtn}
+              onClick={handleBackToPuzzles}
+            >
+              Back to Puzzles
+            </button>
+            <button 
+              className={styles.successBtn}
+              onClick={handleBackToHome}
+            >
+              Main Menu
+            </button>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

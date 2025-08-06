@@ -40,6 +40,14 @@
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transform: none !important;
+}
+
+.button:disabled:hover {
+  transform: none !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .solutionButton.active {

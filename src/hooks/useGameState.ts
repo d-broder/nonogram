@@ -80,25 +80,43 @@ export function useGameState(puzzle: Puzzle | null) {
       }
     }
 
-    // Interpret cell based on defined direction
-    let targetPosition = position;
+    // Calculate all cells between start and current position
+    const cellsToModify: CellPosition[] = [];
+    
     if (dragState.current.direction === 'horizontal') {
-      // If in horizontal mode, interpret as same row as initial cell
-      if (currentRow !== startRow) {
-        targetPosition = { row: startRow, col: currentCol };
+      // Paint all cells in the horizontal line from start to current
+      const row = startRow;
+      const minCol = Math.min(startCol, currentCol);
+      const maxCol = Math.max(startCol, currentCol);
+      
+      for (let col = minCol; col <= maxCol; col++) {
+        if (col >= 0 && col < puzzle!.size.width) {
+          cellsToModify.push({ row, col });
+        }
       }
     } else if (dragState.current.direction === 'vertical') {
-      // If in vertical mode, interpret as same column as initial cell
-      if (currentCol !== startCol) {
-        targetPosition = { row: currentRow, col: startCol };
+      // Paint all cells in the vertical line from start to current
+      const col = startCol;
+      const minRow = Math.min(startRow, currentRow);
+      const maxRow = Math.max(startRow, currentRow);
+      
+      for (let row = minRow; row <= maxRow; row++) {
+        if (row >= 0 && row < puzzle!.size.height) {
+          cellsToModify.push({ row, col });
+        }
       }
+    } else {
+      // No direction set yet, just modify the current cell
+      cellsToModify.push(position);
     }
 
-    // Apply changes to interpreted cell
-    if (targetPosition.row >= 0 && targetPosition.row < puzzle!.size.height &&
-        targetPosition.col >= 0 && targetPosition.col < puzzle!.size.width) {
-      applyCellChange(targetPosition);
-    }
+    // Apply changes to all cells in the line
+    cellsToModify.forEach(cell => {
+      if (cell.row >= 0 && cell.row < puzzle!.size.height &&
+          cell.col >= 0 && cell.col < puzzle!.size.width) {
+        applyCellChange(cell);
+      }
+    });
   }, [puzzle]);
 
   // Handle mouse up (end drag)

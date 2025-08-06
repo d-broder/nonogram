@@ -27,6 +27,7 @@ export function GameControls({
       <button
         onClick={onShowSolution}
         className={`${styles.button} ${styles.solutionButton} ${showSolution ? styles.active : ''}`}
+        disabled={isComplete}
         type="button"
       >
         {showSolution ? 'Hide Solution' : 'Show Solution'}

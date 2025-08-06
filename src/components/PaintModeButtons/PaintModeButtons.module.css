@@ -49,3 +49,21 @@
 .paintModeBtn:hover:not(.selected) .icon {
   transform: scale(1.05);
 }
+
+/* Disabled button styling */
+.paintModeBtn:disabled {
+  background: #e0e0e0 !important;
+  border-color: #ccc !important;
+  cursor: not-allowed !important;
+  opacity: 0.6;
+}
+
+.paintModeBtn:disabled .icon {
+  opacity: 0.5;
+  transform: none !important;
+}
+
+.paintModeBtn:disabled:hover {
+  transform: none !important;
+  background: #e0e0e0 !important;
+}

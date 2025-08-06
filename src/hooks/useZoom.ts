@@ -42,6 +42,9 @@ export function useZoom() {
   const canZoomIn = cellSize < MAX_CELL_SIZE;
   const canZoomOut = cellSize > MIN_CELL_SIZE;
   const config = calculateZoomConfig(cellSize);
+  
+  // Calculate zoom percentage based on default size
+  const zoomPercentage = Math.round((cellSize / DEFAULT_CELL_SIZE) * 100);
 
   return {
     config,
@@ -50,5 +53,6 @@ export function useZoom() {
     resetZoom,
     canZoomIn,
     canZoomOut,
+    zoomPercentage,
   };
 }

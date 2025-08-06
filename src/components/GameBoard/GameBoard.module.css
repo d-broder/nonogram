@@ -1,22 +1,50 @@
-/* Main nonogram container - matching reference layout */
+/* Main nonogram container - updated for sticky clues */
 .nonogramContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px;
+  display: grid;
+  grid-template-areas: 
+    "corner colClues"
+    "rowClues grid";
+  grid-template-columns: max-content 1fr;
+  grid-template-rows: max-content 1fr;
+  /* margin: 20px; */
+  max-width: calc(100vw - 250px); /* Account for sidebar */
+  max-height: 100vh;
+  overflow-y: visible;
+  overflow-x: auto;
 }
 
-/* Column clues container */
+/* Corner space */
+.cornerSpace {
+  grid-area: corner;
+  background: transparent;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  background-color: #f0f2f5;
+}
+
+/* Column clues container - sticky at top */
 .colClues {
+  grid-area: colClues;
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  margin-bottom: 2px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  /* background: white; */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  /* overflow-x: auto; */
+  /* overflow-y: visible; */
+  background-color: #f0f2f5;
+  border-bottom: 1px solid #808080;
 }
 
-.cornerSpace {
-  /* Space in top-left corner to align clues properly */
-  background: transparent;
+.colClues.hidden {
+  height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
 }
 
 .colClueContainer {
@@ -25,19 +53,28 @@
   align-items: center;
   justify-content: flex-end;
   width: var(--cell-size, 40px);
+  flex-shrink: 0;
 }
 
-/* Game area with row clues and grid */
-.gameArea {
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
-}
-
+/* Row clues - sticky at left */
 .rowClues {
+  grid-area: rowClues;
   display: flex;
   flex-direction: column;
-  margin-right: 2px;
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  overflow-y: auto;
+  /* overflow-x: visible; */
+  background-color: #f0f2f5;
+  border-right: 1px solid #808080;
+}
+
+.rowClues.hidden {
+  width: 0;
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
 .rowClueContainer {
@@ -46,6 +83,7 @@
   align-items: center;
   justify-content: flex-end;
   height: var(--cell-size, 40px);
+  flex-shrink: 0;
 }
 
 /* Clue number styling - from reference */
@@ -121,10 +159,10 @@
   height: var(--super-clue-height, 70px);
 }
 
-/* Grid styling - from reference */
+/* Grid styling */
 .grid {
   display: grid;
-  /* Grid template will be set inline based on puzzle size */
+  position: relative;
 }
 
 .cell {
@@ -143,7 +181,7 @@
 }
 
 .cell:disabled {
-  cursor: not-allowed;
+  cursor: default;
 }
 
 /* Cell states - from reference */
@@ -196,11 +234,10 @@
 
 /* Success modal styles removed - now handled by SuccessModal component */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .nonogramContainer {
     margin-top: 10px;
     margin-bottom: 15px;
-    overflow-x: auto;
     --cell-size: 30px;
     --clue-width: 24px;
     --clue-height: 14px;
@@ -219,4 +256,4 @@
     width: 90%;
     max-width: 400px;
   }
-}
+} */

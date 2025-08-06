@@ -41,7 +41,9 @@ export function GameBoard({
   const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
 
   // Handle clue clicking
-  const handleRowClueClick = useCallback((rowIndex: number, clueIndex: number) => {
+  const handleRowClueClick = useCallback((e: React.MouseEvent, rowIndex: number, clueIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
     const clueId = `row-${rowIndex}-${clueIndex}`;
     setClickedRowClues(prev => {
       const newSet = new Set(prev);
@@ -54,7 +56,9 @@ export function GameBoard({
     });
   }, []);
 
-  const handleColClueClick = useCallback((colIndex: number, clueIndex: number) => {
+  const handleColClueClick = useCallback((e: React.MouseEvent, colIndex: number, clueIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
     const clueId = `col-${colIndex}-${clueIndex}`;
     setClickedColClues(prev => {
       const newSet = new Set(prev);
@@ -93,51 +97,6 @@ export function GameBoard({
       document.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, [onCellMouseUp]);
-
-  const [maxRowClues, setMaxRowClues] = useState(0);
-  const [maxColClues, setMaxColClues] = useState(0);
-
-  useEffect(() => {
-    if (!puzzle) return;
-    function getMaxClues(clues: any[], type: 'classic' | 'super') {
-      let max = 0;
-      for (const clue of clues) {
-        if (type === 'classic') {
-          // Array de números
-          max = Math.max(max, Array.isArray(clue) ? clue.length : 0);
-        } else {
-          // Super: pode ser número, array, ou "super"
-          if (clue === 'super') continue;
-          if (typeof clue === 'number') {
-            max = Math.max(max, 1);
-          } else if (Array.isArray(clue)) {
-            // Se for array de duas arrays
-            if (clue.length === 2 && Array.isArray(clue[0]) && Array.isArray(clue[1])) {
-              max = Math.max(max, Math.max(clue[0].length, clue[1].length));
-            } else {
-              max = Math.max(max, clue.length);
-            }
-          }
-        }
-      }
-      return max;
-    }
-    setMaxRowClues(getMaxClues(puzzle.rowClues, puzzle.type));
-    setMaxColClues(getMaxClues(puzzle.colClues, puzzle.type));
-  }, [puzzle]);
-
-  useEffect(() => {
-    if (colCluesRef.current) {
-      const cornerSpace = colCluesRef.current.querySelector(`.${styles.cornerSpace}`) as HTMLElement;
-      if (cornerSpace) {
-        // Calcula dimensões
-        const clueHeight = zoomConfig.clueHeight;
-        const clueGap = zoomConfig.clueGap;
-        cornerSpace.style.width = `${maxRowClues * clueHeight + maxRowClues * clueGap + 2}px`;
-        cornerSpace.style.height = `${maxColClues * clueHeight + maxColClues * clueGap}px`;
-      }
-    }
-  }, [puzzle, zoomConfig, maxRowClues, maxColClues]);
 
   const getCellClass = (row: number, col: number) => {
     const classes = [styles.cell];
@@ -248,7 +207,7 @@ export function GameBoard({
             <div 
               key={blockIndex} 
               className={`${styles.clueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
-              onClick={() => handleColClueClick(index, blockIndex)}
+              onClick={(e) => handleColClueClick(e, index, blockIndex)}
             >
               {block}
             </div>
@@ -263,7 +222,7 @@ export function GameBoard({
           style={{ 
             width: isSuperCol ? `${zoomConfig.cellSize * 2}px` : `${zoomConfig.cellSize}px`
           }}
-          onClick={isSuperCol ? () => handleColClueClick(index, 0) : undefined}
+          onClick={isSuperCol ? (e) => handleColClueClick(e, index, 0) : undefined}
         >
           {clueElements}
         </div>
@@ -330,7 +289,7 @@ export function GameBoard({
             <div 
               key={blockIndex} 
               className={`${styles.clueNumber} ${isClicked ? styles.clueNumberClicked : ''}`}
-              onClick={() => handleRowClueClick(index, blockIndex)}
+              onClick={(e) => handleRowClueClick(e, index, blockIndex)}
             >
               {block}
             </div>
@@ -345,7 +304,7 @@ export function GameBoard({
           style={{ 
             height: isSuperRow ? `${zoomConfig.cellSize * 2}px` : `${zoomConfig.cellSize}px`
           }}
-          onClick={isSuperRow ? () => handleRowClueClick(index, 0) : undefined}
+          onClick={isSuperRow ? (e) => handleRowClueClick(e, index, 0) : undefined}
         >
           {clueElements}
         </div>
@@ -371,41 +330,42 @@ export function GameBoard({
         '--clue-font-size': `${zoomConfig.clueFontSize}px`
       } as React.CSSProperties}
     >
+      {/* Corner space */}
+      <div className={styles.cornerSpace}></div>
+
       {/* Column clues */}
-      <div ref={colCluesRef} className={styles.colClues}>
-        <div className={styles.cornerSpace}></div>
+      <div ref={colCluesRef} className={`${styles.colClues} ${isComplete ? styles.hidden : ''}`}>
         {colClueElements}
       </div>
 
-      {/* Game area with row clues and grid */}
-      <div className={styles.gameArea}>
-        <div ref={rowCluesRef} className={styles.rowClues}>
-          {rowClueElements}
-        </div>
+      {/* Row clues */}
+      <div ref={rowCluesRef} className={`${styles.rowClues} ${isComplete ? styles.hidden : ''}`}>
+        {rowClueElements}
+      </div>
 
-        <div 
-          className={styles.grid}
-          style={{
-            gridTemplateColumns: `repeat(${puzzle.size.width}, ${zoomConfig.cellSize}px)`,
-            gridTemplateRows: `repeat(${puzzle.size.height}, ${zoomConfig.cellSize}px)`,
-          }}
-        >
-          {grid.map((row, rowIndex) =>
-            row.map((_, colIndex) => (
-              <button
-                key={`${rowIndex}-${colIndex}`}
-                className={getCellClass(rowIndex, colIndex)}
-                onMouseDown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
-                onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                onContextMenu={handleContextMenu}
-                disabled={isComplete || showSolution}
-                type="button"
-              >
-                {getCellContent(rowIndex, colIndex)}
-              </button>
-            ))
-          )}
-        </div>
+      {/* Grid container */}
+      <div 
+        className={styles.grid}
+        style={{
+          gridTemplateColumns: `repeat(${puzzle.size.width}, ${zoomConfig.cellSize}px)`,
+          gridTemplateRows: `repeat(${puzzle.size.height}, ${zoomConfig.cellSize}px)`,
+        }}
+      >
+        {grid.map((row, rowIndex) =>
+          row.map((_, colIndex) => (
+            <button
+              key={`${rowIndex}-${colIndex}`}
+              className={getCellClass(rowIndex, colIndex)}
+              onMouseDown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
+              onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+              onContextMenu={handleContextMenu}
+              disabled={isComplete || showSolution}
+              type="button"
+            >
+              {getCellContent(rowIndex, colIndex)}
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

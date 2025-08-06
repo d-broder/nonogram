@@ -7,14 +7,16 @@ import iconO from '../../assets/icon-o.png';
 interface PaintModeButtonsProps {
   currentMode: PaintMode;
   onModeChange: (mode: PaintMode) => void;
+  isComplete?: boolean;
 }
 
-export function PaintModeButtons({ currentMode, onModeChange }: PaintModeButtonsProps) {
+export function PaintModeButtons({ currentMode, onModeChange, isComplete = false }: PaintModeButtonsProps) {
   return (
     <div className={styles.paintModeButtons}>
       <button
         className={`${styles.paintModeBtn} ${styles.black} ${currentMode === 'black' ? styles.selected : ''}`}
         onClick={() => onModeChange('black')}
+        disabled={isComplete}
         aria-label="Black mode"
         type="button"
       >
@@ -23,6 +25,7 @@ export function PaintModeButtons({ currentMode, onModeChange }: PaintModeButtons
       <button
         className={`${styles.paintModeBtn} ${styles.x} ${currentMode === 'x' ? styles.selected : ''}`}
         onClick={() => onModeChange('x')}
+        disabled={isComplete}
         aria-label="X mode"
         type="button"
       >
@@ -31,6 +34,7 @@ export function PaintModeButtons({ currentMode, onModeChange }: PaintModeButtons
       <button
         className={`${styles.paintModeBtn} ${styles.o} ${currentMode === 'o' ? styles.selected : ''}`}
         onClick={() => onModeChange('o')}
+        disabled={isComplete}
         aria-label="O mode"
         type="button"
       >

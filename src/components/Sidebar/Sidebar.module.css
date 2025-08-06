@@ -1,7 +1,10 @@
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 250px;
   min-width: 250px;
-  min-height: 100vh;
+  height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 2rem;
@@ -9,6 +12,8 @@
   flex-direction: column;
   gap: 2rem;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1000;
 }
 
 .titleButton {
@@ -116,4 +121,79 @@
 .paintModePanel :global(.paintModeBtn.selected) {
   background: rgba(255, 255, 255, 0.4) !important;
   border-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Success message */
+.successMessage {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideInUp 0.8s ease-out;
+}
+
+.successTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.successSubtitle {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.successButtons {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.successBtn {
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.successBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.successBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Zoom level indicator */
+.zoomLevel {
+  text-align: center;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Animation for success message */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
