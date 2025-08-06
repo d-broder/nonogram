@@ -44,3 +44,30 @@ export interface DragState {
   startState: CellState | null;
   modifiedCells: Set<string>;
 }
+
+// Multiplayer types
+export type PlayerColor = 'red' | 'blue' | 'green' | 'yellow' | 'purple' | 'orange' | 'pink' | 'teal';
+
+export interface Player {
+  id: string;
+  name: string;
+  color: PlayerColor;
+  isCreator: boolean;
+}
+
+export interface Room {
+  id: string;
+  creator: Player;
+  players: Player[];
+  gameState: GameState | null;
+  puzzle: Puzzle | null;
+  clickedRowClues: Set<string>;
+  clickedColClues: Set<string>;
+}
+
+export interface MultiplayerGameState extends GameState {
+  clickedRowClues: Set<string>;
+  clickedColClues: Set<string>;
+}
+
+export type GameMode = 'singleplayer' | 'multiplayer';

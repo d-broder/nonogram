@@ -1,12 +1,16 @@
 import { useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import styles from './PuzzleSelectionPage.module.css';
 
 export function PuzzleSelectionPage() {
-  const { type } = useParams<{ type: 'classic' | 'super' }>();
+  const { type, roomId } = useParams<{ type: 'classic' | 'super'; roomId?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
+
+  // Check if this is a multiplayer context
+  const isMultiplayer = location.pathname.includes('/multiplayer/');
 
   // Redirect if invalid type
   useEffect(() => {
@@ -22,6 +26,22 @@ export function PuzzleSelectionPage() {
   const puzzles = availablePuzzles[type];
   const title = type === 'classic' ? 'Classic Nonogram' : 'Super Nonogram';
 
+  // Generate link based on context
+  const generatePuzzleLink = (puzzleId: number) => {
+    if (isMultiplayer && roomId) {
+      return `/multiplayer/game/${roomId}/${type}/${puzzleId}`;
+    }
+    return `/game/${type}/${puzzleId}`;
+  };
+
+  // Generate back link based on context
+  const getBackLink = () => {
+    if (isMultiplayer && roomId) {
+      return `/multiplayer/room/${roomId}/select-type`;
+    }
+    return '/puzzles';
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -35,7 +55,7 @@ export function PuzzleSelectionPage() {
       <div className={styles.container}>
         <div className={styles.error}>
           <p>Error loading puzzles: {error}</p>
-          <Link to="/" className={styles.backButton}>Back to Home</Link>
+          <Link to={getBackLink()} className={styles.backButton}>Back</Link>
         </div>
       </div>
     );
@@ -53,7 +73,7 @@ export function PuzzleSelectionPage() {
           {puzzles.map((puzzleId) => (
             <Link
               key={puzzleId}
-              to={`/game/${type}/${puzzleId}`}
+              to={generatePuzzleLink(puzzleId)}
               className={styles.puzzleButton}
             >
               <span className={styles.puzzleNumber}>{puzzleId}</span>
@@ -62,8 +82,8 @@ export function PuzzleSelectionPage() {
         </div>
 
         <div className={styles.controls}>
-          <Link to="/" className={styles.backButton}>
-            ← Back to Home
+          <Link to={getBackLink()} className={styles.backButton}>
+            ← Back
           </Link>
         </div>
       </main>
