@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { PlayerColor } from '../../types';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
@@ -27,6 +27,7 @@ export function JoinRoomPage() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { room, loading, error: roomError, joinRoom } = useFirebaseRoom(roomId || null);
+  const hasUserSelectedColor = useRef(false);
 
   // Get used colors from room data
   const usedColors = room ? Object.values(room.players).map(player => player.color) : [];
@@ -37,12 +38,21 @@ export function JoinRoomPage() {
       return;
     }
 
-    // Find first available color
-    const availableColor = AVAILABLE_COLORS.find(color => !usedColors.includes(color));
-    if (availableColor) {
-      setSelectedColor(availableColor);
+    // Only auto-select color if user hasn't manually selected one and current color is taken
+    if (!hasUserSelectedColor.current && usedColors.includes(selectedColor)) {
+      const availableColor = AVAILABLE_COLORS.find(color => !usedColors.includes(color));
+      if (availableColor) {
+        setSelectedColor(availableColor);
+      }
     }
-  }, [roomId, navigate, usedColors]);
+  }, [roomId, navigate, usedColors, selectedColor]);
+
+  const handleColorSelect = (color: PlayerColor) => {
+    if (!usedColors.includes(color)) {
+      setSelectedColor(color);
+      hasUserSelectedColor.current = true;
+    }
+  };
 
   const handleJoinRoom = async () => {
     if (!playerName.trim()) {
@@ -150,7 +160,7 @@ export function JoinRoomPage() {
                     selectedColor === color ? styles.selected : ''
                   } ${isColorDisabled(color) ? styles.disabled : ''}`}
                   style={{ backgroundColor: COLOR_VALUES[color] }}
-                  onClick={() => !isColorDisabled(color) && setSelectedColor(color)}
+                  onClick={() => handleColorSelect(color)}
                   disabled={isColorDisabled(color)}
                   aria-label={`Select ${color} color ${isColorDisabled(color) ? '(taken)' : ''}`}
                 />

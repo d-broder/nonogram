@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
+import { Sidebar } from '../../components/Sidebar';
 import styles from './PuzzleSelectionPage.module.css';
 
 export function PuzzleSelectionPage() {
@@ -9,7 +10,9 @@ export function PuzzleSelectionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
-  const { updatePuzzleSelection } = useFirebaseRoom(roomId || null);
+  const { updatePuzzleSelection, room } = useFirebaseRoom(roomId || null);
+  const [roomLink, setRoomLink] = useState('');
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Check if this is a multiplayer context
   const isMultiplayer = location.pathname.includes('/multiplayer/');
@@ -20,6 +23,31 @@ export function PuzzleSelectionPage() {
       navigate('/');
     }
   }, [type, navigate]);
+
+  // Set room link for multiplayer
+  useEffect(() => {
+    if (isMultiplayer && roomId) {
+      const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
+      setRoomLink(fullRoomLink);
+    }
+  }, [isMultiplayer, roomId]);
+
+  const handleCopyRoomLink = async () => {
+    if (!roomLink) return;
+    
+    try {
+      await navigator.clipboard.writeText(roomLink);
+      setShowTooltip(true);
+    } catch (err) {
+      const textArea = document.createElement('textarea');
+      textArea.value = roomLink;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setShowTooltip(true);
+    }
+  };
 
   if (!type || (type !== 'classic' && type !== 'super')) {
     return null;
@@ -58,7 +86,20 @@ export function PuzzleSelectionPage() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading puzzles...</div>
+        {isMultiplayer && (
+          <Sidebar
+            isMultiplayer={true}
+            roomId={roomId}
+            roomLink={roomLink}
+            players={room ? Object.values(room.players) : []}
+            showTooltip={showTooltip}
+            onCopyLink={handleCopyRoomLink}
+            onHideTooltip={() => setShowTooltip(false)}
+          />
+        )}
+        <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+          <div className={styles.loading}>Loading puzzles...</div>
+        </div>
       </div>
     );
   }
@@ -66,9 +107,22 @@ export function PuzzleSelectionPage() {
   if (error) {
     return (
       <div className={styles.container}>
-        <div className={styles.error}>
-          <p>Error loading puzzles: {error}</p>
-          <Link to={getBackLink()} className={styles.backButton}>Back</Link>
+        {isMultiplayer && (
+          <Sidebar
+            isMultiplayer={true}
+            roomId={roomId}
+            roomLink={roomLink}
+            players={room ? Object.values(room.players) : []}
+            showTooltip={showTooltip}
+            onCopyLink={handleCopyRoomLink}
+            onHideTooltip={() => setShowTooltip(false)}
+          />
+        )}
+        <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+          <div className={styles.error}>
+            <p>Error loading puzzles: {error}</p>
+            <Link to={getBackLink()} className={styles.backButton}>Back</Link>
+          </div>
         </div>
       </div>
     );
@@ -76,30 +130,44 @@ export function PuzzleSelectionPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>{title}</h1>
-        <p className={styles.subtitle}>Select a puzzle to start playing</p>
-      </header>
+      {isMultiplayer && (
+        <Sidebar
+          isMultiplayer={true}
+          roomId={roomId}
+          roomLink={roomLink}
+          players={room ? Object.values(room.players) : []}
+          showTooltip={showTooltip}
+          onCopyLink={handleCopyRoomLink}
+          onHideTooltip={() => setShowTooltip(false)}
+        />
+      )}
+      
+      <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{title}</h1>
+          <p className={styles.subtitle}>Select a puzzle to start playing</p>
+        </header>
 
-      <main className={styles.main}>
-        <div className={styles.puzzleGrid}>
-          {puzzles.map((puzzleId) => (
-            <button
-              key={puzzleId}
-              onClick={() => handlePuzzleClick(puzzleId)}
-              className={styles.puzzleButton}
-            >
-              <span className={styles.puzzleNumber}>{puzzleId}</span>
-            </button>
-          ))}
-        </div>
+        <main className={styles.content}>
+          <div className={styles.puzzleGrid}>
+            {puzzles.map((puzzleId) => (
+              <button
+                key={puzzleId}
+                onClick={() => handlePuzzleClick(puzzleId)}
+                className={styles.puzzleButton}
+              >
+                <span className={styles.puzzleNumber}>{puzzleId}</span>
+              </button>
+            ))}
+          </div>
 
-        <div className={styles.controls}>
-          <Link to={getBackLink()} className={styles.backButton}>
-            ← Back
-          </Link>
-        </div>
-      </main>
+          <div className={styles.controls}>
+            <Link to={getBackLink()} className={styles.backButton}>
+              ← Back
+            </Link>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

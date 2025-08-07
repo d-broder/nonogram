@@ -141,4 +141,25 @@
   .puzzleNumber {
     font-size: 1.5rem;
   }
+
+  .mainWithSidebar {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Sidebar layouts */
+.mainWithSidebar {
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-left: 250px;
+}
+
+.contentWithSidebar {
+  flex: 1;
+}
+
+.sidebarContainer {
+  flex-shrink: 0;
+  width: 320px;
 }

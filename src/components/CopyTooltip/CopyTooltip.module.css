@@ -1,0 +1,45 @@
+.tooltip {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  transform-origin: center bottom;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.tooltip.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}

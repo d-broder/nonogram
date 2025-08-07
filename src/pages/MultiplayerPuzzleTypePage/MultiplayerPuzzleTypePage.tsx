@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Sidebar } from '../../components/Sidebar';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import styles from './MultiplayerPuzzleTypePage.module.css';
 
 export function MultiplayerPuzzleTypePage() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const [roomLink, setRoomLink] = useState('');
+  const [showTooltip, setShowTooltip] = useState(false);
+  const { room } = useFirebaseRoom(roomId || null);
 
   useEffect(() => {
     if (!roomId) {
@@ -34,7 +38,7 @@ export function MultiplayerPuzzleTypePage() {
   const copyRoomLink = async () => {
     try {
       await navigator.clipboard.writeText(roomLink);
-      alert('Room link copied to clipboard!');
+      setShowTooltip(true);
     } catch (err) {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
@@ -43,7 +47,7 @@ export function MultiplayerPuzzleTypePage() {
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
-      alert('Room link copied to clipboard!');
+      setShowTooltip(true);
     }
   };
 
@@ -51,30 +55,21 @@ export function MultiplayerPuzzleTypePage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Room Created!</h1>
-        <p className={styles.subtitle}>Select puzzle type and share the link with friends</p>
-      </header>
-
+      <Sidebar
+        isMultiplayer={true}
+        roomId={roomId}
+        roomLink={roomLink}
+        players={room ? Object.values(room.players) : []}
+        showTooltip={showTooltip}
+        onCopyLink={copyRoomLink}
+        onHideTooltip={() => setShowTooltip(false)}
+      />
+      
       <main className={styles.main}>
-        <div className={styles.roomInfo}>
-          <h3 className={styles.roomTitle}>Room: {roomId}</h3>
-          <div className={styles.linkContainer}>
-            <input
-              type="text"
-              value={roomLink}
-              readOnly
-              className={styles.linkInput}
-            />
-            <button
-              type="button"
-              onClick={copyRoomLink}
-              className={styles.copyButton}
-            >
-              Copy Link
-            </button>
-          </div>
-        </div>
+        <header className={styles.header}>
+          <h1 className={styles.title}>Room Created!</h1>
+          <p className={styles.subtitle}>Select puzzle type and share the link with friends</p>
+        </header>
 
         <div className={styles.buttonContainer}>
           <Link to={`/multiplayer/room/${roomId}/puzzles/classic`} className={styles.gameTypeButton}>

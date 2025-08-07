@@ -21,6 +21,10 @@ export function GamePage() {
   
   const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
   
+  // States for multiplayer sidebar
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [roomLink, setRoomLink] = useState('');
+  
   const { 
     gameState, 
     initializeGame, 
@@ -134,6 +138,32 @@ export function GamePage() {
       completionRef.current = false;
     }
   }, [puzzle, initializeGame]);
+
+  // Set room link for multiplayer
+  useEffect(() => {
+    if (isMultiplayer && roomId) {
+      const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
+      setRoomLink(fullRoomLink);
+    }
+  }, [isMultiplayer, roomId]);
+
+  const handleCopyRoomLink = async () => {
+    if (!roomLink) return;
+    
+    try {
+      await navigator.clipboard.writeText(roomLink);
+      setShowTooltip(true);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = roomLink;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setShowTooltip(true);
+    }
+  };
 
   // Listen for Firebase updates in multiplayer mode
   useEffect(() => {
@@ -267,6 +297,13 @@ export function GamePage() {
         canZoomIn={canZoomIn}
         canZoomOut={canZoomOut}
         zoomPercentage={zoomPercentage}
+        isMultiplayer={isMultiplayer}
+        roomId={roomId}
+        roomLink={roomLink}
+        players={room ? Object.values(room.players) : []}
+        showTooltip={showTooltip}
+        onCopyLink={handleCopyRoomLink}
+        onHideTooltip={() => setShowTooltip(false)}
       />
       
       <main className={styles.gameBoardArea}>
