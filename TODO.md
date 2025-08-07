@@ -27,10 +27,8 @@ agora está acontecendo o seguinte: o grid está sendo inicializado com todas as
 
 Por algum motivo, não sei se pela forma com está sendo lidado no código, tem algo prevenindo que células com algum estado definido não possam mais ser alterados. E, como está tudo white, nada que eu faça altera as células, nem visualmente. O estado das células deve poder sim ser alterado quantas vezes o usuário quiser
 
-além disso, em "gridUtils" temos a forma como o arraste do mouse lida com as células. As células pintadas depois do arraste e/ou clique são as informações que devem ser mandadas para o Firebase 
+Eu reparei, usando dev tools, que, ao clicar em uma célula, esta é alterada apenas por alguns instantes, voltando para o estado "white" praticamente instantaneamente.
 
-não sei como o seu código está lidando, mas deveria acontecer da mesma lógica do que é exibido para o usuário durante/após o clique/arraste ser a mesma informação sendo enviada ao Firebase
-
-obs.: a mudança que você fez nas clues arrumou perfeitamente. Talvez você possa usar uma lógica similiar da que você usou nas clues para arrumar o problema das cells
+Dica: em "useGameState.ts" temos a função "applyCellChange" que é responsável por aplicar as mudanças de estado das células. Sempre que é aplicada uma mudança de estado em uma célula através desta função, o estado da célula deve ser atualizado tanto localmente quanto no Firebase. Isso garante que todas as alterações sejam refletidas em tempo real para todos os jogadores na sala.
 
 

@@ -15,6 +15,12 @@ export function GamePage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { puzzle, loading, error, loadSpecificPuzzle } = usePuzzleLoader();
+  
+  // Check if this is multiplayer mode
+  const isMultiplayer = location.pathname.includes('/multiplayer/');
+  
+  const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
+  
   const { 
     gameState, 
     initializeGame, 
@@ -23,75 +29,20 @@ export function GamePage() {
     handleCellMouseUp,
     setPaintMode,
     clearGameGrid, 
-    toggleSolution 
-  } = useGameState(puzzle);
+    toggleSolution,
+    updateCellExternally
+  } = useGameState(puzzle, {
+    onCellChange: isMultiplayer && roomId ? updateGridCell : undefined
+  });
+  
   const { config: zoomConfig, zoomIn, zoomOut, resetZoom, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
-  const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
   
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
 
-  // Check if this is multiplayer mode
-  const isMultiplayer = location.pathname.includes('/multiplayer/');
-
   // State for clue clicks (moved from GameBoard to sync with Firebase)
   const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
   const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
-
-  // Wrapper functions for multiplayer sync
-  const handleMultiplayerCellMouseDown = async (position: { row: number; col: number }, button: number) => {
-    // Call original function
-    handleCellMouseDown(position, button);
-    
-    // If multiplayer, sync to Firebase
-    if (isMultiplayer && roomId) {
-      try {
-        const cellId = `${position.row}-${position.col}`;
-        // We need to get the updated state after the click
-        setTimeout(async () => {
-          const newState = gameState.grid[position.row][position.col];
-          await updateGridCell(cellId, newState);
-        }, 0);
-      } catch (error) {
-        console.error('Error syncing cell to Firebase:', error);
-      }
-    }
-  };
-
-  const handleMultiplayerCellMouseEnter = async (position: { row: number; col: number }) => {
-    // Get grid state before the change
-    const gridBefore = gameState.grid.map(row => [...row]);
-    
-    // Call original function - this modifies multiple cells during drag
-    handleCellMouseEnter(position);
-    
-    // If multiplayer, sync all changed cells to Firebase
-    if (isMultiplayer && roomId) {
-      try {
-        // Compare grid before and after to find all changed cells
-        setTimeout(async () => {
-          const gridAfter = gameState.grid;
-          for (let row = 0; row < gridAfter.length; row++) {
-            for (let col = 0; col < gridAfter[row].length; col++) {
-              if (gridBefore[row][col] !== gridAfter[row][col]) {
-                const cellId = `${row}-${col}`;
-                await updateGridCell(cellId, gridAfter[row][col]);
-              }
-            }
-          }
-        }, 0);
-      } catch (error) {
-        console.error('Error syncing drag cells to Firebase:', error);
-      }
-    }
-  };
-
-  const handleMultiplayerCellMouseUp = async () => {
-    // Call original function
-    handleCellMouseUp();
-    
-    // Firebase sync happens in MouseDown, no additional sync needed here
-  };
 
   // Clue click handlers for multiplayer sync
   const handleRowClueClick = async (rowIndex: number, clueIndex: number | string) => {
@@ -191,11 +142,7 @@ export function GamePage() {
     // Update grid based on Firebase room state
     if (room.grid) {
       Object.entries(room.grid).forEach(([cellId, cellState]) => {
-        const [row, col] = cellId.split('-').map(Number);
-        if (gameState.grid[row] && gameState.grid[row][col] !== cellState) {
-          // Update local grid state without triggering Firebase sync
-          gameState.grid[row][col] = cellState as CellState;
-        }
+        updateCellExternally(cellId, cellState as CellState);
       });
     }
 
@@ -217,7 +164,7 @@ export function GamePage() {
       setClickedRowClues(newClickedRowClues);
       setClickedColClues(newClickedColClues);
     }
-  }, [room, isMultiplayer, gameState.grid]);
+  }, [room, isMultiplayer, updateCellExternally]);
 
   // Handle puzzle completion with success animation (gameBoardArea instead of body)
   useEffect(() => {
@@ -336,9 +283,9 @@ export function GamePage() {
           puzzle={puzzle}
           grid={gameState.grid}
           showSolution={gameState.showSolution}
-          onCellMouseDown={isMultiplayer ? handleMultiplayerCellMouseDown : handleCellMouseDown}
-          onCellMouseEnter={isMultiplayer ? handleMultiplayerCellMouseEnter : handleCellMouseEnter}
-          onCellMouseUp={isMultiplayer ? handleMultiplayerCellMouseUp : handleCellMouseUp}
+          onCellMouseDown={handleCellMouseDown}
+          onCellMouseEnter={handleCellMouseEnter}
+          onCellMouseUp={handleCellMouseUp}
           isComplete={gameState.isComplete}
           zoomConfig={zoomConfig}
           onRowClueClick={isMultiplayer ? handleRowClueClick : undefined}

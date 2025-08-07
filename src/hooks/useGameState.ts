@@ -1,8 +1,13 @@
 import { useState, useCallback, useRef } from 'react';
-import type { GameState, CellPosition, Puzzle, PaintMode, DragState } from '../types';
+import type { GameState, CellPosition, Puzzle, PaintMode, DragState, CellState } from '../types';
 import { createEmptyGrid, checkSolution, clearGrid, getNextState } from '../utils/gridUtils';
 
-export function useGameState(puzzle: Puzzle | null) {
+interface UseGameStateOptions {
+  onCellChange?: (cellId: string, state: CellState) => Promise<void>;
+}
+
+export function useGameState(puzzle: Puzzle | null, options?: UseGameStateOptions) {
+  const { onCellChange } = options || {};
   const [gameState, setGameState] = useState<GameState>(() => ({
     grid: puzzle ? createEmptyGrid(puzzle.size.width, puzzle.size.height) : [],
     isComplete: false,
@@ -132,7 +137,7 @@ export function useGameState(puzzle: Puzzle | null) {
   }, []);
 
   // Apply cell change based on drag logic
-  const applyCellChange = useCallback((position: CellPosition) => {
+  const applyCellChange = useCallback(async (position: CellPosition) => {
     if (!puzzle || !dragState.current.startState || !dragState.current.startCell) return;
 
     const cellId = `${position.row}-${position.col}`;
@@ -165,6 +170,13 @@ export function useGameState(puzzle: Puzzle | null) {
 
         dragState.current.modifiedCells.add(cellId);
 
+        // Sync to Firebase if callback is provided
+        if (onCellChange) {
+          onCellChange(cellId, newState).catch(error => {
+            console.error('Error syncing cell to Firebase:', error);
+          });
+        }
+
         // Check if puzzle is complete
         const isComplete = checkSolution(newGrid, puzzle.solution);
 
@@ -177,7 +189,7 @@ export function useGameState(puzzle: Puzzle | null) {
 
       return prev;
     });
-  }, [puzzle]);
+  }, [puzzle, onCellChange]);
 
   // Set paint mode
   const setPaintMode = useCallback((mode: PaintMode) => {
@@ -209,6 +221,36 @@ export function useGameState(puzzle: Puzzle | null) {
     }));
   }, [puzzle]);
 
+  // Update cell externally (for Firebase sync)
+  const updateCellExternally = useCallback((cellId: string, newState: CellState) => {
+    const [row, col] = cellId.split('-').map(Number);
+    
+    setGameState(prev => {
+      // Check if cell is already in this state
+      if (prev.grid[row] && prev.grid[row][col] === newState) {
+        return prev;
+      }
+
+      const newGrid = prev.grid.map((gridRow, rowIndex) =>
+        gridRow.map((cell, colIndex) => {
+          if (rowIndex === row && colIndex === col) {
+            return newState;
+          }
+          return cell;
+        })
+      );
+
+      // Check if puzzle is complete
+      const isComplete = puzzle ? checkSolution(newGrid, puzzle.solution) : false;
+
+      return {
+        ...prev,
+        grid: newGrid,
+        isComplete,
+      };
+    });
+  }, [puzzle]);
+
   return {
     gameState,
     initializeGame,
@@ -218,5 +260,6 @@ export function useGameState(puzzle: Puzzle | null) {
     setPaintMode,
     clearGameGrid,
     toggleSolution,
+    updateCellExternally,
   };
 }
