@@ -109,6 +109,39 @@ export function GameBoard({
     onCellMouseEnter({ row, col });
   }, [onCellMouseEnter, isComplete, showSolution]);
 
+  // Touch event handlers for mobile support
+  const handleCellTouchStart = useCallback((e: React.TouchEvent, row: number, col: number) => {
+    e.preventDefault();
+    if (isComplete || showSolution) return;
+    onCellMouseDown({ row, col }, 0); // Treat touch as left mouse button
+  }, [onCellMouseDown, isComplete, showSolution]);
+
+  const handleCellTouchMove = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    if (isComplete || showSolution) return;
+    
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    // Find the element under the touch point
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (!elementBelow) return;
+    
+    // Check if it's a grid cell button
+    const button = elementBelow.closest('button');
+    if (!button || !button.dataset.row || !button.dataset.col) return;
+    
+    const row = parseInt(button.dataset.row, 10);
+    const col = parseInt(button.dataset.col, 10);
+    
+    onCellMouseEnter({ row, col });
+  }, [onCellMouseEnter, isComplete, showSolution]);
+
+  const handleCellTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    onCellMouseUp();
+  }, [onCellMouseUp]);
+
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault(); // Prevent right-click menu
   }, []);
@@ -119,9 +152,18 @@ export function GameBoard({
       onCellMouseUp();
     };
 
+    const handleGlobalTouchEnd = () => {
+      onCellMouseUp();
+    };
+
     document.addEventListener('mouseup', handleGlobalMouseUp);
+    document.addEventListener('touchend', handleGlobalTouchEnd);
+    document.addEventListener('touchcancel', handleGlobalTouchEnd);
+    
     return () => {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.removeEventListener('touchend', handleGlobalTouchEnd);
+      document.removeEventListener('touchcancel', handleGlobalTouchEnd);
     };
   }, [onCellMouseUp]);
 
@@ -413,8 +455,13 @@ export function GameBoard({
               className={getCellClass(rowIndex, colIndex)}
               onMouseDown={(e) => handleCellMouseDown(e, rowIndex, colIndex)}
               onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+              onTouchStart={(e) => handleCellTouchStart(e, rowIndex, colIndex)}
+              onTouchMove={handleCellTouchMove}
+              onTouchEnd={handleCellTouchEnd}
               onContextMenu={handleContextMenu}
               disabled={isComplete || showSolution}
+              data-row={rowIndex}
+              data-col={colIndex}
               type="button"
             >
               {getCellContent(rowIndex, colIndex)}

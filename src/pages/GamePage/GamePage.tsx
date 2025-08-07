@@ -7,6 +7,8 @@ import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import { GameBoard } from '../../components/GameBoard';
 import { Sidebar } from '../../components/Sidebar';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
+import { PaintModeButtons } from '../../components/PaintModeButtons';
+import { ZoomControls } from '../../components/ZoomControls';
 import type { CellState } from '../../types';
 import styles from './GamePage.module.css';
 
@@ -43,10 +45,22 @@ export function GamePage() {
   
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // State for clue clicks (moved from GameBoard to sync with Firebase)
   const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
   const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Clue click handlers for multiplayer sync
   const handleRowClueClick = async (rowIndex: number, clueIndex: number | string) => {
@@ -331,6 +345,28 @@ export function GamePage() {
           clickedColClues={isMultiplayer ? clickedColClues : undefined}
         />
       </main>
+
+      {/* Mobile bottom controls bar */}
+      {isMobile && (
+        <div className={styles.mobileBottomBar}>
+          <div className={styles.mobileBottomLeft}>
+            <PaintModeButtons
+              currentMode={gameState.paintMode}
+              onModeChange={setPaintMode}
+              isComplete={gameState.isComplete}
+            />
+          </div>
+          <div className={styles.mobileBottomRight}>
+            <ZoomControls
+              onZoomIn={zoomIn}
+              onZoomOut={zoomOut}
+              onResetZoom={resetZoom}
+              canZoomIn={canZoomIn}
+              canZoomOut={canZoomOut}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       <ConfirmationModal

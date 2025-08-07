@@ -67,3 +67,9 @@
   transform: none !important;
   background: #e0e0e0 !important;
 }
+
+@media (max-width: 768px) {
+  .paintModeButtons {
+    height: 10vh;
+  }
+}

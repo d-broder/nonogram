@@ -85,7 +85,7 @@ export function PuzzleSelectionPage() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <div className={styles.puzzlePageContainer}>
         {isMultiplayer && (
           <Sidebar
             isMultiplayer={true}
@@ -97,16 +97,16 @@ export function PuzzleSelectionPage() {
             onHideTooltip={() => setShowTooltip(false)}
           />
         )}
-        <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+        <main className={styles.puzzleSelectionArea}>
           <div className={styles.loading}>Loading puzzles...</div>
-        </div>
+        </main>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.container}>
+      <div className={styles.puzzlePageContainer}>
         {isMultiplayer && (
           <Sidebar
             isMultiplayer={true}
@@ -118,18 +118,18 @@ export function PuzzleSelectionPage() {
             onHideTooltip={() => setShowTooltip(false)}
           />
         )}
-        <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+        <main className={styles.puzzleSelectionArea}>
           <div className={styles.error}>
             <p>Error loading puzzles: {error}</p>
             <Link to={getBackLink()} className={styles.backButton}>Back</Link>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.puzzlePageContainer}>
       {isMultiplayer && (
         <Sidebar
           isMultiplayer={true}
@@ -142,13 +142,13 @@ export function PuzzleSelectionPage() {
         />
       )}
       
-      <div className={isMultiplayer ? styles.mainWithSidebar : styles.main}>
+      <main className={styles.puzzleSelectionArea}>
         <header className={styles.header}>
           <h1 className={styles.title}>{title}</h1>
           <p className={styles.subtitle}>Select a puzzle to start playing</p>
         </header>
 
-        <main className={styles.content}>
+        <div className={styles.content}>
           <div className={styles.puzzleGrid}>
             {puzzles.map((puzzleId) => (
               <button
@@ -166,8 +166,8 @@ export function PuzzleSelectionPage() {
               ← Back
             </Link>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

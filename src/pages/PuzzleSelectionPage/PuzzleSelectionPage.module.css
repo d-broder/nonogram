@@ -1,8 +1,23 @@
-.container {
+/* New PuzzleSelectionPage structure - following GamePage pattern */
+.puzzlePageContainer {
+  display: flex;
   min-height: 100vh;
-  padding: 2rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.puzzleSelectionArea {
+  flex: 1;
+  margin-left: 0; /* Will be adjusted when sidebar is present */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* When multiplayer with sidebar */
+.puzzlePageContainer:has(.sidebar) .puzzleSelectionArea {
+  margin-left: 320px; /* compensate for fixed sidebar */
 }
 
 .header {
@@ -25,9 +40,10 @@
   opacity: 0.9;
 }
 
-.main {
+.content {
   max-width: 1200px;
   margin: 0 auto;
+  flex: 1;
 }
 
 .puzzleGrid {
@@ -119,8 +135,14 @@
 }
 
 @media (max-width: 768px) {
-  .container {
+  .puzzlePageContainer {
     padding: 1rem;
+  }
+
+  .puzzleSelectionArea {
+    padding: 1rem;
+    margin-left: 0;
+    margin-top: 60px; /* Compensate for mobile top bar */
   }
 
   .title {
@@ -141,25 +163,4 @@
   .puzzleNumber {
     font-size: 1.5rem;
   }
-
-  .mainWithSidebar {
-    margin-left: 0;
-    margin-right: 0;
-  }
-}
-
-/* Sidebar layouts */
-.mainWithSidebar {
-  max-width: 1200px;
-  margin: 0 auto;
-  margin-left: 250px;
-}
-
-.contentWithSidebar {
-  flex: 1;
-}
-
-.sidebarContainer {
-  flex-shrink: 0;
-  width: 320px;
 }
