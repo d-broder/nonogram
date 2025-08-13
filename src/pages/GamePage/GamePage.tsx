@@ -349,14 +349,14 @@ export function GamePage() {
       {/* Mobile bottom controls bar */}
       {isMobile && (
         <div className={styles.mobileBottomBar}>
-          <div className={styles.mobileBottomLeft}>
+          <div className={styles.mobileBottomItem}>
             <PaintModeButtons
               currentMode={gameState.paintMode}
               onModeChange={setPaintMode}
               isComplete={gameState.isComplete}
             />
           </div>
-          <div className={styles.mobileBottomRight}>
+          <div className={styles.mobileBottomItem}>
             <ZoomControls
               onZoomIn={zoomIn}
               onZoomOut={zoomOut}

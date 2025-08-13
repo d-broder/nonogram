@@ -71,71 +71,66 @@ export function CreateRoomPage() {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Create Multiplayer Room</h1>
-        <p className={styles.subtitle}>Set up your player identity</p>
-      </header>
+      <h1 className={styles.title}>Create Room</h1>
 
-      <main className={styles.main}>
-        <div className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="playerName" className={styles.label}>
-              Display Name
-            </label>
-            <input
-              id="playerName"
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name..."
-              className={styles.input}
-              maxLength={20}
-            />
-          </div>
+      <div className={styles.form}>
+        <div className={styles.field}>
+          <label htmlFor="playerName" className={styles.label}>
+            Display Name
+          </label>
+          <input
+            id="playerName"
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            placeholder="Enter your name..."
+            className={styles.input}
+            maxLength={20}
+          />
+        </div>
 
-          <div className={styles.field}>
-            <label className={styles.label}>Player Color</label>
-            <div className={styles.colorGrid}>
-              {AVAILABLE_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`${styles.colorButton} ${selectedColor === color ? styles.selected : ''}`}
-                  style={{ backgroundColor: COLOR_VALUES[color] }}
-                  onClick={() => setSelectedColor(color)}
-                  aria-label={`Select ${color} color`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.actions}>
-            {error && (
-              <div className={styles.error}>
-                {error}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={handleCreateRoom}
-              className={styles.createButton}
-              disabled={!playerName.trim() || isCreating}
-            >
-              {isCreating ? 'Creating Room...' : 'Create Room'}
-            </button>
+        <div className={styles.field}>
+          <label className={styles.label}>Player Color</label>
+          <div className={styles.colorGrid}>
+            {AVAILABLE_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                className={`${styles.colorButton} ${selectedColor === color ? styles.selected : ''}`}
+                style={{ backgroundColor: COLOR_VALUES[color] }}
+                onClick={() => setSelectedColor(color)}
+                aria-label={`Select ${color} color`}
+              />
+            ))}
           </div>
         </div>
 
-        <div className={styles.backButton}>
+        <div className={styles.actions}>
+          {error && (
+            <div className={styles.error}>
+              {error}
+            </div>
+          )}
           <button
             type="button"
-            onClick={() => navigate('/')}
-            className={styles.backLink}
+            onClick={handleCreateRoom}
+            className={styles.createButton}
+            disabled={!playerName.trim() || isCreating}
           >
-            ← Back to Game Mode Selection
+            {isCreating ? 'Creating Room...' : 'Create Room'}
           </button>
         </div>
-      </main>
+      </div>
+
+      <div className={styles.backButton}>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className={styles.backLink}
+        >
+          ← Back to Game Mode Selection
+        </button>
+      </div>
     </div>
   );
 }

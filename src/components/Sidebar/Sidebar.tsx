@@ -97,14 +97,16 @@ export function Sidebar({
   if (isMobile && isCollapsed) {
     return (
       <div className={styles.mobileTopBar}>
-        <button 
-          onClick={toggleSidebar}
-          className={styles.hamburgerButton}
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
-        <div className={styles.mobileTitle}>Nonogram</div>
+        <div className={styles.mobileTopIconAndTitle}>
+          <div className={styles.mobileTitle}>Nonogram</div>
+          <button
+            onClick={toggleSidebar}
+            className={styles.hamburgerButton}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+        </div>
       </div>
     );
   }

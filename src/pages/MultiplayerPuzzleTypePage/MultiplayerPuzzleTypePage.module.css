@@ -189,4 +189,11 @@
   .copyButton {
     width: 100%;
   }
+
+  .main {
+    margin-left: 0;
+    margin-top: 10vh;
+    min-height: auto;
+    max-height: 90vh;
+  }
 }

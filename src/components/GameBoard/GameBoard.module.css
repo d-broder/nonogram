@@ -4,11 +4,9 @@
   grid-template-areas: 
     "corner colClues"
     "rowClues grid";
-  grid-template-columns: max-content 1fr;
-  grid-template-rows: max-content 1fr;
-  /* margin: 20px; */
-  max-width: calc(100vw - 250px); /* Account for sidebar */
-  max-height: 100vh;
+  margin: auto;
+  padding-right: 1vh;
+  padding-bottom: 1vh;
 }
 
 /* Corner space */
@@ -33,6 +31,7 @@
   z-index: 15;
   transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
+  padding-top: 1vh;
 }
 
 .colClues.hidden {
@@ -60,6 +59,7 @@
   z-index: 15;
   transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
+  padding-left: 1vh;
 }
 
 .rowClues.hidden {
@@ -244,4 +244,12 @@
 
 .cell.thickTop {
   border-top: 2px solid #808080;
+}
+
+@media (max-width: 768px) {
+  .nonogramContainer {
+    display: grid;
+    /* max-width: 100%;
+    max-height: 100%; */
+ }
 }
