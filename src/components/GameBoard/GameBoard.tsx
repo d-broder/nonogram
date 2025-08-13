@@ -26,6 +26,8 @@ interface GameBoardProps {
   onColClueClick?: (colIndex: number, clueIndex: number | string) => void;
   clickedRowClues?: Set<string>;
   clickedColClues?: Set<string>;
+  // Mobile sticky toggle
+  stickyClues?: boolean;
 }
 
 export function GameBoard({ 
@@ -40,7 +42,8 @@ export function GameBoard({
   onRowClueClick,
   onColClueClick,
   clickedRowClues: externalClickedRowClues,
-  clickedColClues: externalClickedColClues
+  clickedColClues: externalClickedColClues,
+  stickyClues = true
 }: GameBoardProps) {
   const colCluesRef = useRef<HTMLDivElement>(null);
   const rowCluesRef = useRef<HTMLDivElement>(null);
@@ -428,15 +431,15 @@ export function GameBoard({
       } as React.CSSProperties}
     >
       {/* Corner space */}
-      <div className={styles.cornerSpace}></div>
+      <div className={`${styles.cornerSpace} ${!stickyClues ? styles.noSticky : ''}`}></div>
 
       {/* Column clues */}
-      <div ref={colCluesRef} className={`${styles.colClues} ${isComplete ? styles.hidden : ''}`}>
+      <div ref={colCluesRef} className={`${styles.colClues} ${isComplete ? styles.hidden : ''} ${!stickyClues ? styles.noSticky : ''}`}>
         {colClueElements}
       </div>
 
       {/* Row clues */}
-      <div ref={rowCluesRef} className={`${styles.rowClues} ${isComplete ? styles.hidden : ''}`}>
+      <div ref={rowCluesRef} className={`${styles.rowClues} ${isComplete ? styles.hidden : ''} ${!stickyClues ? styles.noSticky : ''}`}>
         {rowClueElements}
       </div>
 

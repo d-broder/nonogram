@@ -9,6 +9,7 @@ import { Sidebar } from '../../components/Sidebar';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
 import { PaintModeButtons } from '../../components/PaintModeButtons';
 import { ZoomControls } from '../../components/ZoomControls';
+import { StickyToggleButton } from '../../components/StickyToggleButton';
 import type { CellState } from '../../types';
 import styles from './GamePage.module.css';
 
@@ -46,6 +47,7 @@ export function GamePage() {
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [stickyClues, setStickyClues] = useState(true);
 
   // State for clue clicks (moved from GameBoard to sync with Firebase)
   const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
@@ -343,6 +345,7 @@ export function GamePage() {
           onColClueClick={isMultiplayer ? handleColClueClick : undefined}
           clickedRowClues={isMultiplayer ? clickedRowClues : undefined}
           clickedColClues={isMultiplayer ? clickedColClues : undefined}
+          stickyClues={stickyClues}
         />
       </main>
 
@@ -354,6 +357,12 @@ export function GamePage() {
               currentMode={gameState.paintMode}
               onModeChange={setPaintMode}
               isComplete={gameState.isComplete}
+            />
+          </div>
+          <div className={styles.mobileBottomItem}>
+            <StickyToggleButton
+              stickyEnabled={stickyClues}
+              onToggle={() => setStickyClues(!stickyClues)}
             />
           </div>
           <div className={styles.mobileBottomItem}>

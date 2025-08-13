@@ -1,35 +1,343 @@
 Obs.: para todos os itens da lista, ter em mente que devemos manter a estilização consistente com a já existente no projeto.
 
-- 1. [ ] No modo celular, implementar responsividade para celulares no GameBoard. No momento, ao "clicar" em uma célula pelo celular, não conseguimos fazer o movimento de arraste. A única forma de pintarmos células pelo celular é clicando uma por uma. Por isso, devemos implementar um sistema de "arraste" que funcione pelo toque.
+Reformular a estrutura de todas as páginas seguindo as instruções:
 
-- 2. [ ] Juntar a PuzzleTypePage e a PuzzleSelectionPage em uma única página. Funcionará da seguinte forma: Será uma div que terá dois botões: "Classic" e "Super" no topo da página. Apenas um destes botões poderá estar apertado por vez. Por padrão, o botão "Classic" estará apertado. Estes botões ficarão um do lado do outro.
+O "pageContent" é onde todo o conteúdo da página - excluindo o que será exibida na sidebar/topbar - será exibido. É uma área dentro da "pageContentArea" delimitando para que o conteúdo não fique muito espalhada pela "pageContentArea", para que o conteúdo não fique muito longes um dos outros para uma melhor experiência do usuário.
+- No caso do mobile, a pageContent irá ocupar 100% do tamanho de pageContentArea.
+- A sidebar ocupa 250px no lado esquerdo da tela e pageContentArea ocupa o restante do espaço disponível (isso já está configurado. Manter ou ajustar conforme necessário).
+- A mobileTopBar ocupa 10% do tamanho da tela na parte superior e pageContentArea ocupa o restante (isso já está configurado. Manter ou ajustar conforme necessário).
+- Todas as telas que tem algum botão de voltar para a tela anterior (Por exemplo, "← Back to Game Mode Selection"), este botão será subsituído por um ícone minimalista de "voltar".
+- Os nomes das classes podem ser alteradas para algo que siga melhor as boas práticas e que sejam intuitivas.
 
-- 3.1. [ ] No modo computador, a sidebar deve aparecer em todas as telas, incluindo:
-  - HomePage
-  - Nova página que será a junção de PuzzleTypePage e PuzzleSelectionPage no modo singleplayer
-  - Nova página que será a junção de PuzzleTypePage e PuzzleSelectionPage no modo multiplayer
-  - WaitingRoomPage
+## 1. HomePage
 
-- 3.2. [ ] No modo computador, em todas as telas que tem algum botão de voltar para a tela anterior (Por exemplo, "← Back to Game Mode Selection"), este botão será subsituído por um ícone minimalista de "voltar" que ficará na parte superior esquerda do container de conteúdo da página.
+### 1.1 Single Player e Multiplayer (nesta tela ainda não há distinção)
 
-- 4.1. [ ] No modo celular, a topbar deve aparecer em todas as telas, incluindo:
-  - HomePage
-  - Nova página que será a junção de PuzzleTypePage e PuzzleSelectionPage no modo singleplayer
-  - Nova página que será a junção de PuzzleTypePage e PuzzleSelectionPage no modo multiplayer
-  - WaitingRoomPage
-Porém, em todas essas páginas, com exceção da "Nova página que será a junção de PuzzleTypePage e PuzzleSelectionPage no modo multiplayer", a topbar não terá um botão para "abrir", já que não têm funções para ser exibidas nestas telas.
+#### 1.1.1 Desktop
 
-- 4.2. [ ] No modo celular, em todas as telas que tem algum botão de voltar para a tela anterior (Por exemplo, "← Back to Game Mode Selection"), este botão será subsituído por um ícone minimalista de "voltar" que ficará na parte esquerda da mobileTopBar
-
-- 5. [ ] No modo celular, implementar, na mobileBottomBar, um botão de "toggle" que faz, na GameBoard, as classes "cornerSpace", "colClues" e "rowClues" trocarem entre ter a propriedade "position: sticky" ligada e desligada.
-
-- 6. [ ] No modo celular, na tela GamePage, remover o paintModePanel e o zoomPanel da "sidebar abert" (ao clicar no hamburgerButton)
-
-- 7. [ ] No modo celular, atualmente, ao clicar em "hamburgerButton", a "mobileTopBar" some e ela é "subtituída" por:
-
-```tsx
-<button class="_closeButton_wvopq_757" aria-label="Close menu">×</button>
-<div><button class="_titleButton_wvopq_67">Nonogram</button></div>
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
 ```
 
-Eu quero que a "mobileTopBar" continue aparecendo e não seja substituída pelos elementos acima. O "x" deverá aparecer na própria "mobileTopBar" no lugar do botão de "hamburgerButton".
+#### 1.1.2 Mobile
+
+```html
+<div class="mobileTopBar">
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+## 2. PuzzleTypePage
+
+Não irá mais existir.
+
+## 3. PuzzleSelectionPage (Junção de PuzzleTypePage e PuzzleSelectionPage)
+
+### 3.1 Single Player
+
+#### 3.1.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent">
+    <div class="backButton"><!-- Conteúdo --></div>
+    <!-- Conteúdo -->
+  </div>
+</div>
+```
+
+#### 3.1.2 Mobile
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+### 3.2 Multiplayer
+
+#### 3.2.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+#### 3.2.2 Mobile
+
+##### 3.2.2.1 Recolhida
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+  <div class="hamburgerButton"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+##### 3.2.2.2 Expandida
+
+```html
+<div class="mobileTopBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="closeButton"><!-- Conteúdo --></div>
+</div>
+<div class="topBarExpanded">
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+```
+
+## 4. GamePage
+
+### 4.1 Single Player
+
+#### 4.1.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="subTitle"><!-- Conteúdo --></div>
+  <div class="gameControls1"><!-- Conteúdo --></div>
+  <div class="gameControls2">
+    <div class="paintModePanel"><!-- Conteúdo --></div>
+    <div class="zoomPanel"><!-- Conteúdo --></div>
+    <div class="toggleButton"><!-- Conteúdo --></div>
+  </div>
+</div>
+<div class="pageContentArea">
+  <div class="nonogramContainer">
+    <!-- Sem o backButton -->
+    <!-- Conteúdo -->
+  </div>
+</div>
+```
+
+#### 4.1.2 Mobile
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea"><!-- Na GamePage versão mobile, "pageContentArea" ocupará verticalmente 80% da tela -->
+  <div class="nonogramContainer"><!-- Conteúdo --></div>
+</div>
+<div class="mobileBottonBar"><!-- Ocupara verticalmente 10% da tela na parte de baixo -->
+  <div class="gameControls2">
+    <div class="paintModePanel"><!-- Conteúdo --></div>
+    <div class="zoomPanel"><!-- Conteúdo --></div>
+    <div class="toggleButton"><!-- Conteúdo --></div>
+  </div>
+</div>
+```
+
+### 4.2 Multiplayer
+
+#### 4.2.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="subTitle"><!-- Conteúdo --></div>
+  <div class="gameControls1"><!-- Conteúdo --></div>
+  <div class="gameControls2">
+    <div class="paintModePanel"><!-- Conteúdo --></div>
+    <div class="zoomPanel"><!-- Conteúdo --></div>
+    <div class="toggleButton"><!-- Conteúdo --></div>
+  </div>
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="nonogramContainer">
+    <!-- Sem o backButton -->
+    <!-- Conteúdo -->
+  </div>
+</div>
+```
+
+#### 4.2.2 Mobile
+
+##### 4.2.2.1 Recolhida
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea"><!-- Na GamePage versão mobile, "pageContentArea" ocupará verticalmente 80% da tela -->
+  <div class="nonogramContainer"><!-- Conteúdo --></div>
+</div>
+<div class="mobileBottonBar"><!-- Ocupara verticalmente 10% da tela na parte de baixo -->
+  <div class="gameControls2">
+    <div class="paintModePanel"><!-- Conteúdo --></div>
+    <div class="zoomPanel"><!-- Conteúdo --></div>
+    <div class="toggleButton"><!-- Conteúdo --></div>
+  </div>
+</div>
+```
+
+##### 4.2.2.2 Expandida
+
+```html
+<div class="mobileTopBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="closeButton"><!-- Conteúdo --></div>
+</div>
+<div class="topBarExpanded">
+  <div class="subTitle"><!-- Conteúdo --></div>
+  <div class="gameControls1"><!-- Conteúdo --></div>
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+```
+
+## 5. CreateRoomPage
+
+### 5.1 Multiplayer (apenas Multiplayer)
+
+#### 5.1.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent">
+    <div class="backButton"><!-- Conteúdo --></div>
+    <!-- Conteúdo -->
+    </div>
+</div>
+```
+
+#### 5.1.2 Mobile
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+## 6. JoinRoomPage
+
+### 6.1 Multiplayer (apenas Multiplayer)
+
+#### 6.1.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="nonogramContainer">
+    <!-- Sem o backButton -->
+    <!-- Conteúdo -->
+  </div>
+</div>
+```
+
+#### 6.2.2 Mobile
+
+##### 6.2.2.1 Recolhida
+
+```html
+<div class="mobileTopBar">
+  <!-- Sem o backButton -->
+  <div class="projectTitle">Nonogram</div>
+  <div class="hamburgerButton"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="pageContent"><!-- Conteúdo --></div>
+</div>
+```
+
+##### 6.2.2.2 Expandida
+
+```html
+<div class="mobileTopBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="closeButton"><!-- Conteúdo --></div>
+</div>
+<div class="topBarExpanded">
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+```
+
+## 7. MultiplayerPuzzleTypePage
+
+Não irá mais existir. Será a mesma que a PuzzleTypePage, mas esta com suporte para multiplayer.
+
+## 8. WaitingRoomPage
+
+### 8.1 Multiplayer (apenas Multiplayer)
+
+#### 8.1.1 Desktop
+
+```html
+<div class="sideBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="nonogramContainer">
+    <div class="backButton"><!-- Conteúdo --></div>
+    <div> >
+  </div>
+</div>
+```
+
+#### 8.2.2 Mobile
+
+##### 8.2.2.1 Recolhida
+
+```html
+<div class="mobileTopBar">
+  <div class="backButton"><!-- Conteúdo --></div>
+  <div class="projectTitle">Nonogram</div>
+  <div class="hamburgerButton"><!-- Conteúdo --></div>
+</div>
+<div class="pageContentArea">
+  <div class="statusContainer">
+    <div class="loadingSpinner"></div>
+    <p class="statusText">Waiting for creator to select a puzzle...</p>
+  </div>
+</div>
+```
+
+##### 8.2.2.2 Expandida
+
+```html
+<div class="mobileTopBar">
+  <div class="projectTitle">Nonogram</div>
+  <div class="closeButton"><!-- Conteúdo --></div>
+</div>
+<div class="topBarExpanded">
+  <div class="roomInfo"><!-- Conteúdo --></div>
+</div>
+```

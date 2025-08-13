@@ -20,6 +20,11 @@
   background-color: #f0f2f5;
 }
 
+/* Corner space without sticky positioning */
+.cornerSpace.noSticky {
+  position: static;
+}
+
 /* Column clues container - sticky at top */
 .colClues {
   grid-area: colClues;
@@ -32,6 +37,11 @@
   transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
   padding-top: 1vh;
+}
+
+/* Column clues without sticky positioning */
+.colClues.noSticky {
+  position: static;
 }
 
 .colClues.hidden {
@@ -60,6 +70,11 @@
   transition: all 1.2s ease-in-out;
   background-color: #f0f2f5;
   padding-left: 1vh;
+}
+
+/* Row clues without sticky positioning */
+.rowClues.noSticky {
+  position: static;
 }
 
 .rowClues.hidden {
