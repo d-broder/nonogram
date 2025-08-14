@@ -5,11 +5,8 @@ import { useGameState } from '../../hooks/useGameState';
 import { useZoom } from '../../hooks/useZoom';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import { GameBoard } from '../../components/GameBoard';
-import { Sidebar } from '../../components/Sidebar';
+import { PageLayout } from '../../components/PageLayout';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
-import { PaintModeButtons } from '../../components/PaintModeButtons';
-import { ZoomControls } from '../../components/ZoomControls';
-import { StickyToggleButton } from '../../components/StickyToggleButton';
 import type { CellState } from '../../types';
 import styles from './GamePage.module.css';
 
@@ -253,18 +250,18 @@ export function GamePage() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <PageLayout>
         <div className={styles.loading}>
           <div className={styles.spinner}></div>
           <p>Loading puzzle...</p>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.container}>
+      <PageLayout>
         <div className={styles.error}>
           <h2>Error Loading Puzzle</h2>
           <p>{error}</p>
@@ -275,13 +272,13 @@ export function GamePage() {
             Return to Home
           </button>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (!puzzle || !type) {
     return (
-      <div className={styles.container}>
+      <PageLayout>
         <div className={styles.error}>
           <h2>Puzzle Not Found</h2>
           <p>The requested puzzle could not be found.</p>
@@ -292,90 +289,64 @@ export function GamePage() {
             Return to Home
           </button>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className={styles.gamePageContainer}>
-      <Sidebar
-        puzzle={puzzle}
-        currentType={type}
-        paintMode={gameState.paintMode}
-        showSolution={gameState.showSolution}
-        isComplete={gameState.isComplete}
-        onShowSolution={toggleSolution}
-        onClearGrid={handleClearGridClick}
-        onModeChange={setPaintMode}
-        onZoomIn={zoomIn}
-        onZoomOut={zoomOut}
-        onResetZoom={resetZoom}
-        canZoomIn={canZoomIn}
-        canZoomOut={canZoomOut}
-        zoomPercentage={zoomPercentage}
-        isMultiplayer={isMultiplayer}
-        roomId={roomId}
-        roomLink={roomLink}
-        players={room ? Object.values(room.players) : []}
-        showTooltip={showTooltip}
-        onCopyLink={handleCopyRoomLink}
-        onHideTooltip={() => setShowTooltip(false)}
-      />
-      
-      <main className={styles.gameBoardArea}>
-        {/* Success message overlay */}
-        {gameState.isComplete && (
-          <div className={styles.successOverlay}>
+    <PageLayout
+      showBackButton={isMobile}
+      isGamePage
+      pageContentAreaHeight={isMobile ? "80%" : "full"}
+      showMobileBottomBar={isMobile}
+      isMultiplayer={isMultiplayer}
+      roomId={roomId}
+      roomLink={roomLink}
+      players={room ? Object.values(room.players) : []}
+      showTooltip={showTooltip}
+      onCopyLink={handleCopyRoomLink}
+      onHideTooltip={() => setShowTooltip(false)}
+      puzzle={puzzle}
+      currentType={type}
+      paintMode={gameState.paintMode}
+      showSolution={gameState.showSolution}
+      isComplete={gameState.isComplete}
+      onShowSolution={toggleSolution}
+      onClearGrid={handleClearGridClick}
+      onModeChange={setPaintMode}
+      onZoomIn={zoomIn}
+      onZoomOut={zoomOut}
+      onResetZoom={resetZoom}
+      canZoomIn={canZoomIn}
+      canZoomOut={canZoomOut}
+      zoomPercentage={zoomPercentage}
+      stickyClues={stickyClues}
+      onStickyToggle={() => setStickyClues(!stickyClues)}
+    >
+      {/* Success message overlay */}
+      {gameState.isComplete && (
+        <div className={styles.successOverlay}>
           <h1 className={styles.successMessage}>
             {(type === 'classic' ? 'CLASSIC' : 'SUPER').toUpperCase()} PUZZLE {puzzle.id} SOLVED
           </h1>
-          </div>
-        )}
-        
-        <GameBoard
-          puzzle={puzzle}
-          grid={gameState.grid}
-          showSolution={gameState.showSolution}
-          onCellMouseDown={handleCellMouseDown}
-          onCellMouseEnter={handleCellMouseEnter}
-          onCellMouseUp={handleCellMouseUp}
-          isComplete={gameState.isComplete}
-          zoomConfig={zoomConfig}
-          onRowClueClick={isMultiplayer ? handleRowClueClick : undefined}
-          onColClueClick={isMultiplayer ? handleColClueClick : undefined}
-          clickedRowClues={isMultiplayer ? clickedRowClues : undefined}
-          clickedColClues={isMultiplayer ? clickedColClues : undefined}
-          stickyClues={stickyClues}
-        />
-      </main>
-
-      {/* Mobile bottom controls bar */}
-      {isMobile && (
-        <div className={styles.mobileBottomBar}>
-          <div className={styles.mobileBottomItem}>
-            <PaintModeButtons
-              currentMode={gameState.paintMode}
-              onModeChange={setPaintMode}
-              isComplete={gameState.isComplete}
-            />
-          </div>
-          <div className={styles.mobileBottomItem}>
-            <StickyToggleButton
-              stickyEnabled={stickyClues}
-              onToggle={() => setStickyClues(!stickyClues)}
-            />
-          </div>
-          <div className={styles.mobileBottomItem}>
-            <ZoomControls
-              onZoomIn={zoomIn}
-              onZoomOut={zoomOut}
-              onResetZoom={resetZoom}
-              canZoomIn={canZoomIn}
-              canZoomOut={canZoomOut}
-            />
-          </div>
         </div>
       )}
+      
+      <GameBoard
+        puzzle={puzzle}
+        grid={gameState.grid}
+        showSolution={gameState.showSolution}
+        onCellMouseDown={handleCellMouseDown}
+        onCellMouseEnter={handleCellMouseEnter}
+        onCellMouseUp={handleCellMouseUp}
+        isComplete={gameState.isComplete}
+        zoomConfig={zoomConfig}
+        onRowClueClick={isMultiplayer ? handleRowClueClick : undefined}
+        onColClueClick={isMultiplayer ? handleColClueClick : undefined}
+        clickedRowClues={isMultiplayer ? clickedRowClues : undefined}
+        clickedColClues={isMultiplayer ? clickedColClues : undefined}
+        stickyClues={stickyClues}
+      />
 
       {/* Confirmation Modal */}
       <ConfirmationModal
@@ -387,6 +358,6 @@ export function GamePage() {
         confirmText="Yes"
         cancelText="No"
       />
-    </div>
+    </PageLayout>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { PlayerColor } from '../../types';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
+import { PageLayout } from '../../components/PageLayout';
 import styles from './CreateRoomPage.module.css';
 
 const AVAILABLE_COLORS: PlayerColor[] = [
@@ -21,7 +22,7 @@ const COLOR_VALUES = {
 
 export function CreateRoomPage() {
   const [playerName, setPlayerName] = useState('');
-  const [selectedColor, setSelectedColor] = useState<PlayerColor>('blue');
+  const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -59,8 +60,8 @@ export function CreateRoomPage() {
       // Create room in Firebase
       await createRoom(player, roomId);
 
-      // Navigate to puzzle type selection with room context
-      navigate(`/multiplayer/room/${roomId}/select-type`);
+      // Navigate to puzzle selection with room context
+      navigate(`/multiplayer/room/${roomId}/puzzles`);
     } catch (error) {
       console.error('Error creating room:', error);
       setError('Failed to create room. Please try again.');
@@ -70,7 +71,7 @@ export function CreateRoomPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <PageLayout showBackButton>
       <h1 className={styles.title}>Create Room</h1>
 
       <div className={styles.form}>
@@ -121,16 +122,6 @@ export function CreateRoomPage() {
           </button>
         </div>
       </div>
-
-      <div className={styles.backButton}>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className={styles.backLink}
-        >
-          ← Back to Game Mode Selection
-        </button>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

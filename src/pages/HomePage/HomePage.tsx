@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import { PageLayout } from '../../components/PageLayout';
 import styles from './HomePage.module.css';
 
 export function HomePage() {
   return (
-    <div className={styles.container}>
+    <PageLayout>
       <header className={styles.header}>
         <h1 className={styles.title}>Nonogram Puzzle Game</h1>
         <p className={styles.subtitle}>Choose your game mode to get started</p>
@@ -26,6 +27,6 @@ export function HomePage() {
           </Link>
         </div>
       </main>
-    </div>
+    </PageLayout>
   );
 }

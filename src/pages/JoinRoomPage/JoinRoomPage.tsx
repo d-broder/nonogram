@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { PlayerColor } from '../../types';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
+import { PageLayout } from '../../components/PageLayout';
 import styles from './JoinRoomPage.module.css';
 
 const AVAILABLE_COLORS: PlayerColor[] = [
@@ -22,7 +23,7 @@ const COLOR_VALUES = {
 export function JoinRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
   const [playerName, setPlayerName] = useState('');
-  const [selectedColor, setSelectedColor] = useState<PlayerColor>('blue');
+  const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -102,15 +103,15 @@ export function JoinRoomPage() {
 
   if (loading) {
     return (
-      <div className={styles.container}>
+      <PageLayout>
         <div className={styles.loading}>Loading room...</div>
-      </div>
+      </PageLayout>
     );
   }
 
   if (roomError || !room) {
     return (
-      <div className={styles.container}>
+      <PageLayout>
         <div className={styles.error}>
           <h2>Room not found</h2>
           <p>The room you're trying to join doesn't exist or has been removed.</p>
@@ -118,12 +119,12 @@ export function JoinRoomPage() {
             Back to Home
           </button>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className={styles.container}>
+    <PageLayout>
       <header className={styles.header}>
         <h1 className={styles.title}>Join Room</h1>
         <p className={styles.subtitle}>Room ID: {roomId}</p>
@@ -132,74 +133,62 @@ export function JoinRoomPage() {
         </p>
       </header>
 
-      <main className={styles.main}>
-        <div className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="playerName" className={styles.label}>
-              Display Name
-            </label>
-            <input
-              id="playerName"
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Enter your name..."
-              className={styles.input}
-              maxLength={20}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label className={styles.label}>Player Color</label>
-            <div className={styles.colorGrid}>
-              {AVAILABLE_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`${styles.colorButton} ${
-                    selectedColor === color ? styles.selected : ''
-                  } ${isColorDisabled(color) ? styles.disabled : ''}`}
-                  style={{ backgroundColor: COLOR_VALUES[color] }}
-                  onClick={() => handleColorSelect(color)}
-                  disabled={isColorDisabled(color)}
-                  aria-label={`Select ${color} color ${isColorDisabled(color) ? '(taken)' : ''}`}
-                />
-              ))}
-            </div>
-            {usedColors.length > 0 && (
-              <p className={styles.colorNote}>
-                Grayed out colors are already taken by other players
-              </p>
-            )}
-          </div>
-
-          <div className={styles.actions}>
-            {error && (
-              <div className={styles.errorMessage}>
-                {error}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={handleJoinRoom}
-              className={styles.joinButton}
-              disabled={!playerName.trim() || isJoining || isColorDisabled(selectedColor)}
-            >
-              {isJoining ? 'Joining Room...' : 'Join Room'}
-            </button>
-          </div>
+      <div className={styles.form}>
+        <div className={styles.field}>
+          <label htmlFor="playerName" className={styles.label}>
+            Display Name
+          </label>
+          <input
+            id="playerName"
+            type="text"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+            placeholder="Enter your name..."
+            className={styles.input}
+            maxLength={20}
+          />
         </div>
 
-        <div className={styles.backButton}>
+        <div className={styles.field}>
+          <label className={styles.label}>Player Color</label>
+          <div className={styles.colorGrid}>
+            {AVAILABLE_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                className={`${styles.colorButton} ${
+                  selectedColor === color ? styles.selected : ''
+                } ${isColorDisabled(color) ? styles.disabled : ''}`}
+                style={{ backgroundColor: COLOR_VALUES[color] }}
+                onClick={() => handleColorSelect(color)}
+                disabled={isColorDisabled(color)}
+                aria-label={`Select ${color} color ${isColorDisabled(color) ? '(taken)' : ''}`}
+              />
+            ))}
+          </div>
+          {usedColors.length > 0 && (
+            <p className={styles.colorNote}>
+              Grayed out colors are already taken by other players
+            </p>
+          )}
+        </div>
+
+        <div className={styles.actions}>
+          {error && (
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          )}
           <button
             type="button"
-            onClick={() => navigate('/')}
-            className={styles.backLink}
+            onClick={handleJoinRoom}
+            className={styles.joinButton}
+            disabled={!playerName.trim() || isJoining || isColorDisabled(selectedColor)}
           >
-            ← Back to Game Mode Selection
+            {isJoining ? 'Joining Room...' : 'Join Room'}
           </button>
         </div>
-      </main>
-    </div>
+      </div>
+    </PageLayout>
   );
 }

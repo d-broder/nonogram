@@ -19,10 +19,10 @@ export function GameControls({
   return (
     <div className={styles.controlGroup}>
       <Link 
-        to={`/puzzles/${puzzleType}`} 
+        to={`/puzzles/`} 
         className={styles.button}
       >
-        ← Back to Puzzles
+        ⯇ Back to Puzzles
       </Link>
       <button
         onClick={onShowSolution}

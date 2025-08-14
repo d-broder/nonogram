@@ -1,28 +1,22 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import { Sidebar } from '../../components/Sidebar';
+import { PageLayout } from '../../components/PageLayout';
 import styles from './PuzzleSelectionPage.module.css';
 
 export function PuzzleSelectionPage() {
-  const { type, roomId } = useParams<{ type: 'classic' | 'super'; roomId?: string }>();
+  const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
   const { updatePuzzleSelection, room } = useFirebaseRoom(roomId || null);
   const [roomLink, setRoomLink] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
+  const [selectedType, setSelectedType] = useState<'classic' | 'super'>('classic');
 
   // Check if this is a multiplayer context
   const isMultiplayer = location.pathname.includes('/multiplayer/');
-
-  // Redirect if invalid type
-  useEffect(() => {
-    if (type && type !== 'classic' && type !== 'super') {
-      navigate('/');
-    }
-  }, [type, navigate]);
 
   // Set room link for multiplayer
   useEffect(() => {
@@ -31,6 +25,23 @@ export function PuzzleSelectionPage() {
       setRoomLink(fullRoomLink);
     }
   }, [isMultiplayer, roomId]);
+
+  // Check if user is creator for multiplayer rooms
+  useEffect(() => {
+    if (isMultiplayer && roomId) {
+      const playerInfo = sessionStorage.getItem('playerInfo');
+      if (!playerInfo) {
+        navigate('/');
+        return;
+      }
+
+      const player = JSON.parse(playerInfo);
+      if (!player.isCreator) {
+        navigate(`/multiplayer/room/${roomId}/waiting`);
+        return;
+      }
+    }
+  }, [isMultiplayer, roomId, navigate]);
 
   const handleCopyRoomLink = async () => {
     if (!roomLink) return;
@@ -49,125 +60,120 @@ export function PuzzleSelectionPage() {
     }
   };
 
-  if (!type || (type !== 'classic' && type !== 'super')) {
-    return null;
-  }
+  const handleHideTooltip = () => {
+    setShowTooltip(false);
+  };
 
-  const puzzles = availablePuzzles[type];
-  const title = type === 'classic' ? 'Classic Nonogram' : 'Super Nonogram';
-
-  // Handle puzzle selection for multiplayer
+  // Handle puzzle selection
   const handlePuzzleClick = async (puzzleId: number) => {
     if (isMultiplayer && roomId) {
       try {
         // Update Firebase with puzzle selection
-        await updatePuzzleSelection(type, puzzleId);
+        await updatePuzzleSelection(selectedType, puzzleId);
         // Navigate to game
-        navigate(`/multiplayer/game/${roomId}/${type}/${puzzleId}`);
+        navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
       } catch (error) {
         console.error('Error updating puzzle selection:', error);
         // Fallback: navigate anyway
-        navigate(`/multiplayer/game/${roomId}/${type}/${puzzleId}`);
+        navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
       }
     } else {
       // Single player: navigate directly
-      navigate(`/game/${type}/${puzzleId}`);
+      navigate(`/game/${selectedType}/${puzzleId}`);
     }
   };
 
-  // Generate back link based on context
-  const getBackLink = () => {
-    if (isMultiplayer && roomId) {
-      return `/multiplayer/room/${roomId}/select-type`;
-    }
-    return '/puzzles';
-  };
+  const puzzles = availablePuzzles[selectedType];
 
   if (loading) {
     return (
-      <div className={styles.puzzlePageContainer}>
-        {isMultiplayer && (
-          <Sidebar
-            isMultiplayer={true}
-            roomId={roomId}
-            roomLink={roomLink}
-            players={room ? Object.values(room.players) : []}
-            showTooltip={showTooltip}
-            onCopyLink={handleCopyRoomLink}
-            onHideTooltip={() => setShowTooltip(false)}
-          />
-        )}
-        <main className={styles.puzzleSelectionArea}>
-          <div className={styles.loading}>Loading puzzles...</div>
-        </main>
-      </div>
+      <PageLayout
+        showBackButton
+        isMultiplayer={isMultiplayer}
+        roomId={roomId}
+        roomLink={roomLink}
+        players={room ? Object.values(room.players) : []}
+        showTooltip={showTooltip}
+        onCopyLink={handleCopyRoomLink}
+        onHideTooltip={handleHideTooltip}
+      >
+        <div className={styles.loading}>Loading puzzles...</div>
+      </PageLayout>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.puzzlePageContainer}>
-        {isMultiplayer && (
-          <Sidebar
-            isMultiplayer={true}
-            roomId={roomId}
-            roomLink={roomLink}
-            players={room ? Object.values(room.players) : []}
-            showTooltip={showTooltip}
-            onCopyLink={handleCopyRoomLink}
-            onHideTooltip={() => setShowTooltip(false)}
-          />
-        )}
-        <main className={styles.puzzleSelectionArea}>
-          <div className={styles.error}>
-            <p>Error loading puzzles: {error}</p>
-            <Link to={getBackLink()} className={styles.backButton}>Back</Link>
-          </div>
-        </main>
-      </div>
+      <PageLayout
+        showBackButton
+        isMultiplayer={isMultiplayer}
+        roomId={roomId}
+        roomLink={roomLink}
+        players={room ? Object.values(room.players) : []}
+        showTooltip={showTooltip}
+        onCopyLink={handleCopyRoomLink}
+        onHideTooltip={handleHideTooltip}
+      >
+        <div className={styles.error}>
+          <p>Error loading puzzles: {error}</p>
+        </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className={styles.puzzlePageContainer}>
-      {isMultiplayer && (
-        <Sidebar
-          isMultiplayer={true}
-          roomId={roomId}
-          roomLink={roomLink}
-          players={room ? Object.values(room.players) : []}
-          showTooltip={showTooltip}
-          onCopyLink={handleCopyRoomLink}
-          onHideTooltip={() => setShowTooltip(false)}
-        />
-      )}
-      
-      <main className={styles.puzzleSelectionArea}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>Select a puzzle to start playing</p>
-        </header>
+    <PageLayout
+      showBackButton
+      isMultiplayer={isMultiplayer}
+      roomId={roomId}
+      roomLink={roomLink}
+      players={room ? Object.values(room.players) : []}
+      showTooltip={showTooltip}
+      onCopyLink={handleCopyRoomLink}
+      onHideTooltip={handleHideTooltip}
+    >
+      <header className={styles.header}>
+        <h1 className={styles.title}>Select Puzzle</h1>
+        <p className={styles.subtitle}>Choose your puzzle type and select a puzzle to start playing</p>
+      </header>
 
-        <div className={styles.content}>
-          <div className={styles.puzzleGrid}>
-            {puzzles.map((puzzleId) => (
-              <button
-                key={puzzleId}
-                onClick={() => handlePuzzleClick(puzzleId)}
-                className={styles.puzzleButton}
-              >
-                <span className={styles.puzzleNumber}>{puzzleId}</span>
-              </button>
-            ))}
-          </div>
+      {/* Puzzle Type Tabs */}
+      <div className={styles.typeTabs}>
+        <button
+          className={`${styles.typeTab} ${selectedType === 'classic' ? styles.activeTab : ''}`}
+          onClick={() => setSelectedType('classic')}
+        >
+          Classic
+        </button>
+        <button
+          className={`${styles.typeTab} ${selectedType === 'super' ? styles.activeTab : ''}`}
+          onClick={() => setSelectedType('super')}
+        >
+          Super
+        </button>
+      </div>
 
-          <div className={styles.controls}>
-            <Link to={getBackLink()} className={styles.backButton}>
-              ← Back
-            </Link>
-          </div>
-        </div>
-      </main>
-    </div>
+      {/* Puzzle Type Description */}
+      <div className={styles.typeDescription}>
+        {selectedType === 'classic' ? (
+          <p>Traditional nonogram puzzles with standard grid sizes</p>
+        ) : (
+          <p>Larger, more challenging nonogram puzzles</p>
+        )}
+      </div>
+
+      {/* Puzzle Grid */}
+      <div className={styles.puzzleGrid}>
+        {puzzles.map((puzzleId) => (
+          <button
+            key={puzzleId}
+            onClick={() => handlePuzzleClick(puzzleId)}
+            className={styles.puzzleButton}
+          >
+            <span className={styles.puzzleNumber}>{puzzleId}</span>
+          </button>
+        ))}
+      </div>
+    </PageLayout>
   );
 }

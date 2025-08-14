@@ -1,1 +1,0 @@
-export { PuzzleTypePage } from './PuzzleTypePage';
