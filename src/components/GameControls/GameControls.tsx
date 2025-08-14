@@ -13,7 +13,6 @@ export function GameControls({
   onShowSolution, 
   onClearGrid, 
   showSolution, 
-  puzzleType,
   isComplete 
 }: GameControlsProps) {
   return (
