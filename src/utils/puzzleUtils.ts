@@ -34,7 +34,7 @@ export async function getAvailablePuzzles(type: 'classic' | 'super'): Promise<nu
   if (type === 'classic') {
     return [1, 2, 3]; // Sample puzzle IDs
   } else {
-    return [1]; // Sample super puzzle IDs
+    return [1, 2]; // Sample super puzzle IDs
   }
 }
 
