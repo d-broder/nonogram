@@ -3,10 +3,7 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CopyTooltip } from '../CopyTooltip';
 import { GameControls } from '../GameControls';
-import { PaintModeButtons } from '../PaintModeButtons';
-import { ZoomControls } from '../ZoomControls';
-import { ClueToggleButton } from '../ClueToggleButton';
-import { PlayerIndicatorToggleButton } from '../PlayerIndicatorToggleButton';
+import { GameControlsPanel } from '../GameControlsPanel';
 import type { PaintMode, Puzzle, Player } from '../../types';
 import styles from './PageLayout.module.css';
 
@@ -163,38 +160,23 @@ export function PageLayout({
         {/* Mobile Bottom Bar (only for GamePage) */}
         {showMobileBottomBar && paintMode && onModeChange && onZoomIn && onZoomOut && onResetZoom && (
           <div className={styles.mobileBottomBar}>
-            <div className={styles.gameControls2}>
-              <PaintModeButtons
-                currentMode={paintMode}
-                onModeChange={onModeChange}
-                isComplete={isComplete ?? false}
-              />
-              <ZoomControls
-                onZoomIn={onZoomIn}
-                onZoomOut={onZoomOut}
-                onResetZoom={onResetZoom}
-                canZoomIn={canZoomIn ?? true}
-                canZoomOut={canZoomOut ?? true}
-              />
-              {onStickyToggle && (
-                <div className={styles.toggleButton}>
-                  <ClueToggleButton
-                    stickyEnabled={stickyClues ?? true}
-                    onToggle={onStickyToggle}
-                    disabled={isComplete}
-                  />
-                </div>
-              )}
-              {isMultiplayer && onPlayerIndicatorToggle && (
-                <div className={styles.toggleButton}>
-                  <PlayerIndicatorToggleButton
-                    showIndicators={showPlayerIndicators ?? true}
-                    onToggle={onPlayerIndicatorToggle}
-                    disabled={isComplete}
-                  />
-                </div>
-              )}
-            </div>
+            <GameControlsPanel
+              layout="bottombar"
+              paintMode={paintMode}
+              onPaintModeChange={onModeChange}
+              onZoomIn={onZoomIn}
+              onZoomOut={onZoomOut}
+              onResetZoom={onResetZoom}
+              canZoomIn={canZoomIn ?? true}
+              canZoomOut={canZoomOut ?? true}
+              zoomPercentage={zoomPercentage ?? 100}
+              stickyClues={stickyClues ?? true}
+              onStickyToggle={onStickyToggle || (() => {})}
+              showPlayerIndicators={showPlayerIndicators ?? true}
+              onPlayerIndicatorToggle={onPlayerIndicatorToggle}
+              isMultiplayer={isMultiplayer}
+              isComplete={isComplete ?? false}
+            />
           </div>
         )}
       </div>
@@ -333,44 +315,23 @@ export function PageLayout({
             {/* Paint mode and zoom controls */}
             {paintMode && onModeChange && onZoomIn && onZoomOut && onResetZoom && (
               <div className={styles.gameControls2}>
-                <div className={styles.paintModePanel}>
-                  <h3 className={styles.sectionTitle}>Paint Mode</h3>
-                  <PaintModeButtons
-                    currentMode={paintMode}
-                    onModeChange={onModeChange}
-                    isComplete={isComplete ?? false}
-                  />
-                </div>
-                <div className={styles.zoomPanel}>
-                  <h3 className={styles.sectionTitle}>Zoom: {zoomPercentage ?? 100}%</h3>
-                  <ZoomControls
-                    onZoomIn={onZoomIn}
-                    onZoomOut={onZoomOut}
-                    onResetZoom={onResetZoom}
-                    canZoomIn={canZoomIn ?? true}
-                    canZoomOut={canZoomOut ?? true}
-                  />
-                </div>
-                {onStickyToggle && (
-                  <div className={styles.toggleButton}>
-                    <h3 className={styles.sectionTitle}>Clues</h3>
-                    <ClueToggleButton
-                      stickyEnabled={stickyClues ?? true}
-                      onToggle={onStickyToggle}
-                      disabled={isComplete}
-                    />
-                  </div>
-                )}
-                {isMultiplayer && onPlayerIndicatorToggle && (
-                  <div className={styles.toggleButton}>
-                    <h3 className={styles.sectionTitle}>Players</h3>
-                    <PlayerIndicatorToggleButton
-                      showIndicators={showPlayerIndicators ?? true}
-                      onToggle={onPlayerIndicatorToggle}
-                      disabled={isComplete}
-                    />
-                  </div>
-                )}
+                <GameControlsPanel
+                  layout="sidebar"
+                  paintMode={paintMode}
+                  onPaintModeChange={onModeChange}
+                  onZoomIn={onZoomIn}
+                  onZoomOut={onZoomOut}
+                  onResetZoom={onResetZoom}
+                  canZoomIn={canZoomIn ?? true}
+                  canZoomOut={canZoomOut ?? true}
+                  zoomPercentage={zoomPercentage ?? 100}
+                  stickyClues={stickyClues ?? true}
+                  onStickyToggle={onStickyToggle || (() => {})}
+                  showPlayerIndicators={showPlayerIndicators ?? true}
+                  onPlayerIndicatorToggle={onPlayerIndicatorToggle}
+                  isMultiplayer={isMultiplayer}
+                  isComplete={isComplete ?? false}
+                />
               </div>
             )}
           </div>

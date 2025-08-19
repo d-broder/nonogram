@@ -1,1 +1,0 @@
-export { PaintModeButtons } from './PaintModeButtons';

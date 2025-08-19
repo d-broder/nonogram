@@ -1,0 +1,216 @@
+.button {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 8px;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Size variants */
+.button.large {
+  width: 56px;
+  height: 56px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 64px;
+  max-height: 64px;
+}
+
+.button.small {
+  width: 40px;
+  height: 40px;
+  min-width: 28px;
+  min-height: 28px;
+  max-width: 48px;
+  max-height: 48px;
+}
+
+/* Icon styling */
+.icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.paintIcon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.button.small .icon {
+  font-size: 1rem;
+}
+
+.button.small .paintIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Label styling */
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.button.small .label {
+  font-size: 0.6rem;
+}
+
+/* Paint mode variant */
+.button.paint {
+  background: #f4f4f4;
+  border-color: #dee2e6;
+  color: #333;
+}
+
+.button.paint:not(:disabled):hover {
+  background: rgb(156, 212, 255);
+  border-color: #409edd;
+  transform: translateY(-2px);
+}
+
+.button.paint.active {
+  background: #409edd;
+  border-color: #2980b9;
+  color: white;
+}
+
+.button.paint.active:not(:disabled):hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+}
+
+/* Zoom variant */
+.button.zoom {
+  background: #f4f4f4;
+  border-color: #dee2e6;
+  color: #333;
+}
+
+.button.zoom:not(:disabled):hover {
+  background: rgb(156, 212, 255);
+  border-color: #409edd;
+  transform: translateY(-2px);
+}
+
+.button.zoom.active {
+  background: #409edd;
+  border-color: #2980b9;
+  color: white;
+}
+
+/* Toggle variant - enabled state */
+.button.toggle.active {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.button.toggle.active:not(:disabled):hover {
+  background: rgba(34, 197, 94, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+/* Toggle variant - disabled state */
+.button.toggle:not(.active) {
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+}
+
+.button.toggle:not(.active):not(:disabled):hover {
+  background: rgba(239, 68, 68, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Focus state */
+.button:focus {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+/* Disabled state */
+.button:disabled {
+  background: rgba(156, 163, 175, 0.5) !important;
+  color: rgba(107, 114, 128, 0.7) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .button.large {
+    width: 6vh;
+    height: 6vh;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 56px;
+    max-height: 56px;
+    padding: 6px;
+  }
+  
+  .button.small {
+    width: 5vh;
+    height: 5vh;
+    min-width: 36px;
+    min-height: 36px;
+    max-width: 44px;
+    max-height: 44px;
+    padding: 4px;
+  }
+  
+  .icon {
+    font-size: 1.1rem;
+  }
+  
+  .button.small .icon {
+    font-size: 0.9rem;
+  }
+  
+  .label {
+    font-size: 0.65rem;
+  }
+  
+  .button.small .label {
+    font-size: 0.55rem;
+  }
+  
+  /* More aggressive shrinking on mobile */
+  .button.large {
+    width: 40px;
+    height: 40px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .button.small {
+    width: 32px;
+    height: 32px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+  
+  .paintIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .button.small .paintIcon {
+    width: 16px;
+    height: 16px;
+  }
+}
