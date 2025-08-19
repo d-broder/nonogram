@@ -226,7 +226,8 @@ export function GameBoard({
     if (puzzle.type === 'super') {
       for (let i = 0; i < colClues.length; i++) {
         const clues = colClues[i];
-        if (clues && (clues.includes('super') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
+        if (clues && (clues.includes('super'))) {
+          superCols.push(i-1);
           superCols.push(i);
         }
       }
@@ -321,7 +322,8 @@ export function GameBoard({
     if (puzzle.type === 'super') {
       for (let i = 0; i < rowClues.length; i++) {
         const clues = rowClues[i];
-        if (clues && (clues.includes('super') || clues.some(block => Array.isArray(block) && Array.isArray(block[0])))) {
+        if (clues && (clues.includes('super'))) {
+          superRows.push(i-1);
           superRows.push(i);
         }
       }
