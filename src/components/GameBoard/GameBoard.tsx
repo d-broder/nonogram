@@ -28,6 +28,10 @@ interface GameBoardProps {
   clickedColClues?: Set<string>;
   // Mobile sticky toggle
   stickyClues?: boolean;
+  // Multiplayer cell authorship
+  cellAuthors?: { [cellId: string]: string };
+  players?: { [playerId: string]: { id: string; name: string; color: string; isCreator: boolean } };
+  showPlayerIndicators?: boolean;
 }
 
 export function GameBoard({ 
@@ -43,7 +47,10 @@ export function GameBoard({
   onColClueClick,
   clickedRowClues: externalClickedRowClues,
   clickedColClues: externalClickedColClues,
-  stickyClues = true
+  stickyClues = true,
+  cellAuthors = {},
+  players = {},
+  showPlayerIndicators = true
 }: GameBoardProps) {
   const colCluesRef = useRef<HTMLDivElement>(null);
   const rowCluesRef = useRef<HTMLDivElement>(null);
@@ -206,15 +213,26 @@ export function GameBoard({
     
     const cellState = grid[row][col];
     const iconClass = isComplete ? `${styles.cellIcon} ${styles.fadeOut}` : styles.cellIcon;
+    const cellId = `${row}-${col}`;
+    const authorId = cellAuthors[cellId];
+    const author = authorId ? players[authorId] : null;
     
-    switch (cellState) {
-      case 'x':
-        return <img src={iconX} alt="X mark" className={iconClass} />;
-      case 'o':
-        return <img src={iconO} alt="O mark" className={iconClass} />;
-      default:
-        return null;
-    }
+    return (
+      <>
+        {/* Main cell content (X or O icons) */}
+        {cellState === 'x' && <img src={iconX} alt="X mark" className={iconClass} />}
+        {cellState === 'o' && <img src={iconO} alt="O mark" className={iconClass} />}
+        
+        {/* Player indicator for multiplayer mode */}
+        {author && cellState !== 'white' && !isComplete && showPlayerIndicators && (
+          <div 
+            className={styles.playerIndicator}
+            style={{ backgroundColor: author.color }}
+            title={`Filled by ${author.name}`}
+          />
+        )}
+      </>
+    );
   };
 
   const renderVisualClues = () => {

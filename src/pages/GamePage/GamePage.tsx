@@ -19,6 +19,11 @@ export function GamePage() {
   // Check if this is multiplayer mode
   const isMultiplayer = location.pathname.includes('/multiplayer/');
   
+  // Get current player info for multiplayer
+  const currentPlayerInfo = isMultiplayer 
+    ? JSON.parse(sessionStorage.getItem('playerInfo') || '{}') 
+    : null;
+  
   const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
   
   // States for multiplayer sidebar
@@ -36,7 +41,8 @@ export function GamePage() {
     toggleSolution,
     updateCellExternally
   } = useGameState(puzzle, {
-    onCellChange: isMultiplayer && roomId ? updateGridCell : undefined
+    onCellChange: isMultiplayer && roomId ? updateGridCell : undefined,
+    playerId: currentPlayerInfo?.id
   });
   
   const { config: zoomConfig, zoomIn, zoomOut, resetZoom, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
@@ -45,6 +51,7 @@ export function GamePage() {
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [stickyClues, setStickyClues] = useState(true);
+  const [showPlayerIndicators, setShowPlayerIndicators] = useState(true);
 
   // State for clue clicks (moved from GameBoard to sync with Firebase)
   const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
@@ -322,6 +329,8 @@ export function GamePage() {
       zoomPercentage={zoomPercentage}
       stickyClues={stickyClues}
       onStickyToggle={() => setStickyClues(!stickyClues)}
+      showPlayerIndicators={showPlayerIndicators}
+      onPlayerIndicatorToggle={() => setShowPlayerIndicators(!showPlayerIndicators)}
     >
       {/* Success message overlay */}
       {gameState.isComplete && (
@@ -346,6 +355,9 @@ export function GamePage() {
         clickedRowClues={isMultiplayer ? clickedRowClues : undefined}
         clickedColClues={isMultiplayer ? clickedColClues : undefined}
         stickyClues={stickyClues}
+        cellAuthors={isMultiplayer && room ? room.cellAuthors : undefined}
+        players={isMultiplayer && room ? room.players : undefined}
+        showPlayerIndicators={showPlayerIndicators}
       />
 
       {/* Confirmation Modal */}

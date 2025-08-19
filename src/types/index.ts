@@ -64,6 +64,7 @@ export interface Room {
   puzzleType: 'classic' | 'super' | null;
   puzzleId: number | null;
   grid: { [cellId: string]: CellState };
+  cellAuthors: { [cellId: string]: string }; // Track who filled each cell
   clues: { [clueId: string]: boolean }; // Simplified structure: "row-0-0": true, "col-1-2": false
 }
 

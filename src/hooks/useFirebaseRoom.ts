@@ -57,6 +57,7 @@ export function useFirebaseRoom(roomId: string | null) {
         puzzleType: null,
         puzzleId: null,
         grid: {},
+        cellAuthors: {},
         clues: {}
       };
 
@@ -117,6 +118,7 @@ export function useFirebaseRoom(roomId: string | null) {
         puzzleId,
         status: 'playing',
         grid: initialGrid,
+        cellAuthors: {}, // Reset cell authors as well
         // Reset clues as well
         clues: {}
       });
@@ -126,14 +128,24 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
-  // Update grid cell
-  const updateGridCell = async (cellId: string, state: CellState): Promise<void> => {
+  // Update grid cell with author tracking
+  const updateGridCell = async (cellId: string, state: CellState, playerId?: string): Promise<void> => {
     if (!roomId) throw new Error('No room ID provided');
     
     try {
-      await updateDoc(doc(firestore, 'rooms', roomId), {
+      const updateData: any = {
         [`grid.${cellId}`]: state
-      });
+      };
+
+      // If cell is being filled (not white) and playerId is provided, track the author
+      if (state !== 'white' && playerId) {
+        updateData[`cellAuthors.${cellId}`] = playerId;
+      } else if (state === 'white') {
+        // If cell is being cleared, remove the author
+        updateData[`cellAuthors.${cellId}`] = null;
+      }
+
+      await updateDoc(doc(firestore, 'rooms', roomId), updateData);
     } catch (error) {
       console.error('Error updating grid cell:', error);
       throw new Error('Failed to update grid cell');

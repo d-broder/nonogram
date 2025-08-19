@@ -5,7 +5,8 @@ import { CopyTooltip } from '../CopyTooltip';
 import { GameControls } from '../GameControls';
 import { PaintModeButtons } from '../PaintModeButtons';
 import { ZoomControls } from '../ZoomControls';
-import { StickyToggleButton } from '../StickyToggleButton';
+import { ClueToggleButton } from '../ClueToggleButton';
+import { PlayerIndicatorToggleButton } from '../PlayerIndicatorToggleButton';
 import type { PaintMode, Puzzle, Player } from '../../types';
 import styles from './PageLayout.module.css';
 
@@ -54,9 +55,11 @@ interface PageLayoutProps {
   canZoomOut?: boolean;
   zoomPercentage?: number;
   
-  // Sticky toggle button (for GamePage)
+  // Toggle buttons (for GamePage)
   stickyClues?: boolean;
   onStickyToggle?: () => void;
+  showPlayerIndicators?: boolean;
+  onPlayerIndicatorToggle?: () => void;
 }
 
 export function PageLayout({
@@ -87,7 +90,9 @@ export function PageLayout({
   canZoomOut,
   zoomPercentage,
   stickyClues,
-  onStickyToggle
+  onStickyToggle,
+  showPlayerIndicators,
+  onPlayerIndicatorToggle
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -173,9 +178,19 @@ export function PageLayout({
               />
               {onStickyToggle && (
                 <div className={styles.toggleButton}>
-                  <StickyToggleButton
+                  <ClueToggleButton
                     stickyEnabled={stickyClues ?? true}
                     onToggle={onStickyToggle}
+                    disabled={isComplete}
+                  />
+                </div>
+              )}
+              {isMultiplayer && onPlayerIndicatorToggle && (
+                <div className={styles.toggleButton}>
+                  <PlayerIndicatorToggleButton
+                    showIndicators={showPlayerIndicators ?? true}
+                    onToggle={onPlayerIndicatorToggle}
+                    disabled={isComplete}
                   />
                 </div>
               )}
@@ -339,9 +354,20 @@ export function PageLayout({
                 {onStickyToggle && (
                   <div className={styles.toggleButton}>
                     <h3 className={styles.sectionTitle}>Clues</h3>
-                    <StickyToggleButton
+                    <ClueToggleButton
                       stickyEnabled={stickyClues ?? true}
                       onToggle={onStickyToggle}
+                      disabled={isComplete}
+                    />
+                  </div>
+                )}
+                {isMultiplayer && onPlayerIndicatorToggle && (
+                  <div className={styles.toggleButton}>
+                    <h3 className={styles.sectionTitle}>Players</h3>
+                    <PlayerIndicatorToggleButton
+                      showIndicators={showPlayerIndicators ?? true}
+                      onToggle={onPlayerIndicatorToggle}
+                      disabled={isComplete}
                     />
                   </div>
                 )}

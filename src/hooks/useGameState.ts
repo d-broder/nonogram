@@ -3,11 +3,12 @@ import type { GameState, CellPosition, Puzzle, PaintMode, DragState, CellState }
 import { createEmptyGrid, checkSolution, clearGrid, getNextState } from '../utils/gridUtils';
 
 interface UseGameStateOptions {
-  onCellChange?: (cellId: string, state: CellState) => Promise<void>;
+  onCellChange?: (cellId: string, state: CellState, playerId?: string) => Promise<void>;
+  playerId?: string; // Add playerId to track who made the change
 }
 
 export function useGameState(puzzle: Puzzle | null, options?: UseGameStateOptions) {
-  const { onCellChange } = options || {};
+  const { onCellChange, playerId } = options || {};
   const [gameState, setGameState] = useState<GameState>(() => ({
     grid: puzzle ? createEmptyGrid(puzzle.size.width, puzzle.size.height) : [],
     isComplete: false,
@@ -172,7 +173,7 @@ export function useGameState(puzzle: Puzzle | null, options?: UseGameStateOption
 
         // Sync to Firebase if callback is provided
         if (onCellChange) {
-          onCellChange(cellId, newState).catch(error => {
+          onCellChange(cellId, newState, playerId).catch(error => {
             console.error('Error syncing cell to Firebase:', error);
           });
         }
@@ -189,7 +190,7 @@ export function useGameState(puzzle: Puzzle | null, options?: UseGameStateOption
 
       return prev;
     });
-  }, [puzzle, onCellChange]);
+  }, [puzzle, onCellChange, playerId]);
 
   // Set paint mode
   const setPaintMode = useCallback((mode: PaintMode) => {

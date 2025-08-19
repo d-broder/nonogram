@@ -1,0 +1,86 @@
+.toggleButton {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 8px;
+  width: 56px;
+  height: 56px;
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 64px;
+  max-height: 64px;
+}
+
+.icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.toggleButton.enabled {
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+}
+
+.toggleButton.enabled:hover {
+  background: rgba(59, 130, 246, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.toggleButton.disabled {
+  background: rgba(156, 163, 175, 0.9);
+  color: white;
+}
+
+.toggleButton.disabled:hover {
+  background: rgba(156, 163, 175, 1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(156, 163, 175, 0.3);
+}
+
+.toggleButton:focus {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.toggleButton:disabled {
+  background: rgba(156, 163, 175, 0.5) !important;
+  color: rgba(107, 114, 128, 0.7) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+  .toggleButton {
+    width: 6vh;
+    height: 6vh;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 56px;
+    max-height: 56px;
+    padding: 6px;
+  }
+  
+  .icon {
+    font-size: 1.1rem;
+  }
+  
+  .label {
+    font-size: 0.65rem;
+  }
+}
