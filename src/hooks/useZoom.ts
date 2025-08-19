@@ -10,7 +10,7 @@ interface ZoomConfig {
   clueFontSize: number;
 }
 
-const MIN_CELL_SIZE = 20;
+const MIN_CELL_SIZE = 10;
 const MAX_CELL_SIZE = 80;
 const DEFAULT_CELL_SIZE = 40;
 

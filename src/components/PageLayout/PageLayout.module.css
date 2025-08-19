@@ -1,7 +1,9 @@
 /* Page Container */
 .pageContainer {
   display: flex;
-  height: 100vh;
+  height: 100vh; /* Fallback for older browsers */
+  height: calc(var(--vh, 1vh) * 100); /* Fallback using JS-calculated viewport */
+  height: 100dvh; /* Dynamic viewport height for modern browsers */
   width: 100%;
 }
 
@@ -9,6 +11,7 @@
 .sidebar {
   width: 250px;
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ecf0f1;
   padding: 1rem;
@@ -203,6 +206,7 @@
   align-items: center;
   overflow: auto;
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height */
   width: calc(100vw - 250px)
 }
 
@@ -262,6 +266,7 @@
 /* Mobile Styles */
 .mobileTopBar {
   height: 10vh;
+  height: 10dvh; /* Dynamic viewport height */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ecf0f1;
   display: flex;
@@ -276,6 +281,7 @@
   color: #ecf0f1;
   padding: 1rem;
   height: 90vh;
+  height: 90dvh; /* Dynamic viewport height */
   overflow-y: auto;
   border-bottom: 1px solid #2c3e50;
 }
@@ -286,6 +292,7 @@
   left: 0;
   right: 0;
   height: 15vh;
+  height: 15dvh; /* Dynamic viewport height */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #ecf0f1;
   display: flex;
@@ -339,7 +346,9 @@
   }
 
 .nonogramContainerArea {
-    height: 80vh;
+    height: 80vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 80); /* JS fallback */
+    height: 80dvh; /* Dynamic viewport height for mobile */
     width: 100vw;
   }
 }

@@ -105,9 +105,24 @@ export function PageLayout({
       }
     };
 
+    // Set CSS custom property for real viewport height (fallback for older browsers)
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
     checkMobile();
+    setViewportHeight();
+    
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
   }, []);
 
   const handleBackClick = () => {
@@ -152,7 +167,9 @@ export function PageLayout({
         {/* Page Content Area */}
         <div 
           className={isGamePage ? styles.nonogramContainerArea : styles.pageContentArea}
-          style={{ height: pageContentAreaHeight === '80%' ? '80vh' : 'calc(100vh - 10vh)' }}
+          style={{ 
+            height: pageContentAreaHeight === '80%' ? '80dvh' : 'calc(100dvh - 10dvh)'
+          }}
         >
           {isGamePage ? children : <div className={styles.pageContent}>{children}</div>}
         </div>
