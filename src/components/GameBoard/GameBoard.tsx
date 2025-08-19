@@ -121,14 +121,12 @@ export function GameBoard({
 
   // Touch event handlers for mobile support
   const handleCellTouchStart = useCallback((e: React.TouchEvent, row: number, col: number) => {
-    e.preventDefault();
     e.stopPropagation();
     if (isComplete || showSolution) return;
     onCellMouseDown({ row, col }, 0); // Treat touch as left mouse button
   }, [onCellMouseDown, isComplete, showSolution]);
 
   const handleCellTouchMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     if (isComplete || showSolution) return;
     
