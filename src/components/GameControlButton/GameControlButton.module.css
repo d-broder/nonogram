@@ -77,20 +77,21 @@
 }
 
 .button.paint:not(:disabled):hover {
-  background: rgb(156, 212, 255);
-  border-color: #409edd;
+  background: rgb(210, 235, 255);
+  border-color: #8dbddd;  
   transform: translateY(-2px);
 }
 
 .button.paint.active {
-  background: #409edd;
-  border-color: #2980b9;
+  background: #8cc0e2;
+  border-color: #6d9bb9;
   color: white;
 }
 
 .button.paint.active:not(:disabled):hover {
-  background: #2980b9;
-  transform: translateY(-2px);
+  background: #8cc0e2;
+  border-color: #6d9bb9;
+  color: white;
 }
 
 /* Zoom variant */
@@ -101,15 +102,9 @@
 }
 
 .button.zoom:not(:disabled):hover {
-  background: rgb(156, 212, 255);
-  border-color: #409edd;
+  background: rgb(210, 235, 255);
+  border-color: #8dbddd;
   transform: translateY(-2px);
-}
-
-.button.zoom.active {
-  background: #409edd;
-  border-color: #2980b9;
-  color: white;
 }
 
 /* Toggle variant - enabled state */
