@@ -122,12 +122,14 @@ export function GameBoard({
   // Touch event handlers for mobile support
   const handleCellTouchStart = useCallback((e: React.TouchEvent, row: number, col: number) => {
     e.preventDefault();
+    e.stopPropagation();
     if (isComplete || showSolution) return;
     onCellMouseDown({ row, col }, 0); // Treat touch as left mouse button
   }, [onCellMouseDown, isComplete, showSolution]);
 
   const handleCellTouchMove = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (isComplete || showSolution) return;
     
     const touch = e.touches[0];
@@ -149,6 +151,7 @@ export function GameBoard({
 
   const handleCellTouchEnd = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     onCellMouseUp();
   }, [onCellMouseUp]);
 
@@ -176,6 +179,24 @@ export function GameBoard({
       document.removeEventListener('touchcancel', handleGlobalTouchEnd);
     };
   }, [onCellMouseUp]);
+
+  // Prevent page scroll on mobile during touch interactions within the grid only
+  useEffect(() => {
+    const preventScroll = (e: TouchEvent) => {
+      // Check if the touch started specifically on the grid element
+      const target = e.target as Element;
+      if (target && target.closest('.'+styles.grid)) {
+        e.preventDefault();
+      }
+    };
+
+    // Add passive: false to allow preventDefault
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchmove', preventScroll);
+    };
+  }, []);
 
   const getCellClass = (row: number, col: number) => {
     const classes = [styles.cell];
@@ -434,6 +455,20 @@ export function GameBoard({
     return { colClueElements, rowClueElements };
   };
 
+  // Grid-specific touch handlers to prevent page scroll only in grid area
+  const handleGridTouchStart = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  const handleGridTouchMove = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleGridTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation();
+  }, []);
+
   const { colClueElements, rowClueElements } = renderVisualClues();
 
   return (
@@ -466,6 +501,9 @@ export function GameBoard({
       {/* Grid container */}
       <div 
         className={styles.grid}
+        onTouchStart={handleGridTouchStart}
+        onTouchMove={handleGridTouchMove}
+        onTouchEnd={handleGridTouchEnd}
         style={{
           gridTemplateColumns: `repeat(${puzzle.size.width}, ${zoomConfig.cellSize}px)`,
           gridTemplateRows: `repeat(${puzzle.size.height}, ${zoomConfig.cellSize}px)`,

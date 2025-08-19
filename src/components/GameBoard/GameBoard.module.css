@@ -7,6 +7,10 @@
   margin: auto;
   padding-right: 1vh;
   padding-bottom: 1vh;
+  user-select: none; /* Prevent text selection during drag */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 /* Corner space */
@@ -179,6 +183,7 @@
 .grid {
   display: grid;
   position: relative;
+  touch-action: none; /* Prevent scrolling on grid interactions */
 }
 
 .cell {
@@ -192,6 +197,10 @@
   font-size: var(--cell-size, 40px);
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: none;
   transition: background 0.2s;
   box-sizing: border-box;
   position: relative;
