@@ -1,0 +1,1 @@
+export { RoomInfoDefault } from './RoomInfoDefault';

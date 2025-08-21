@@ -166,6 +166,28 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
+  // Migrate game state to a room (for single player to multiplayer transition)
+  const migrateGameState = async (targetRoomId: string, migrationData: any): Promise<void> => {
+    try {
+      await updateDoc(doc(firestore, 'rooms', targetRoomId), {
+        grid: migrationData.grid || {},
+        cellAuthors: migrationData.cellAuthors || {},
+        clues: migrationData.clues || {},
+        status: migrationData.status || 'waiting',
+        puzzleType: migrationData.puzzleType || null,
+        puzzleId: migrationData.puzzleId || null,
+        gameSettings: {
+          ...migrationData.gameSettings,
+          migratedAt: serverTimestamp()
+        },
+        updatedAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error migrating game state:', error);
+      throw new Error('Failed to migrate game state');
+    }
+  };
+
   return {
     room,
     loading,
@@ -175,6 +197,7 @@ export function useFirebaseRoom(roomId: string | null) {
     leaveRoom,
     updatePuzzleSelection,
     updateGridCell,
-    updateClueState
+    updateClueState,
+    migrateGameState
   };
 }

@@ -4,6 +4,7 @@ import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
 import { useGameState } from '../../hooks/useGameState';
 import { useZoom } from '../../hooks/useZoom';
 import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
+import { useGameStateMigration } from '../../hooks/useGameStateMigration';
 import { GameBoard } from '../../components/GameBoard';
 import { PageLayout } from '../../components/PageLayout';
 import { ConfirmationModal } from '../../components/ConfirmationModal';
@@ -25,10 +26,12 @@ export function GamePage() {
     : null;
   
   const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
+  const { migrateToMultiplayer } = useGameStateMigration();
   
   // States for multiplayer sidebar
   const [showTooltip, setShowTooltip] = useState(false);
   const [roomLink, setRoomLink] = useState('');
+  const [isMigrating, setIsMigrating] = useState(false);
   
   const { 
     gameState, 
@@ -185,6 +188,47 @@ export function GamePage() {
     }
   };
 
+  // Handle room creation during game (migration from single to multiplayer)
+  const handleRoomCreated = async (newRoomId: string, playerId: string) => {
+    if (!puzzle) return;
+
+    setIsMigrating(true);
+    try {
+      // Prepare migration data
+      const migrationData = {
+        gameState,
+        puzzle,
+        puzzleType: type!, // From URL params
+        puzzleId: parseInt(id!), // From URL params
+        creatorId: playerId, // Creator ID for cellAuthors
+        clueStates: {
+          clickedRowClues,
+          clickedColClues
+        },
+        uiSettings: {
+          paintMode: gameState.paintMode,
+          stickyClues,
+          showPlayerIndicators
+        }
+      };
+
+      // Migrate current game state to the new room
+      const result = await migrateToMultiplayer(newRoomId, migrationData);
+      
+      if (result.success) {
+        // Navigate to multiplayer game page with same puzzle
+        navigate(`/multiplayer/game/${newRoomId}/${type}/${id}`);
+      } else {
+        console.error('Migration failed:', result.error);
+        // Could show error message to user here
+      }
+    } catch (error) {
+      console.error('Error during room creation and migration:', error);
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
   // Listen for Firebase updates in multiplayer mode
   useEffect(() => {
     if (!isMultiplayer || !room) return;
@@ -313,6 +357,7 @@ export function GamePage() {
       showTooltip={showTooltip}
       onCopyLink={handleCopyRoomLink}
       onHideTooltip={() => setShowTooltip(false)}
+      onRoomCreated={handleRoomCreated}
       puzzle={puzzle}
       currentType={type}
       paintMode={gameState.paintMode}
@@ -337,6 +382,15 @@ export function GamePage() {
         <div className={styles.successOverlay}>
           <h1 className={styles.successMessage}>
             {(type === 'classic' ? 'CLASSIC' : 'SUPER').toUpperCase()} PUZZLE {puzzle.id} SOLVED
+          </h1>
+        </div>
+      )}
+
+      {/* Migration loading overlay */}
+      {isMigrating && (
+        <div className={styles.successOverlay}>
+          <h1 className={styles.successMessage}>
+            Creating Multiplayer Room...
           </h1>
         </div>
       )}

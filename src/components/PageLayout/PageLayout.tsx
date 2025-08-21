@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { CopyTooltip } from '../CopyTooltip';
 import { GameControls } from '../GameControls';
 import { GameControlsPanel } from '../GameControlsPanel';
+import { CreateRoomModal } from '../CreateRoomModal';
+import { RoomInfoDefault } from '../RoomInfoDefault';
 import type { PaintMode, Puzzle, Player } from '../../types';
 import styles from './PageLayout.module.css';
 
@@ -57,6 +59,9 @@ interface PageLayoutProps {
   onStickyToggle?: () => void;
   showPlayerIndicators?: boolean;
   onPlayerIndicatorToggle?: () => void;
+
+  // Create room modal callbacks
+  onRoomCreated?: (roomId: string, playerId: string) => void;
 }
 
 export function PageLayout({
@@ -89,11 +94,29 @@ export function PageLayout({
   stickyClues,
   onStickyToggle,
   showPlayerIndicators,
-  onPlayerIndicatorToggle
+  onPlayerIndicatorToggle,
+  onRoomCreated
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Modal handlers
+  const handleOpenCreateModal = () => {
+    setShowCreateRoomModal(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateRoomModal(false);
+  };
+
+  const handleRoomCreated = (roomId: string, playerId: string) => {
+    setShowCreateRoomModal(false);
+    if (onRoomCreated) {
+      onRoomCreated(roomId, playerId);
+    }
+  };
 
   // Check for mobile screen size
   useEffect(() => {
@@ -239,54 +262,58 @@ export function PageLayout({
             </div>
           )}
 
-          {/* Room info (for multiplayer) */}
-          {isMultiplayer && roomId && (
-            <div className={styles.roomInfo}>
-              <div className={styles.roomTitle}>Room: {roomId}</div>
-              {roomLink && (
-                <>
-                  <div className={styles.roomLink}>{roomLink}</div>
-                  <div className={styles.copyButtonWrapper}>
-                    <button
-                      type="button"
-                      onClick={onCopyLink}
-                      className={styles.copyButton}
-                    >
-                      Copy Link
-                    </button>
-                    {onHideTooltip && (
-                      <CopyTooltip 
-                        text="Link copied!" 
-                        show={showTooltip} 
-                        onHide={onHideTooltip} 
-                      />
-                    )}
-                  </div>
-                </>
-              )}
-
-              {/* Players list */}
-              {players.length > 0 && (
-                <div className={styles.playersContainer}>
-                  <h3 className={styles.playersTitle}>Players ({players.length})</h3>
-                  <div className={styles.playersList}>
-                    {players.map((player) => (
-                      <div key={player.id} className={styles.playerCard}>
-                        <div
-                          className={styles.playerColor}
-                          style={{ backgroundColor: COLOR_VALUES[player.color] }}
+          {/* Room info (always visible) */}
+          <div className={styles.roomInfo}>
+            {!isMultiplayer ? (
+              <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
+            ) : roomId ? (
+              <>
+                <div className={styles.roomTitle}>Room: {roomId}</div>
+                {roomLink && (
+                  <>
+                    <div className={styles.roomLink}>{roomLink}</div>
+                    <div className={styles.copyButtonWrapper}>
+                      <button
+                        type="button"
+                        onClick={onCopyLink}
+                        className={styles.copyButton}
+                      >
+                        Copy Link
+                      </button>
+                      {onHideTooltip && (
+                        <CopyTooltip 
+                          text="Link copied!" 
+                          show={showTooltip} 
+                          onHide={onHideTooltip} 
                         />
-                        <div className={styles.playerInfo}>
-                          <span className={styles.playerName}>{player.name}</span>
-                          {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Players list */}
+                {players.length > 0 && (
+                  <div className={styles.playersContainer}>
+                    <h3 className={styles.playersTitle}>Players ({players.length})</h3>
+                    <div className={styles.playersList}>
+                      {players.map((player) => (
+                        <div key={player.id} className={styles.playerCard}>
+                          <div
+                            className={styles.playerColor}
+                            style={{ backgroundColor: COLOR_VALUES[player.color] }}
+                          />
+                          <div className={styles.playerInfo}>
+                            <span className={styles.playerName}>{player.name}</span>
+                            {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </>
+            ) : null}
+          </div>
         </div>
 
         {/* Overlay to close expanded menu */}
@@ -354,54 +381,58 @@ export function PageLayout({
           </div>
         )}
 
-        {/* Multiplayer content */}
-        {isMultiplayer && roomId && (
-          <div className={styles.roomInfo}>
-            <div className={styles.roomTitle}>Room: {roomId}</div>
-            {roomLink && (
-              <>
-                <div className={styles.roomLink}>{roomLink}</div>
-                <div className={styles.copyButtonWrapper}>
-                  <button
-                    type="button"
-                    onClick={onCopyLink}
-                    className={styles.copyButton}
-                  >
-                    Copy Link
-                  </button>
-                  {onHideTooltip && (
-                    <CopyTooltip 
-                      text="Link copied!" 
-                      show={showTooltip} 
-                      onHide={onHideTooltip} 
-                    />
-                  )}
-                </div>
-              </>
-            )}
-
-            {/* Players list */}
-            {players.length > 0 && (
-              <div className={styles.playersContainer}>
-                <h3 className={styles.playersTitle}>Players ({players.length})</h3>
-                <div className={styles.playersList}>
-                  {players.map((player) => (
-                    <div key={player.id} className={styles.playerCard}>
-                      <div
-                        className={styles.playerColor}
-                        style={{ backgroundColor: COLOR_VALUES[player.color] }}
+        {/* Room info content (always visible) */}
+        <div className={styles.roomInfo}>
+          {!isMultiplayer ? (
+            <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
+          ) : roomId ? (
+            <>
+              <div className={styles.roomTitle}>Room: {roomId}</div>
+              {roomLink && (
+                <>
+                  <div className={styles.roomLink}>{roomLink}</div>
+                  <div className={styles.copyButtonWrapper}>
+                    <button
+                      type="button"
+                      onClick={onCopyLink}
+                      className={styles.copyButton}
+                    >
+                      Copy Link
+                    </button>
+                    {onHideTooltip && (
+                      <CopyTooltip 
+                        text="Link copied!" 
+                        show={showTooltip} 
+                        onHide={onHideTooltip} 
                       />
-                      <div className={styles.playerInfo}>
-                        <span className={styles.playerName}>{player.name}</span>
-                        {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Players list */}
+              {players.length > 0 && (
+                <div className={styles.playersContainer}>
+                  <h3 className={styles.playersTitle}>Players ({players.length})</h3>
+                  <div className={styles.playersList}>
+                    {players.map((player) => (
+                      <div key={player.id} className={styles.playerCard}>
+                        <div
+                          className={styles.playerColor}
+                          style={{ backgroundColor: COLOR_VALUES[player.color] }}
+                        />
+                        <div className={styles.playerInfo}>
+                          <span className={styles.playerName}>{player.name}</span>
+                          {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </>
+          ) : null}
+        </div>
       </div>
 
       {/* Page Content Area */}
@@ -435,6 +466,13 @@ export function PageLayout({
           isGamePage ? children : <div className={styles.pageContent}>{children}</div>
         )}
       </div>
+
+      {/* Create Room Modal */}
+      <CreateRoomModal
+        isOpen={showCreateRoomModal}
+        onClose={handleCloseCreateModal}
+        onRoomCreated={handleRoomCreated}
+      />
     </div>
   );
 }

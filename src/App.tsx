@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomePage } from './pages/HomePage';
 import { PuzzleSelectionPage } from './pages/PuzzleSelectionPage';
 import { GamePage } from './pages/GamePage';
-import { CreateRoomPage } from './pages/CreateRoomPage';
 import { JoinRoomPage } from './pages/JoinRoomPage';
 import { WaitingRoomPage } from './pages/WaitingRoomPage';
 import './App.css';
@@ -12,14 +10,13 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<PuzzleSelectionPage />} />
           
           {/* Single Player Routes */}
           <Route path="/puzzles" element={<PuzzleSelectionPage />} />
           <Route path="/game/:type/:id" element={<GamePage />} />
           
           {/* Multiplayer Routes */}
-          <Route path="/multiplayer/create" element={<CreateRoomPage />} />
           <Route path="/multiplayer/join/:roomId" element={<JoinRoomPage />} />
           <Route path="/multiplayer/room/:roomId/puzzles" element={<PuzzleSelectionPage />} />
           <Route path="/multiplayer/room/:roomId/waiting" element={<WaitingRoomPage />} />

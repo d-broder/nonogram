@@ -64,6 +64,12 @@ export function PuzzleSelectionPage() {
     setShowTooltip(false);
   };
 
+  // Handle room creation during puzzle selection
+  const handleRoomCreated = (newRoomId: string, _playerId: string) => {
+    // Navigate to multiplayer puzzle selection for the new room
+    navigate(`/multiplayer/room/${newRoomId}/puzzles`);
+  };
+
   // Handle puzzle selection
   const handlePuzzleClick = async (puzzleId: number) => {
     if (isMultiplayer && roomId) {
@@ -96,6 +102,7 @@ export function PuzzleSelectionPage() {
         showTooltip={showTooltip}
         onCopyLink={handleCopyRoomLink}
         onHideTooltip={handleHideTooltip}
+        onRoomCreated={handleRoomCreated}
       >
         <div className={styles.loading}>Loading puzzles...</div>
       </PageLayout>
@@ -113,6 +120,7 @@ export function PuzzleSelectionPage() {
         showTooltip={showTooltip}
         onCopyLink={handleCopyRoomLink}
         onHideTooltip={handleHideTooltip}
+        onRoomCreated={handleRoomCreated}
       >
         <div className={styles.error}>
           <p>Error loading puzzles: {error}</p>
@@ -131,6 +139,7 @@ export function PuzzleSelectionPage() {
       showTooltip={showTooltip}
       onCopyLink={handleCopyRoomLink}
       onHideTooltip={handleHideTooltip}
+      onRoomCreated={handleRoomCreated}
     >
       <header className={styles.header}>
         <h1 className={styles.title}>Select Puzzle</h1>
