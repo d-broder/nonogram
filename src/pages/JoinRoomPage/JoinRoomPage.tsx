@@ -26,12 +26,22 @@ export function JoinRoomPage() {
   const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [roomLink, setRoomLink] = useState('');
   const navigate = useNavigate();
   const { room, loading, error: roomError, joinRoom } = useFirebaseRoom(roomId || null);
   const hasUserSelectedColor = useRef(false);
 
   // Get used colors from room data
   const usedColors = room ? Object.values(room.players).map(player => player.color) : [];
+
+  // Set room link
+  useEffect(() => {
+    if (roomId) {
+      const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
+      setRoomLink(fullRoomLink);
+    }
+  }, [roomId]);
 
   useEffect(() => {
     if (!roomId) {
@@ -103,7 +113,19 @@ export function JoinRoomPage() {
 
   if (loading) {
     return (
-      <PageLayout>
+      <PageLayout 
+        isMultiplayer={true}
+        roomId={roomId}
+        roomLink={roomLink}
+        showTooltip={showTooltip}
+        onCopyLink={() => {
+          if (roomId) {
+            navigator.clipboard.writeText(roomLink);
+            setShowTooltip(true);
+            setTimeout(() => setShowTooltip(false), 2000);
+          }
+        }}
+      >
         <div className={styles.loading}>Loading room...</div>
       </PageLayout>
     );
@@ -111,7 +133,19 @@ export function JoinRoomPage() {
 
   if (roomError || !room) {
     return (
-      <PageLayout>
+      <PageLayout 
+        isMultiplayer={true}
+        roomId={roomId}
+        roomLink={roomLink}
+        showTooltip={showTooltip}
+        onCopyLink={() => {
+          if (roomId) {
+            navigator.clipboard.writeText(roomLink);
+            setShowTooltip(true);
+            setTimeout(() => setShowTooltip(false), 2000);
+          }
+        }}
+      >
         <div className={styles.error}>
           <h2>Room not found</h2>
           <p>The room you're trying to join doesn't exist or has been removed.</p>
@@ -124,7 +158,20 @@ export function JoinRoomPage() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout 
+      isMultiplayer={true}
+      roomId={roomId}
+      players={room ? Object.values(room.players) : undefined}
+      roomLink={roomLink}
+      showTooltip={showTooltip}
+      onCopyLink={() => {
+        if (roomId) {
+          navigator.clipboard.writeText(roomLink);
+          setShowTooltip(true);
+          setTimeout(() => setShowTooltip(false), 2000);
+        }
+      }}
+    >
       <header className={styles.header}>
         <h1 className={styles.title}>Join Room</h1>
         <p className={styles.subtitle}>Room ID: {roomId}</p>

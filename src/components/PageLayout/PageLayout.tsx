@@ -6,7 +6,8 @@ import { GameControls } from '../GameControls';
 import { GameControlsPanel } from '../GameControlsPanel';
 import { CreateRoomModal } from '../CreateRoomModal';
 import { RoomInfoDefault } from '../RoomInfoDefault';
-import type { PaintMode, Puzzle, Player } from '../../types';
+import type { PaintMode, Puzzle, Player, PlayerColor } from '../../types';
+import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
 import styles from './PageLayout.module.css';
 
 const COLOR_VALUES = {
@@ -19,6 +20,111 @@ const COLOR_VALUES = {
   pink: '#ec4899',
   teal: '#14b8a6'
 };
+
+const AVAILABLE_COLORS: PlayerColor[] = [
+  'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'teal'
+];
+
+// Mobile Create Room Form Component
+interface MobileCreateRoomFormProps {
+  onRoomCreated: (roomId: string, playerId: string) => void;
+}
+
+function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
+  const [playerName, setPlayerName] = useState('');
+  const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { createRoom } = useFirebaseRoom(null);
+
+  const handleCreateRoom = async () => {
+    if (!playerName.trim()) {
+      setError('Please enter a display name');
+      return;
+    }
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      const roomId = Math.random().toString(36).substr(2, 8).toUpperCase();
+      const playerId = Date.now().toString();
+      
+      const player = {
+        id: playerId,
+        name: playerName.trim(),
+        color: selectedColor,
+        isCreator: true
+      };
+
+      await createRoom(player, roomId);
+
+      // Store player info
+      sessionStorage.setItem('playerInfo', JSON.stringify(player));
+
+      onRoomCreated(roomId, playerId);
+    } catch (error) {
+      console.error('Error creating room:', error);
+      setError('Failed to create room. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  return (
+    <div className={styles.mobileCreateForm}>
+      <h3 className={styles.formTitle}>Create New Room</h3>
+      
+      {error && (
+        <div className={styles.error}>
+          <p>{error}</p>
+        </div>
+      )}
+
+      <div className={styles.formGroup}>
+        <label htmlFor="playerName" className={styles.label}>
+          Display Name
+        </label>
+        <input
+          id="playerName"
+          type="text"
+          value={playerName}
+          onChange={(e) => setPlayerName(e.target.value)}
+          placeholder="Enter your name..."
+          className={styles.input}
+          maxLength={20}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Player Color</label>
+        <div className={styles.colorGrid}>
+          {AVAILABLE_COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              className={`${styles.colorButton} ${
+                selectedColor === color ? styles.selected : ''
+              }`}
+              style={{ backgroundColor: COLOR_VALUES[color] }}
+              onClick={() => setSelectedColor(color)}
+              aria-label={`Select ${color} color`}
+            />
+          ))}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleCreateRoom}
+        disabled={isCreating || !playerName.trim()}
+        className={styles.createButton}
+      >
+        {isCreating ? 'Creating...' : 'Create Room'}
+      </button>
+    </div>
+  );
+}
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -101,18 +207,27 @@ export function PageLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showMobileCreateRoom, setShowMobileCreateRoom] = useState(false);
 
   // Modal handlers
   const handleOpenCreateModal = () => {
-    setShowCreateRoomModal(true);
+    if (isMobile) {
+      // No mobile, usar topBarExpanded em vez de modal
+      setShowMobileCreateRoom(true);
+      setIsCollapsed(false); // Expandir a sidebar
+    } else {
+      setShowCreateRoomModal(true);
+    }
   };
 
   const handleCloseCreateModal = () => {
     setShowCreateRoomModal(false);
+    setShowMobileCreateRoom(false);
   };
 
   const handleRoomCreated = (roomId: string, playerId: string) => {
     setShowCreateRoomModal(false);
+    setShowMobileCreateRoom(false);
     if (onRoomCreated) {
       onRoomCreated(roomId, playerId);
     }
@@ -176,7 +291,7 @@ export function PageLayout({
             </button>
           )}
           <div className={styles.projectTitle}>Nonogram</div>
-          {isGamePage && (
+          {(isGamePage || isMultiplayer || !isMultiplayer) && (
             <button
               onClick={toggleSidebar}
               className={styles.hamburgerButton}
@@ -229,6 +344,15 @@ export function PageLayout({
       <div className={styles.pageContainer}>
         {/* Mobile Top Bar */}
         <div className={styles.mobileTopBar}>
+          {showMobileCreateRoom && (
+            <button
+              onClick={() => setShowMobileCreateRoom(false)}
+              className={styles.backButton}
+              aria-label="Go back"
+            >
+              ⯇
+            </button>
+          )}
           <div className={styles.projectTitle}>Nonogram</div>
           <button
             onClick={toggleSidebar}
@@ -241,32 +365,37 @@ export function PageLayout({
 
         {/* Top Bar Expanded */}
         <div className={styles.topBarExpanded}>
-          {/* Game subtitle (only for GamePage) */}
-          {puzzle && currentType && (
-            <div className={styles.subtitle}>
-              {currentType === 'classic' ? 'Classic' : 'Super'}<br />
-              Puzzle {puzzle.id} ({puzzle.size.width}x{puzzle.size.height})
-            </div>
-          )}
+          {showMobileCreateRoom ? (
+            /* Mobile Create Room Form - substitui todo o conteúdo */
+            <MobileCreateRoomForm onRoomCreated={handleRoomCreated} />
+          ) : (
+            <>
+              {/* Game subtitle (only for GamePage) */}
+              {puzzle && currentType && (
+                <div className={styles.subtitle}>
+                  {currentType === 'classic' ? 'Classic' : 'Super'}<br />
+                  Puzzle {puzzle.id} ({puzzle.size.width}x{puzzle.size.height})
+                </div>
+              )}
 
-          {/* Game controls (only for GamePage) */}
-          {onShowSolution && onClearGrid && (
-            <div className={styles.gameControls1}>
-              <GameControls
-                onShowSolution={onShowSolution}
-                onClearGrid={onClearGrid}
-                showSolution={showSolution ?? false}
-                puzzleType={currentType ?? 'classic'}
-                isComplete={isComplete ?? false}
-              />
-            </div>
-          )}
+              {/* Game controls (only for GamePage) */}
+              {onShowSolution && onClearGrid && (
+                <div className={styles.gameControls1}>
+                  <GameControls
+                    onShowSolution={onShowSolution}
+                    onClearGrid={onClearGrid}
+                    showSolution={showSolution ?? false}
+                    puzzleType={currentType ?? 'classic'}
+                    isComplete={isComplete ?? false}
+                  />
+                </div>
+              )}
 
-          {/* Room info (always visible) */}
-          <div className={styles.roomInfo}>
-            {!isMultiplayer ? (
-              <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
-            ) : roomId ? (
+              {/* Room info (always visible) */}
+              <div className={styles.roomInfo}>
+                {!isMultiplayer ? (
+                  <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
+                ) : roomId ? (
               <>
                 <div className={styles.roomTitle}>Room: {roomId}</div>
                 {roomLink && (
@@ -314,6 +443,8 @@ export function PageLayout({
               </>
             ) : null}
           </div>
+            </>
+          )}
         </div>
 
         {/* Overlay to close expanded menu */}

@@ -1,79 +1,31 @@
-.container {
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.2s ease;
-}
-
-.container:hover {
-  background: #f1f5f9;
-  border-color: #94a3b8;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #334155;
-}
-
-.description {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #64748b;
-  line-height: 1.5;
-  max-width: 200px;
-}
-
 .createButton {
-  background: #3b82f6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
   color: white;
-  border: none;
-  padding: 10px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-  min-width: 140px;
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
 .createButton:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.createButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .createButton:active {
   transform: translateY(0);
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-  
-  .title {
-    font-size: 1rem;
-  }
-  
-  .description {
-    font-size: 0.8125rem;
-  }
-  
-  .createButton {
-    font-size: 0.8125rem;
-    padding: 8px 16px;
-    min-width: 120px;
-  }
 }
