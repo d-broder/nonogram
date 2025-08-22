@@ -126,6 +126,42 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
   );
 }
 
+// Mobile Clear Grid Form Component
+interface MobileClearGridFormProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function MobileClearGridForm({ onConfirm, onCancel }: MobileClearGridFormProps) {
+  return (
+    <div className={styles.mobileClearForm}>
+      <h3 className={styles.formTitle}>Clear Grid</h3>
+      
+      <div className={styles.clearMessage}>
+        <p>Are you sure you want to clear the entire grid?</p>
+        <p>This action cannot be undone.</p>
+      </div>
+
+      <div className={styles.clearActions}>
+        <button
+          type="button"
+          onClick={onCancel}
+          className={styles.clearCancelButton}
+        >
+          No
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          className={styles.clearConfirmButton}
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface PageLayoutProps {
   children: ReactNode;
   
@@ -168,6 +204,11 @@ interface PageLayoutProps {
 
   // Create room modal callbacks
   onRoomCreated?: (roomId: string, playerId: string) => void;
+  
+  // Clear grid modal callbacks  
+  showClearConfirmation?: boolean;
+  onConfirmClear?: () => void;
+  onCancelClear?: () => void;
 }
 
 export function PageLayout({
@@ -201,13 +242,16 @@ export function PageLayout({
   onStickyToggle,
   showPlayerIndicators,
   onPlayerIndicatorToggle,
-  onRoomCreated
+  onRoomCreated,
+  onConfirmClear,
+  onCancelClear
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileCreateRoom, setShowMobileCreateRoom] = useState(false);
+  const [showMobileClearGrid, setShowMobileClearGrid] = useState(false);
 
   // Modal handlers
   const handleOpenCreateModal = () => {
@@ -230,6 +274,31 @@ export function PageLayout({
     setShowMobileCreateRoom(false);
     if (onRoomCreated) {
       onRoomCreated(roomId, playerId);
+    }
+  };
+
+  // Clear Grid mobile handlers
+  const handleClearGrid = () => {
+    if (isMobile) {
+      // No mobile, usar topBarExpanded em vez de modal
+      setShowMobileClearGrid(true);
+      setIsCollapsed(false); // Expandir a sidebar
+    } else if (onClearGrid) {
+      onClearGrid();
+    }
+  };
+
+  const handleMobileClearConfirm = () => {
+    setShowMobileClearGrid(false);
+    if (onConfirmClear) {
+      onConfirmClear();
+    }
+  };
+
+  const handleMobileClearCancel = () => {
+    setShowMobileClearGrid(false);
+    if (onCancelClear) {
+      onCancelClear();
     }
   };
 
@@ -273,6 +342,9 @@ export function PageLayout({
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
+    // Reset mobile forms when toggling sidebar
+    setShowMobileCreateRoom(false);
+    setShowMobileClearGrid(false);
   };
 
   // Mobile collapsed view
@@ -344,9 +416,12 @@ export function PageLayout({
       <div className={styles.pageContainer}>
         {/* Mobile Top Bar */}
         <div className={styles.mobileTopBar}>
-          {showMobileCreateRoom && (
+          {(showMobileCreateRoom || showMobileClearGrid) && (
             <button
-              onClick={() => setShowMobileCreateRoom(false)}
+              onClick={() => {
+                setShowMobileCreateRoom(false);
+                setShowMobileClearGrid(false);
+              }}
               className={styles.backButton}
               aria-label="Go back"
             >
@@ -368,6 +443,12 @@ export function PageLayout({
           {showMobileCreateRoom ? (
             /* Mobile Create Room Form - substitui todo o conteúdo */
             <MobileCreateRoomForm onRoomCreated={handleRoomCreated} />
+          ) : showMobileClearGrid ? (
+            /* Mobile Clear Grid Form - substitui todo o conteúdo */
+            <MobileClearGridForm 
+              onConfirm={handleMobileClearConfirm} 
+              onCancel={handleMobileClearCancel} 
+            />
           ) : (
             <>
               {/* Game subtitle (only for GamePage) */}
@@ -383,7 +464,7 @@ export function PageLayout({
                 <div className={styles.gameControls1}>
                   <GameControls
                     onShowSolution={onShowSolution}
-                    onClearGrid={onClearGrid}
+                    onClearGrid={handleClearGrid}
                     showSolution={showSolution ?? false}
                     puzzleType={currentType ?? 'classic'}
                     isComplete={isComplete ?? false}
@@ -479,7 +560,7 @@ export function PageLayout({
               <div className={styles.gameControls1}>
                 <GameControls
                   onShowSolution={onShowSolution}
-                  onClearGrid={onClearGrid}
+                  onClearGrid={handleClearGrid}
                   showSolution={showSolution ?? false}
                   puzzleType={currentType}
                   isComplete={isComplete ?? false}

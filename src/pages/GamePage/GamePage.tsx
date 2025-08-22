@@ -346,7 +346,6 @@ export function GamePage() {
 
   return (
     <PageLayout
-      showBackButton={isMobile}
       isGamePage
       pageContentAreaHeight={isMobile ? "80%" : "full"}
       showMobileBottomBar={isMobile}
@@ -376,6 +375,9 @@ export function GamePage() {
       onStickyToggle={() => setStickyClues(!stickyClues)}
       showPlayerIndicators={showPlayerIndicators}
       onPlayerIndicatorToggle={() => setShowPlayerIndicators(!showPlayerIndicators)}
+      showClearConfirmation={showClearConfirmation}
+      onConfirmClear={handleConfirmClear}
+      onCancelClear={handleCancelClear}
     >
       {/* Success message overlay */}
       {gameState.isComplete && (

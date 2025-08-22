@@ -94,7 +94,6 @@ export function PuzzleSelectionPage() {
   if (loading) {
     return (
       <PageLayout
-        showBackButton
         isMultiplayer={isMultiplayer}
         roomId={roomId}
         roomLink={roomLink}
@@ -131,7 +130,6 @@ export function PuzzleSelectionPage() {
 
   return (
     <PageLayout
-      showBackButton
       isMultiplayer={isMultiplayer}
       roomId={roomId}
       roomLink={roomLink}
