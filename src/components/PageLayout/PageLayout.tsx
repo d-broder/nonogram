@@ -214,7 +214,6 @@ interface PageLayoutProps {
 export function PageLayout({
   children,
   showBackButton = false,
-  pageContentAreaHeight = 'full',
   showMobileBottomBar = false,
   isGamePage = false,
   isMultiplayer = false,
@@ -272,6 +271,10 @@ export function PageLayout({
   const handleRoomCreated = (roomId: string, playerId: string) => {
     setShowCreateRoomModal(false);
     setShowMobileCreateRoom(false);
+    // No mobile, colapsar a topBar após criar sala
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
     if (onRoomCreated) {
       onRoomCreated(roomId, playerId);
     }
@@ -377,9 +380,6 @@ export function PageLayout({
         {/* Page Content Area */}
         <div 
           className={isGamePage ? styles.nonogramContainerArea : styles.pageContentArea}
-          style={{ 
-            height: pageContentAreaHeight === '80%' ? '80dvh' : 'calc(100dvh - 10dvh)'
-          }}
         >
           {isGamePage ? children : <div className={styles.pageContent}>{children}</div>}
         </div>
