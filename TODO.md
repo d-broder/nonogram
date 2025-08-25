@@ -1,124 +1,301 @@
-# Parte 1
+# 🏗️ REFATORAÇÃO COMPLETA DO PROJETO - Tracking System
 
-✅ **CONCLUÍDO**: Sistema de navegação interna implementado!
+## 📊 **STATUS GERAL DA REFATORAÇÃO**
 
-Agora, ao selecionar um puzzle na `PuzzleSelectionPage`, a URL permanece como `http://localhost:5174/`. O sistema puxa a informação do JSON do puzzle selecionado e exibe na `GamePage` através de um contexto de navegação interno. O botão "⯇ Back to Puzzles" também funciona sem mudar a URL.
-
-## Implementação:
-
-1. **Contexto de Navegação** (`src/contexts/AppNavigationContext.tsx`):
-
-   - Gerencia o estado atual da visualização (`puzzle-selection` ou `game`)
-   - Armazena informações do puzzle selecionado (tipo e ID)
-   - Fornece funções para navegar entre visualizações
-
-2. **Página Unificada** (`src/pages/UnifiedPage/UnifiedPage.tsx`):
-
-   - Renderiza condicionalmente `PuzzleSelectionPage` ou `GamePage`
-   - Baseado no estado do contexto de navegação
-
-3. **Modificações no GamePage**:
-
-   - Aceita props opcionais para tipo e ID do puzzle
-   - Mantém compatibilidade com rotas URL para multiplayer
-   - Usa navegação interna quando props são fornecidas
-
-4. **Modificações no PuzzleSelectionPage**:
-
-   - Usa navegação interna para modo single player
-   - Mantém navegação por URL para multiplayer
-
-5. **Modificações nos Controles**:
-   - Botão "Back to Puzzles" usa navegação interna quando apropriado
-   - Mantém Link para URL em contextos multiplayer
-
-O sistema funciona perfeitamente mantendo a URL como `/` enquanto navega internamente entre seleção de puzzles e jogo!
-
-# Parte 2
-
-Alteração da implementação do modo multiplayer. Atualmente, ao iniciar o modo multiplayer (ao clicar no botão "Create Room" na tela de criação de sala), a URL é alterada para:
-
-- Se estamos na "puzzle-selection": http://localhost:5173/multiplayer/room/{roomId}/puzzles
-- Se estamos na "game": http://localhost:5173/multiplayer/game/{roomId}/{puzzleType}/{puzzleId}
-
-Eu quero alterar esta lógica. Eu quero que, a qualquer momento, quando criamos a sala, a URL seja: http://localhost:5173/{roomId}
-
-Quando a room é criada, é criado o objeto da room no Firebase informando o estado da sala:
-
-```typescript
-const roomData: Omit<Room, "id"> = {
-  createdAt: serverTimestamp(),
-  createdBy: creator.id,
-  players: {
-    [creator.id]: creator,
-  },
-  status: "waiting",
-  puzzleType: null,
-  puzzleId: null,
-  grid: {},
-  cellAuthors: {},
-  clues: {},
-};
+```
+PROGRESS: [██░░░░░░░░] 20% (Preparação concluída)
+ESTIMATIVA: 10-13 horas totais
+BRANCH: refactor/feature-architecture
+FASE ATUAL: Preparação → Centralização de Constantes
 ```
 
-O status será "waiting" se a sala estiver no "puzzle-selection" e "playing" se estiver no "game".
+---
 
-Isto vai definir em qual tela o usuário será direcionado depois que abrir o link (localhost:5173/{roomId}) da sala, informar os dados (nome do jogador e cor do jogador) e clicar em "Join Room".
+## 📋 **INVENTÁRIO COMPLETO - ESTADO ATUAL vs TARGET**
 
-Ou seja, sempre que um usuário abrir o link da sala, ele será redirecionado para a "JoinRoomPage". Ao clicar em "Join Room", a página que ele vai entrar vai ser definida pelo estado da sala (waiting ou playing), mas mantendo a mesma URL (localhost:5173/{roomId}).
+### 📁 **Estrutura Atual (Para Migração)**
 
-# Parte 3
+#### **🏠 Root & Config (Manter)**
 
-✅ **CONCLUÍDO**: Remover o "roomLink" de "roomInfo".
+```
+├── src/main.tsx ✅
+├── src/App.tsx (51 linhas) ✅
+├── src/index.css ✅
+├── src/App.css ✅
+├── src/firebase.ts → shared/services/ 📦
+├── src/vite-env.d.ts → shared/types/ 📦
+├── package.json ✅
+├── vite.config.ts ✅
+├── tsconfig*.json ✅
+└── vercel.json ✅
+```
 
-O sistema agora gera o roomLink internamente no PageLayout usando o roomId. Isso simplifica a passagem de props e centraliza a lógica de geração do link.
+#### **📄 Pages/Routers (6 arquivos) - RENOMEAR/MOVER**
 
-✅ **CONCLUÍDO**: Quando um jogador fecha a página, o jogador é removido da sala. Se o jogador for o criador:
+```
+src/pages/
+├── UnifiedPage.tsx (15 linhas) → SinglePlayerRouter.tsx 🔄
+├── MultiplayerRoomHandler.tsx (135 linhas) → MultiplayerRouter.tsx 🔄
+├── GamePage.tsx (471 linhas) → views/GameView/ 📦 [REFATORAR]
+├── PuzzleSelectionPage.tsx (190 linhas) → views/PuzzleSelectionView/ 📦
+├── JoinRoomPage.tsx (265 linhas) → views/JoinRoomView/ 📦 [EXTRAIR FORM]
+└── WaitingRoomPage.tsx (77 linhas) → views/WaitingRoomView/ 📦
+```
 
-- se o criador for o único jogador, a sala deve ser excluída.
-- se houver outros jogadores, o título de "Host" será transferido para outro jogador.
+#### **🧩 Components (12 arquivos) - REORGANIZAR POR FEATURE**
 
-Implementado através do hook `useRoomCleanup` que detecta quando o usuário fecha a página/aba e automaticamente remove o jogador da sala. A lógica no `useFirebaseRoom.leaveRoom` cuida da transferência de host e exclusão da sala conforme necessário.
+```
+src/components/
+├── PageLayout.tsx (731 linhas) 🔥 [URGENTE: DIVIDIR EM 8]
+├── GameBoard.tsx (495 linhas) → features/puzzle/components/ 📦
+├── CreateRoomModal.tsx (166 linhas) → features/multiplayer/ 📦 [REFATORAR]
+├── GameControls.tsx (57 linhas) → features/puzzle/components/ 📦
+├── GameControlsPanel.tsx (143 linhas) → features/puzzle/components/ 📦
+├── GameControlButton.tsx (73 linhas) → shared/components/ui/ 📦
+├── ButtonGroup.tsx (29 linhas) → shared/components/ui/ 📦
+├── ClueToggleButton.tsx → shared/components/ui/Toggle/ 📦
+├── PlayerIndicatorToggleButton.tsx → shared/components/ui/Toggle/ 📦
+├── ConfirmationModal.tsx (55 linhas) → shared/components/ui/Modal/ 📦
+├── CopyTooltip.tsx (24 linhas) → shared/components/ui/Tooltip/ 📦
+└── RoomInfoDefault.tsx (15 linhas) → features/multiplayer/ 📦
+```
 
-✅ **CONCLUÍDO**: No modo multiplayer, tanto para o criador quanto para os demais jogadores, ao clicar em "titleButton"
+#### **🔧 Hooks (6 arquivos) - MOVER POR FEATURE**
 
-O titleButton (logo "Nonogram") já utiliza a mesma função que o botão "Back to Puzzles", então funciona corretamente para ambos os cenários.
+```
+src/hooks/
+├── useGameState.ts (267 linhas) → features/puzzle/hooks/ 📦
+├── usePuzzleLoader.ts → features/puzzle/hooks/ 📦
+├── useZoom.ts → features/puzzle/hooks/ 📦
+├── useFirebaseRoom.ts (254 linhas) → features/multiplayer/hooks/ 📦
+├── useRoomCleanup.ts → features/multiplayer/hooks/ 📦
+└── useGameStateMigration.ts → features/multiplayer/hooks/ 📦
+```
 
-✅ **CONCLUÍDO**: Não exibir o "gameControls" (botões "Back to Puzzles", "Show Solution" e "Clear Grid") para os jogadores que não são o criador da sala
+#### **🔧 Utils & Types (4 arquivos) - CENTRALIZAR**
 
-Implementado através da prop `showGameControls` no PageLayout que é controlada pela variável `isCreator` na GamePage. Apenas o criador da sala vê os controles do jogo.
+```
+src/
+├── types/index.ts → shared/types/ 📦
+├── utils/gridUtils.ts → shared/utils/ 📦
+├── utils/puzzleUtils.ts → shared/utils/ 📦
+└── contexts/AppNavigationContext.tsx → shared/contexts/ 📦
+```
 
-✅ **CONCLUÍDO**: No modo multiplayer, quando o "Host" da sala apertar no botão "Back to Puzzles", a sala ficará com o status "waiting" e os demais jogadores da sala serão redirecionados para a "WaitingRoomPage". As demais informações da sala também serão resetadas (grid, cellAuthors, clues, puzzleId, puzzleType).
+#### **🎮 Assets & Puzzles (Manter)**
 
-Implementado através da função `resetRoomToWaiting` no `useFirebaseRoom` que é chamada quando o criador clica em "Back to Puzzles". Isso reseta o status da sala para "waiting" e limpa todos os dados do jogo, fazendo com que os outros jogadores sejam automaticamente redirecionados para a WaitingRoomPage pelo MultiplayerRoomHandler.
+```
+public/
+├── puzzles/classic/ (3 puzzles) ✅
+├── puzzles/super/ (3 puzzles) ✅
+└── assets/ ✅
+```
 
-# Parte 4
+---
 
-✅ **CONCLUÍDO**: Ao clicar no em "titleButton", o jogador será redirecionado para a página de seleção de puzzles
+### 🎯 **Estrutura Target (Nova Organização)**
 
-- Se estiver no modo single player, irá para a página de seleção de puzzles normalmente
-- Se estiver no modo multiplayer e for o host, irá sair da sala (passando o "Host" para outro jogador, se tiverem outros jogadores, ou deletando a sala se for o único jogador da sala), ir para o modo singleplayer e ir para a página de seleção de puzzles
-- Se estiver no modo multiplayer e não for o host, irá sair da sala, ir para o modo singleplayer e ir para a página de seleção de puzzles
+```
+src/
+├── app/                          # 📁 Application Core
+│   ├── App.tsx
+│   ├── App.css
+│   └── router.tsx               # 🆕 Centralized routing
+├── shared/                      # 📁 Shared Resources
+│   ├── components/
+│   │   ├── layout/
+│   │   │   ├── PageLayout/      # 🔥 REFATORADO (8 componentes)
+│   │   │   │   ├── PageLayout.tsx (~120 linhas)
+│   │   │   │   ├── Sidebar/
+│   │   │   │   ├── MobileTopBar/
+│   │   │   │   ├── MobileBottomBar/
+│   │   │   │   └── RoomInfo/
+│   │   │   └── GameBoard/       # Movido de components/
+│   │   └── ui/
+│   │       ├── Button/
+│   │       │   ├── ButtonGroup/
+│   │       │   └── GameControlButton/
+│   │       ├── Modal/
+│   │       │   └── ConfirmationModal/
+│   │       ├── Toggle/
+│   │       │   ├── ClueToggleButton/
+│   │       │   └── PlayerIndicatorToggleButton/
+│   │       └── Tooltip/
+│   │           └── CopyTooltip/
+│   ├── hooks/                   # 🆕 General utility hooks
+│   ├── utils/                   # Movido de src/utils/
+│   ├── types/                   # Movido de src/types/
+│   ├── contexts/                # Movido de src/contexts/
+│   ├── services/                # 🆕 firebase.ts aqui
+│   └── constants/               # 🆕 Cores, configs centralizadas
+├── features/                    # 📁 Domain-Based Features
+│   ├── puzzle/
+│   │   ├── components/
+│   │   │   ├── PuzzleControls/  # GameControls + GameControlsPanel
+│   │   │   └── PuzzleSelection/
+│   │   ├── hooks/               # useGameState, usePuzzleLoader, useZoom
+│   │   └── types/
+│   ├── multiplayer/
+│   │   ├── components/
+│   │   │   ├── CreateRoomForm/  # 🔥 UNIFICADO (3 → 1 componente)
+│   │   │   ├── RoomInfo/        # RoomInfoDefault movido
+│   │   │   └── WaitingRoom/
+│   │   ├── hooks/               # useFirebaseRoom, useRoomCleanup, etc
+│   │   └── services/
+│   └── game/                    # 🆕 Game-specific logic
+├── pages/                       # 📁 Route Handlers Only
+│   ├── SinglePlayerRouter.tsx   # UnifiedPage renomeado
+│   └── MultiplayerRouter.tsx    # MultiplayerRoomHandler renomeado
+└── views/                       # 📁 Page Views
+    ├── GameView/                # GamePage refatorado
+    ├── PuzzleSelectionView/     # PuzzleSelectionPage movido
+    ├── JoinRoomView/            # JoinRoomPage movido + form extraído
+    └── WaitingRoomView/         # WaitingRoomPage movido
+```
 
-Implementado através da modificação do `handleHomeClick` no PageLayout que detecta se está em modo multiplayer (através do roomId), remove o jogador da sala usando `leaveRoom`, limpa o sessionStorage e navega para a URL raiz (modo single player).
+---
 
-✅ **CONCLUÍDO**: Quando o jogador virar o "Host" após o "Host" anterior sair da sala, será exibido o "gameControls" para o novo "Host"
+## 🔥 **PROBLEMAS CRÍTICOS IDENTIFICADOS**
 
-Implementado através da modificação da lógica `isCreator` no GamePage para usar dados em tempo real do Firebase (room.players) em vez de apenas o sessionStorage inicial. Também foi adicionado um useEffect para sincronizar o sessionStorage quando há mudanças de host.
+### **1. PageLayout.tsx - 731 linhas (URGENTE)**
 
-# Parte 5
+```tsx
+// LOCALIZAÇÃO ATUAL: src/components/PageLayout/PageLayout.tsx
+// PROBLEMAS:
+❌ 731 linhas (era 799, mas ainda muito grande)
+❌ MobileCreateRoomForm interno (linhas ~40-85)
+❌ MobileClearGridForm interno (linhas ~147-181)
+❌ Cores duplicadas (COLOR_VALUES, AVAILABLE_COLORS)
+❌ Props interface complexa (30+ propriedades)
+❌ Responsabilidades misturadas
 
-✅ **CONCLUÍDO**: Remover as divs "roomTitle" e "roomLink" da div "roomInfo"
+// SOLUÇÃO: Dividir em 8 componentes separados
+✅ PageLayout.tsx principal (~120 linhas)
+✅ Sidebar/ (desktop)
+✅ MobileTopBar/ + MobileBottomBar/ (mobile)
+✅ RoomInfo/ (multiplayer)
+✅ Formulários extraídos para features/multiplayer/
+```
 
-As divs "roomTitle" (que mostrava "Room: {roomId}") e "roomLink" (que mostrava a URL completa da sala) foram removidas da interface. Agora apenas o botão "Copy Link" permanece visível para compartilhar a sala, simplificando a interface.
+### **2. Formulários Duplicados (3 locais)**
 
-✅ **CONCLUÍDO**: No momento, a ordem dos jogadores em "playerList" fica alterando toda vez que algum jogador faz alguma mudança no grid. Eu quero que a ordem dos jogadores permaneça a mesma, independentemente das mudanças no grid. Quero que a ordem seja baseada na ordem de chegada dos jogadores na sala, mas com o "Host" sempre em primeiro.
+```tsx
+// PROBLEMA: Lógica duplicada em:
+❌ CreateRoomModal.tsx (166 linhas) - Modal desktop
+❌ MobileCreateRoomForm em PageLayout.tsx (~45 linhas) - Mobile inline
+❌ JoinRoomPage.tsx (265 linhas) - Formulário similar
 
-Implementado através de:
+// SOLUÇÃO: Componente base unificado
+✅ features/multiplayer/components/CreateRoomForm/
+  ├── RoomForm.tsx (base reutilizável)
+  ├── CreateRoomModal.tsx (wrapper modal)
+  ├── CreateRoomInline.tsx (wrapper inline)
+  └── useRoomForm.ts (hook compartilhado)
+```
 
-1. **Adição do campo `joinedAt`** ao tipo `Player` para rastrear quando cada jogador entrou na sala
-2. **Atualização dos pontos de criação de jogadores** (CreateRoomModal, JoinRoomPage, MobileCreateRoomForm) para incluir timestamp de entrada
-3. **Função de ordenação personalizada** no PageLayout que ordena os jogadores com o Host sempre primeiro, seguido pelos demais jogadores na ordem de chegada
-4. **Uso de `sortedPlayers`** em vez de `players` diretamente na renderização da lista
+### **3. Constantes Duplicadas**
 
-A ordem agora permanece estável independentemente das mudanças no grid, garantindo uma experiência de usuário consistente.
+```tsx
+// PROBLEMA: Cores em 4+ locais diferentes
+❌ PageLayout.tsx → COLOR_VALUES, AVAILABLE_COLORS
+❌ CreateRoomModal.tsx → Cores duplicadas
+❌ JoinRoomPage.tsx → Lógica de cor similar
+
+// SOLUÇÃO: Centralização
+✅ shared/constants/
+  ├── colors.ts (COLOR_VALUES, AVAILABLE_COLORS, PlayerColor)
+  ├── playerConfig.ts
+  └── validation.ts
+```
+
+---
+
+## 📅 **CRONOGRAMA DE EXECUÇÃO - 6 FASES**
+
+### **Fase 1: Preparação e Setup (1-2h) ⚪ TODO**
+
+- [ ] 🔄 Criar nova estrutura de pastas
+- [ ] 🔄 Centralizar constantes (cores, validações)
+- [ ] 🔄 Mover utils, types, services para shared/
+- [ ] 🔄 Configurar barrel exports básicos
+
+### **Fase 2: PageLayout Refactoring (3-4h) ⚪ TODO**
+
+- [ ] 🔥 Extrair MobileCreateRoomForm → features/multiplayer/
+- [ ] 🔥 Extrair MobileClearGridForm → shared/components/
+- [ ] 🔥 Dividir PageLayout em componentes menores
+- [ ] 🔥 Simplificar props interface
+- [ ] 🔄 Aplicar container-controlled spacing
+
+### **Fase 3: Form Unification (2-3h) ⚪ TODO**
+
+- [ ] 🔄 Criar RoomForm base component
+- [ ] 🔄 Refatorar CreateRoomModal usando base
+- [ ] 🔄 Refatorar JoinRoomPage form usando base
+- [ ] 🔄 Criar useRoomForm hook compartilhado
+
+### **Fase 4: Feature Organization (2h) ⚪ TODO**
+
+- [ ] 🔄 Mover hooks para features apropriadas
+- [ ] 🔄 Mover components para features
+- [ ] 🔄 Reorganizar GameControls → PuzzleControls
+- [ ] 🔄 Configurar barrel exports por feature
+
+### **Fase 5: Pages/Views Migration (1h) ⚪ TODO**
+
+- [ ] 🔄 Renomear UnifiedPage → SinglePlayerRouter
+- [ ] 🔄 Renomear MultiplayerRoomHandler → MultiplayerRouter
+- [ ] 🔄 Mover pages para views/
+- [ ] 🔄 Atualizar imports e rotas
+
+### **Fase 6: Validation & Cleanup (1h) ⚪ TODO**
+
+- [ ] 🔄 Testar funcionamento completo
+- [ ] 🔄 Verificar imports circulares
+- [ ] 🔄 Remover arquivos antigos
+- [ ] 🔄 Documentar mudanças
+
+**⏱️ Total: 10-13 horas estimadas**
+
+---
+
+## 📊 **TRACKING DE PROGRESSO**
+
+### **Legenda de Status:**
+
+- ✅ **Concluído**
+- 🔄 **Em andamento**
+- ⚪ **Pendente**
+- 🔥 **Urgente/Crítico**
+- 📦 **Para mover**
+
+### **Métricas de Sucesso:**
+
+- **Redução de linhas**: PageLayout 731 → ~120 (-83%)
+- **Eliminação de duplicação**: 3 formulários → 1 base
+- **Organização**: 40+ arquivos → estrutura por features
+- **Manutenibilidade**: Responsabilidades bem definidas
+
+### **Riscos Identificados:**
+
+- ⚠️ **Imports circulares** durante reorganização
+- ⚠️ **Quebra de funcionalidade** durante PageLayout split
+- ⚠️ **Conflitos de merge** se trabalhar em paralelo
+
+---
+
+## 🎯 **PRÓXIMOS PASSOS IMEDIATOS**
+
+1. **Criar branch**: `refactor/feature-architecture`
+2. **Fase 1**: Centralizar constantes (começar pequeno)
+3. **Teste**: Validar que tudo funciona após cada fase
+4. **Commit frequente**: Cada sub-tarefa = 1 commit
+
+### **Comandos para Iniciar:**
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b refactor/feature-architecture
+# Começar Fase 1: Centralização de constantes
+```
