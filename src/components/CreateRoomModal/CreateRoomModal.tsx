@@ -1,21 +1,28 @@
-import { useState } from 'react';
-import type { PlayerColor } from '../../types';
-import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import styles from './CreateRoomModal.module.css';
+import { useState } from "react";
+import type { PlayerColor } from "../../types";
+import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import styles from "./CreateRoomModal.module.css";
 
 const AVAILABLE_COLORS: PlayerColor[] = [
-  'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'teal'
+  "red",
+  "blue",
+  "green",
+  "yellow",
+  "purple",
+  "orange",
+  "pink",
+  "teal",
 ];
 
 const COLOR_VALUES = {
-  red: '#ef4444',
-  blue: '#3b82f6',
-  green: '#22c55e',
-  yellow: '#eab308',
-  purple: '#a855f7',
-  orange: '#f97316',
-  pink: '#ec4899',
-  teal: '#14b8a6'
+  red: "#ef4444",
+  blue: "#3b82f6",
+  green: "#22c55e",
+  yellow: "#eab308",
+  purple: "#a855f7",
+  orange: "#f97316",
+  pink: "#ec4899",
+  teal: "#14b8a6",
 };
 
 interface CreateRoomModalProps {
@@ -24,16 +31,20 @@ interface CreateRoomModalProps {
   onRoomCreated: (roomId: string, playerId: string) => void;
 }
 
-export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomModalProps) {
-  const [playerName, setPlayerName] = useState('');
-  const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
+export function CreateRoomModal({
+  isOpen,
+  onClose,
+  onRoomCreated,
+}: CreateRoomModalProps) {
+  const [playerName, setPlayerName] = useState("");
+  const [selectedColor, setSelectedColor] = useState<PlayerColor>("red");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { createRoom } = useFirebaseRoom(null);
 
   const handleCreateRoom = async () => {
     if (!playerName.trim()) {
-      setError('Please enter a display name');
+      setError("Please enter a display name");
       return;
     }
 
@@ -44,35 +55,38 @@ export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomMo
       // Generate random room ID
       const roomId = Math.random().toString(36).substr(2, 8).toUpperCase();
       const playerId = Date.now().toString();
-      
+
       const player = {
         id: playerId,
         name: playerName.trim(),
         color: selectedColor,
-        isCreator: true
+        isCreator: true,
       };
 
       // Store player info in sessionStorage
-      sessionStorage.setItem('playerInfo', JSON.stringify({
-        id: playerId,
-        name: playerName.trim(),
-        color: selectedColor,
-        isCreator: true
-      }));
+      sessionStorage.setItem(
+        "playerInfo",
+        JSON.stringify({
+          id: playerId,
+          name: playerName.trim(),
+          color: selectedColor,
+          isCreator: true,
+        })
+      );
 
       // Create room in Firebase
       await createRoom(player, roomId);
 
       // Notify parent component
       onRoomCreated(roomId, playerId);
-      
+
       // Reset form
-      setPlayerName('');
-      setSelectedColor('red');
+      setPlayerName("");
+      setSelectedColor("red");
       setError(null);
     } catch (error) {
-      console.error('Error creating room:', error);
-      setError('Failed to create room. Please try again.');
+      console.error("Error creating room:", error);
+      setError("Failed to create room. Please try again.");
     } finally {
       setIsCreating(false);
     }
@@ -80,8 +94,8 @@ export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomMo
 
   const handleClose = () => {
     if (!isCreating) {
-      setPlayerName('');
-      setSelectedColor('red');
+      setPlayerName("");
+      setSelectedColor("red");
       setError(null);
       onClose();
     }
@@ -129,7 +143,9 @@ export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomMo
                 <button
                   key={color}
                   type="button"
-                  className={`${styles.colorButton} ${selectedColor === color ? styles.selected : ''}`}
+                  className={`${styles.colorButton} ${
+                    selectedColor === color ? styles.selected : ""
+                  }`}
                   style={{ backgroundColor: COLOR_VALUES[color] }}
                   onClick={() => setSelectedColor(color)}
                   disabled={isCreating}
@@ -141,11 +157,7 @@ export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomMo
         </div>
 
         <div className={styles.actions}>
-          {error && (
-            <div className={styles.error}>
-              {error}
-            </div>
-          )}
+          {error && <div className={styles.error}>{error}</div>}
           <button
             type="button"
             onClick={handleClose}
@@ -160,7 +172,7 @@ export function CreateRoomModal({ isOpen, onClose, onRoomCreated }: CreateRoomMo
             className={styles.createButton}
             disabled={!playerName.trim() || isCreating}
           >
-            {isCreating ? 'Creating Room...' : 'Create Room'}
+            {isCreating ? "Creating Room..." : "Create Room"}
           </button>
         </div>
       </div>

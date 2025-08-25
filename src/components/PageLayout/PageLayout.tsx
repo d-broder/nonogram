@@ -184,7 +184,6 @@ interface PageLayoutProps {
   // Multiplayer configuration
   isMultiplayer?: boolean;
   roomId?: string;
-  roomLink?: string;
   players?: Player[];
   showTooltip?: boolean;
   onCopyLink?: () => void;
@@ -207,6 +206,7 @@ interface PageLayoutProps {
   canZoomIn?: boolean;
   canZoomOut?: boolean;
   zoomPercentage?: number;
+  showGameControls?: boolean; // Whether to show game controls (Back to Puzzles, Show Solution, Clear Grid)
 
   // Toggle buttons (for GamePage)
   stickyClues?: boolean;
@@ -230,7 +230,6 @@ export function PageLayout({
   isGamePage = false,
   isMultiplayer = false,
   roomId,
-  roomLink,
   players = [],
   showTooltip = false,
   onCopyLink,
@@ -251,6 +250,7 @@ export function PageLayout({
   canZoomIn,
   canZoomOut,
   zoomPercentage,
+  showGameControls = true,
   stickyClues,
   onStickyToggle,
   showPlayerIndicators,
@@ -265,6 +265,9 @@ export function PageLayout({
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileCreateRoom, setShowMobileCreateRoom] = useState(false);
   const [showMobileClearGrid, setShowMobileClearGrid] = useState(false);
+
+  // Generate room link if roomId is provided
+  const roomLink = roomId ? `${window.location.origin}/${roomId}` : undefined;
 
   // Modal handlers
   const handleOpenCreateModal = () => {
@@ -490,7 +493,7 @@ export function PageLayout({
               )}
 
               {/* Game controls (only for GamePage) */}
-              {onShowSolution && onClearGrid && (
+              {showGameControls && onShowSolution && onClearGrid && (
                 <div className={styles.gameControls1}>
                   <GameControls
                     onShowSolution={onShowSolution}
@@ -598,7 +601,7 @@ export function PageLayout({
             </div>
 
             {/* Game controls */}
-            {onShowSolution && onClearGrid && (
+            {showGameControls && onShowSolution && onClearGrid && (
               <div className={styles.gameControls1}>
                 <GameControls
                   onShowSolution={onShowSolution}

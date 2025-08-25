@@ -12,7 +12,6 @@ export function WaitingRoomPage() {
 
   // Get players from room data
   const players = room ? Object.values(room.players) : [];
-  const roomLink = roomId ? `${window.location.origin}/${roomId}` : "";
 
   useEffect(() => {
     if (!roomId) {
@@ -37,7 +36,6 @@ export function WaitingRoomPage() {
         showBackButton
         isMultiplayer
         roomId={roomId}
-        roomLink={roomLink}
         players={players}
       >
         <div className={styles.loading}>Loading room...</div>
@@ -51,7 +49,6 @@ export function WaitingRoomPage() {
         showBackButton
         isMultiplayer
         roomId={roomId}
-        roomLink={roomLink}
         players={players}
       >
         <div className={styles.error}>
@@ -65,13 +62,7 @@ export function WaitingRoomPage() {
   if (!roomId) return null;
 
   return (
-    <PageLayout
-      showBackButton
-      isMultiplayer
-      roomId={roomId}
-      roomLink={roomLink}
-      players={players}
-    >
+    <PageLayout showBackButton isMultiplayer roomId={roomId} players={players}>
       <div className={styles.statusContainer}>
         <div className={styles.loadingSpinner}></div>
         <p className={styles.statusText}>

@@ -111,8 +111,9 @@ export function JoinRoomPage() {
       // Join room in Firebase
       await joinRoom(player);
 
-      // After joining, reload the page to let MultiplayerRoomHandler determine the correct view
-      window.location.reload();
+      // Navigate to current room URL to trigger MultiplayerRoomHandler refresh
+      // Instead of reload, use navigate to avoid potential cleanup issues
+      navigate(`/${roomId}`, { replace: true });
     } catch (error) {
       console.error("Error joining room:", error);
       setError("Failed to join room. Please try again.");
@@ -128,7 +129,6 @@ export function JoinRoomPage() {
       <PageLayout
         isMultiplayer={true}
         roomId={roomId}
-        roomLink={roomLink}
         showTooltip={showTooltip}
         onCopyLink={() => {
           if (roomId) {
@@ -148,7 +148,6 @@ export function JoinRoomPage() {
       <PageLayout
         isMultiplayer={true}
         roomId={roomId}
-        roomLink={roomLink}
         showTooltip={showTooltip}
         onCopyLink={() => {
           if (roomId) {
@@ -176,7 +175,6 @@ export function JoinRoomPage() {
       isMultiplayer={true}
       roomId={roomId}
       players={room ? Object.values(room.players) : undefined}
-      roomLink={roomLink}
       showTooltip={showTooltip}
       onCopyLink={() => {
         if (roomId) {

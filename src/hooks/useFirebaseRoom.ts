@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   doc, 
   setDoc, 
   updateDoc, 
   onSnapshot, 
   serverTimestamp,
-  deleteField 
+  deleteField,
+  deleteDoc
 } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import type { Player, Room, CellState } from '../types';
@@ -82,18 +83,47 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
-  // Leave room
-  const leaveRoom = async (playerId: string): Promise<void> => {
-    if (!roomId) return;
+  // Leave room with host transfer and room cleanup logic
+  const leaveRoom = useCallback(async (playerId: string): Promise<void> => {
+    if (!roomId || !room) return;
     
     try {
-      await updateDoc(doc(firestore, 'rooms', roomId), {
+      const players = Object.values(room.players);
+      const leavingPlayer = room.players[playerId];
+      
+      if (!leavingPlayer) return;
+      
+      // If this is the only player, delete the room
+      if (players.length === 1) {
+        await deleteDoc(doc(firestore, 'rooms', roomId));
+        return;
+      }
+      
+      // Remove the player from the room
+      const updateData: any = {
         [`players.${playerId}`]: deleteField()
-      });
+      };
+      
+      // If the leaving player is the creator, transfer host to another player
+      if (leavingPlayer.isCreator) {
+        const remainingPlayers = players.filter(p => p.id !== playerId);
+        if (remainingPlayers.length > 0) {
+          const newHost = remainingPlayers[0];
+          // Update the new host
+          updateData[`players.${newHost.id}`] = {
+            ...newHost,
+            isCreator: true
+          };
+          // Update createdBy field
+          updateData.createdBy = newHost.id;
+        }
+      }
+      
+      await updateDoc(doc(firestore, 'rooms', roomId), updateData);
     } catch (error) {
       console.error('Error leaving room:', error);
     }
-  };
+  }, [roomId, room]);
 
   // Update puzzle selection and initialize grid
   const updatePuzzleSelection = async (puzzleType: 'classic' | 'super', puzzleId: number): Promise<void> => {
@@ -166,6 +196,25 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
+  // Reset room to waiting state (for "Back to Puzzles")
+  const resetRoomToWaiting = async (): Promise<void> => {
+    if (!roomId) throw new Error('No room ID provided');
+    
+    try {
+      await updateDoc(doc(firestore, 'rooms', roomId), {
+        status: 'waiting',
+        puzzleType: null,
+        puzzleId: null,
+        grid: {},
+        cellAuthors: {},
+        clues: {}
+      });
+    } catch (error) {
+      console.error('Error resetting room:', error);
+      throw new Error('Failed to reset room');
+    }
+  };
+
   // Migrate game state to a room (for single player to multiplayer transition)
   const migrateGameState = async (targetRoomId: string, migrationData: any): Promise<void> => {
     try {
@@ -198,6 +247,7 @@ export function useFirebaseRoom(roomId: string | null) {
     updatePuzzleSelection,
     updateGridCell,
     updateClueState,
+    resetRoomToWaiting,
     migrateGameState
   };
 }

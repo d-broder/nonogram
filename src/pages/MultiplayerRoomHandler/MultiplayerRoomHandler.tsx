@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import { useRoomCleanup } from "../../hooks/useRoomCleanup";
 import { PuzzleSelectionPage } from "../PuzzleSelectionPage";
 import { GamePage } from "../GamePage";
 import { JoinRoomPage } from "../JoinRoomPage";
@@ -11,6 +12,9 @@ export function MultiplayerRoomHandler() {
   const { room, loading } = useFirebaseRoom(roomId || null);
   const [isPlayerInRoom, setIsPlayerInRoom] = useState(false);
 
+  // Auto cleanup when leaving the room (with conservative approach)
+  useRoomCleanup(roomId || null);
+
   // Check if current player is already in the room
   useEffect(() => {
     const playerInfo = sessionStorage.getItem("playerInfo");
@@ -18,9 +22,11 @@ export function MultiplayerRoomHandler() {
       const player = JSON.parse(playerInfo);
       const playerExists = room.players[player.id];
       setIsPlayerInRoom(!!playerExists);
-    } else {
+    } else if (!playerInfo) {
+      // Only set to false if there's no player info at all
       setIsPlayerInRoom(false);
     }
+    // If playerInfo exists but room is still loading, don't change the state
   }, [room]);
 
   // Loading state
@@ -74,8 +80,9 @@ export function MultiplayerRoomHandler() {
     );
   }
 
-  // If player is not in the room, show join page
-  if (!isPlayerInRoom) {
+  // If player is not in the room, show join page (but not if still loading and has playerInfo)
+  const playerInfo = sessionStorage.getItem("playerInfo");
+  if (!isPlayerInRoom && !(loading && playerInfo)) {
     return <JoinRoomPage />;
   }
 

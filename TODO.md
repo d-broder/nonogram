@@ -66,3 +66,28 @@ O status será "waiting" se a sala estiver no "puzzle-selection" e "playing" se 
 Isto vai definir em qual tela o usuário será direcionado depois que abrir o link (localhost:5173/{roomId}) da sala, informar os dados (nome do jogador e cor do jogador) e clicar em "Join Room".
 
 Ou seja, sempre que um usuário abrir o link da sala, ele será redirecionado para a "JoinRoomPage". Ao clicar em "Join Room", a página que ele vai entrar vai ser definida pelo estado da sala (waiting ou playing), mas mantendo a mesma URL (localhost:5173/{roomId}).
+
+# Parte 3
+
+✅ **CONCLUÍDO**: Remover o "roomLink" de "roomInfo".
+
+O sistema agora gera o roomLink internamente no PageLayout usando o roomId. Isso simplifica a passagem de props e centraliza a lógica de geração do link.
+
+✅ **CONCLUÍDO**: Quando um jogador fecha a página, o jogador é removido da sala. Se o jogador for o criador:
+
+- se o criador for o único jogador, a sala deve ser excluída.
+- se houver outros jogadores, o título de "Host" será transferido para outro jogador.
+
+Implementado através do hook `useRoomCleanup` que detecta quando o usuário fecha a página/aba e automaticamente remove o jogador da sala. A lógica no `useFirebaseRoom.leaveRoom` cuida da transferência de host e exclusão da sala conforme necessário.
+
+✅ **CONCLUÍDO**: No modo multiplayer, tanto para o criador quanto para os demais jogadores, ao clicar em "titleButton"
+
+O titleButton (logo "Nonogram") já utiliza a mesma função que o botão "Back to Puzzles", então funciona corretamente para ambos os cenários.
+
+✅ **CONCLUÍDO**: Não exibir o "gameControls" (botões "Back to Puzzles", "Show Solution" e "Clear Grid") para os jogadores que não são o criador da sala
+
+Implementado através da prop `showGameControls` no PageLayout que é controlada pela variável `isCreator` na GamePage. Apenas o criador da sala vê os controles do jogo.
+
+✅ **CONCLUÍDO**: No modo multiplayer, quando o "Host" da sala apertar no botão "Back to Puzzles", a sala ficará com o status "waiting" e os demais jogadores da sala serão redirecionados para a "WaitingRoomPage". As demais informações da sala também serão resetadas (grid, cellAuthors, clues, puzzleId, puzzleType).
+
+Implementado através da função `resetRoomToWaiting` no `useFirebaseRoom` que é chamada quando o criador clica em "Back to Puzzles". Isso reseta o status da sala para "waiting" e limpa todos os dados do jogo, fazendo com que os outros jogadores sejam automaticamente redirecionados para a WaitingRoomPage pelo MultiplayerRoomHandler.

@@ -47,14 +47,16 @@ export function GamePage({
     ? JSON.parse(sessionStorage.getItem("playerInfo") || "{}")
     : null;
 
-  const { room, updateGridCell, updateClueState } = useFirebaseRoom(
-    roomId || null
-  );
+  // Check if current player is the creator (controls game controls visibility)
+  const isCreator =
+    !isMultiplayer || (currentPlayerInfo && currentPlayerInfo.isCreator);
+
+  const { room, updateGridCell, updateClueState, resetRoomToWaiting } =
+    useFirebaseRoom(roomId || null);
   const { migrateToMultiplayer } = useGameStateMigration();
 
   // States for multiplayer sidebar
   const [showTooltip, setShowTooltip] = useState(false);
-  const [roomLink, setRoomLink] = useState("");
   const [isMigrating, setIsMigrating] = useState(false);
 
   const {
@@ -212,17 +214,10 @@ export function GamePage({
     }
   }, [puzzle, initializeGame]);
 
-  // Set room link for multiplayer
-  useEffect(() => {
-    if (isMultiplayer && roomId) {
-      const fullRoomLink = `${window.location.origin}/${roomId}`;
-      setRoomLink(fullRoomLink);
-    }
-  }, [isMultiplayer, roomId]);
-
   const handleCopyRoomLink = async () => {
-    if (!roomLink) return;
+    if (!roomId) return;
 
+    const roomLink = `${window.location.origin}/${roomId}`;
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
@@ -277,6 +272,21 @@ export function GamePage({
     } finally {
       setIsMigrating(false);
     }
+  };
+
+  // Handle back to puzzles with room reset for multiplayer
+  const handleBackToPuzzles = async () => {
+    if (isMultiplayer && isCreator && roomId) {
+      try {
+        await resetRoomToWaiting();
+        // Navigation will be handled by the room state change
+      } catch (error) {
+        console.error("Error resetting room:", error);
+      }
+    } else if (isUsingProps) {
+      navigateToPuzzleSelection();
+    }
+    // For non-multiplayer URL-based navigation, let the Link component handle it
   };
 
   // Listen for Firebase updates in multiplayer mode
@@ -407,7 +417,6 @@ export function GamePage({
       showMobileBottomBar={isMobile}
       isMultiplayer={isMultiplayer}
       roomId={roomId}
-      roomLink={roomLink}
       players={room ? Object.values(room.players) : []}
       showTooltip={showTooltip}
       onCopyLink={handleCopyRoomLink}
@@ -418,9 +427,10 @@ export function GamePage({
       paintMode={gameState.paintMode}
       showSolution={gameState.showSolution}
       isComplete={gameState.isComplete}
+      showGameControls={isCreator}
       onShowSolution={toggleSolution}
       onClearGrid={handleClearGridClick}
-      onBackToPuzzles={isUsingProps ? navigateToPuzzleSelection : undefined}
+      onBackToPuzzles={handleBackToPuzzles}
       onHomeClick={isUsingProps ? navigateToPuzzleSelection : undefined}
       onModeChange={setPaintMode}
       onZoomIn={zoomIn}

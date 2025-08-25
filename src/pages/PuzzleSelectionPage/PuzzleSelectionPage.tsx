@@ -19,7 +19,6 @@ export function PuzzleSelectionPage({
   const { navigateToGame } = useAppNavigation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
   const { updatePuzzleSelection, room } = useFirebaseRoom(roomId || null);
-  const [roomLink, setRoomLink] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
   const [selectedType, setSelectedType] = useState<"classic" | "super">(
     "classic"
@@ -28,14 +27,6 @@ export function PuzzleSelectionPage({
   // Check if this is a multiplayer context
   const isMultiplayer =
     isMultiplayerMode || location.pathname.includes("/multiplayer/");
-
-  // Set room link for multiplayer
-  useEffect(() => {
-    if (isMultiplayer && roomId) {
-      const fullRoomLink = `${window.location.origin}/${roomId}`;
-      setRoomLink(fullRoomLink);
-    }
-  }, [isMultiplayer, roomId]);
 
   // Check if user is creator for multiplayer rooms
   useEffect(() => {
@@ -52,8 +43,9 @@ export function PuzzleSelectionPage({
   }, [isMultiplayer, roomId, navigate]);
 
   const handleCopyRoomLink = async () => {
-    if (!roomLink) return;
+    if (!roomId) return;
 
+    const roomLink = `${window.location.origin}/${roomId}`;
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
@@ -104,7 +96,6 @@ export function PuzzleSelectionPage({
       <PageLayout
         isMultiplayer={isMultiplayer}
         roomId={roomId}
-        roomLink={roomLink}
         players={room ? Object.values(room.players) : []}
         showTooltip={showTooltip}
         onCopyLink={handleCopyRoomLink}
@@ -122,7 +113,6 @@ export function PuzzleSelectionPage({
         showBackButton
         isMultiplayer={isMultiplayer}
         roomId={roomId}
-        roomLink={roomLink}
         players={room ? Object.values(room.players) : []}
         showTooltip={showTooltip}
         onCopyLink={handleCopyRoomLink}
@@ -140,7 +130,6 @@ export function PuzzleSelectionPage({
     <PageLayout
       isMultiplayer={isMultiplayer}
       roomId={roomId}
-      roomLink={roomLink}
       players={room ? Object.values(room.players) : []}
       showTooltip={showTooltip}
       onCopyLink={handleCopyRoomLink}
