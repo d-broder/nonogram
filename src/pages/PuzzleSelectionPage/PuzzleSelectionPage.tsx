@@ -6,7 +6,13 @@ import { useAppNavigation } from "../../contexts/AppNavigationContext";
 import { PageLayout } from "../../components/PageLayout";
 import styles from "./PuzzleSelectionPage.module.css";
 
-export function PuzzleSelectionPage() {
+interface PuzzleSelectionPageProps {
+  isMultiplayerMode?: boolean;
+}
+
+export function PuzzleSelectionPage({
+  isMultiplayerMode,
+}: PuzzleSelectionPageProps = {}) {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,12 +26,13 @@ export function PuzzleSelectionPage() {
   );
 
   // Check if this is a multiplayer context
-  const isMultiplayer = location.pathname.includes("/multiplayer/");
+  const isMultiplayer =
+    isMultiplayerMode || location.pathname.includes("/multiplayer/");
 
   // Set room link for multiplayer
   useEffect(() => {
     if (isMultiplayer && roomId) {
-      const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
+      const fullRoomLink = `${window.location.origin}/${roomId}`;
       setRoomLink(fullRoomLink);
     }
   }, [isMultiplayer, roomId]);
@@ -39,11 +46,8 @@ export function PuzzleSelectionPage() {
         return;
       }
 
-      const player = JSON.parse(playerInfo);
-      if (!player.isCreator) {
-        navigate(`/multiplayer/room/${roomId}/waiting`);
-        return;
-      }
+      // No need to check for creator status here - MultiplayerRoomHandler handles this
+      // This code is only reached when we're in the correct context
     }
   }, [isMultiplayer, roomId, navigate]);
 
@@ -70,22 +74,22 @@ export function PuzzleSelectionPage() {
 
   // Handle room creation during puzzle selection
   const handleRoomCreated = (newRoomId: string, _playerId: string) => {
-    // Navigate to multiplayer puzzle selection for the new room
-    navigate(`/multiplayer/room/${newRoomId}/puzzles`);
+    // Navigate to the new room URL - MultiplayerRoomHandler will handle the rest
+    navigate(`/${newRoomId}`);
   };
 
   // Handle puzzle selection
   const handlePuzzleClick = async (puzzleId: number) => {
     if (isMultiplayer && roomId) {
       try {
-        // Update Firebase with puzzle selection
+        // Update Firebase with puzzle selection - this will change room status to 'playing'
+        // MultiplayerRoomHandler will automatically detect this change and show GamePage
         await updatePuzzleSelection(selectedType, puzzleId);
-        // Navigate to game
-        navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
+        // No navigation needed - room status change will trigger re-render
       } catch (error) {
         console.error("Error updating puzzle selection:", error);
-        // Fallback: navigate anyway
-        navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
+        // On error, try to reload the page to get fresh room status
+        window.location.reload();
       }
     } else {
       // Single player: use internal navigation

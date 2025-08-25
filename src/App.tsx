@@ -5,6 +5,7 @@ import { GamePage } from "./pages/GamePage";
 import { JoinRoomPage } from "./pages/JoinRoomPage";
 import { WaitingRoomPage } from "./pages/WaitingRoomPage";
 import { UnifiedPage } from "./pages/UnifiedPage";
+import { MultiplayerRoomHandler } from "./pages/MultiplayerRoomHandler";
 import "./App.css";
 
 function App() {
@@ -15,11 +16,14 @@ function App() {
           <Routes>
             <Route path="/" element={<UnifiedPage />} />
 
-            {/* Single Player Routes */}
+            {/* Multiplayer Room Route - handles all multiplayer scenarios */}
+            <Route path="/:roomId" element={<MultiplayerRoomHandler />} />
+
+            {/* Legacy Single Player Routes (kept for backward compatibility) */}
             <Route path="/puzzles" element={<PuzzleSelectionPage />} />
             <Route path="/game/:type/:id" element={<GamePage />} />
 
-            {/* Multiplayer Routes */}
+            {/* Legacy Multiplayer Routes (redirected or deprecated) */}
             <Route
               path="/multiplayer/join/:roomId"
               element={<JoinRoomPage />}

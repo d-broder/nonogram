@@ -1,0 +1,1 @@
+export { MultiplayerRoomHandler } from './MultiplayerRoomHandler';

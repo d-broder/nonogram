@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import { PageLayout } from '../../components/PageLayout';
-import type { Player } from '../../types';
-import styles from './WaitingRoomPage.module.css';
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import { PageLayout } from "../../components/PageLayout";
+import type { Player } from "../../types";
+import styles from "./WaitingRoomPage.module.css";
 
 export function WaitingRoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -12,25 +12,23 @@ export function WaitingRoomPage() {
 
   // Get players from room data
   const players = room ? Object.values(room.players) : [];
-  const roomLink = roomId ? `${window.location.origin}/multiplayer/join/${roomId}` : '';
+  const roomLink = roomId ? `${window.location.origin}/${roomId}` : "";
 
   useEffect(() => {
     if (!roomId) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
     // Check if player info exists
-    const playerInfo = sessionStorage.getItem('playerInfo');
+    const playerInfo = sessionStorage.getItem("playerInfo");
     if (!playerInfo) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
-    // If room is ready and puzzle is selected, navigate to game
-    if (room?.status === 'playing' && room.puzzleType && room.puzzleId) {
-      navigate(`/multiplayer/game/${roomId}/${room.puzzleType}/${room.puzzleId}`);
-    }
+    // MultiplayerRoomHandler will handle navigation when room status changes
+    // No manual navigation needed here
   }, [roomId, room, navigate]);
 
   if (loading) {
@@ -77,7 +75,9 @@ export function WaitingRoomPage() {
       <div className={styles.statusContainer}>
         <div className={styles.loadingSpinner}></div>
         <p className={styles.statusText}>
-          Waiting for {players.find((p: Player) => p.isCreator)?.name || 'creator'} to select a puzzle...
+          Waiting for{" "}
+          {players.find((p: Player) => p.isCreator)?.name || "creator"} to
+          select a puzzle...
         </p>
       </div>
     </PageLayout>

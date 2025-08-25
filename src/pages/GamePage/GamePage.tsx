@@ -15,9 +15,14 @@ import styles from "./GamePage.module.css";
 interface GamePageProps {
   puzzleType?: "classic" | "super";
   puzzleId?: number;
+  isMultiplayerMode?: boolean;
 }
 
-export function GamePage({ puzzleType, puzzleId }: GamePageProps = {}) {
+export function GamePage({
+  puzzleType,
+  puzzleId,
+  isMultiplayerMode,
+}: GamePageProps = {}) {
   const { type, id, roomId } = useParams<{
     type: "classic" | "super";
     id: string;
@@ -34,7 +39,8 @@ export function GamePage({ puzzleType, puzzleId }: GamePageProps = {}) {
   const isUsingProps = Boolean(puzzleType && puzzleId);
 
   // Check if this is multiplayer mode
-  const isMultiplayer = location.pathname.includes("/multiplayer/");
+  const isMultiplayer =
+    isMultiplayerMode || location.pathname.includes("/multiplayer/");
 
   // Get current player info for multiplayer
   const currentPlayerInfo = isMultiplayer
@@ -209,7 +215,7 @@ export function GamePage({ puzzleType, puzzleId }: GamePageProps = {}) {
   // Set room link for multiplayer
   useEffect(() => {
     if (isMultiplayer && roomId) {
-      const fullRoomLink = `${window.location.origin}/multiplayer/join/${roomId}`;
+      const fullRoomLink = `${window.location.origin}/${roomId}`;
       setRoomLink(fullRoomLink);
     }
   }, [isMultiplayer, roomId]);
@@ -260,10 +266,8 @@ export function GamePage({ puzzleType, puzzleId }: GamePageProps = {}) {
       const result = await migrateToMultiplayer(newRoomId, migrationData);
 
       if (result.success) {
-        // Navigate to multiplayer game page with same puzzle
-        navigate(
-          `/multiplayer/game/${newRoomId}/${effectiveType}/${effectiveId}`
-        );
+        // Navigate to the new room - MultiplayerRoomHandler will handle showing the correct view
+        navigate(`/${newRoomId}`);
       } else {
         console.error("Migration failed:", result.error);
         // Could show error message to user here
