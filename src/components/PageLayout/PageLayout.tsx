@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { serverTimestamp } from "firebase/firestore";
 import { CopyTooltip } from "../CopyTooltip";
 import { GameControls } from "../GameControls";
 import { GameControlsPanel } from "../GameControlsPanel";
@@ -62,12 +63,22 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
         name: playerName.trim(),
         color: selectedColor,
         isCreator: true,
+        joinedAt: serverTimestamp(),
       };
 
       await createRoom(player, roomId);
 
       // Store player info
-      sessionStorage.setItem("playerInfo", JSON.stringify(player));
+      sessionStorage.setItem(
+        "playerInfo",
+        JSON.stringify({
+          id: playerId,
+          name: playerName.trim(),
+          color: selectedColor,
+          isCreator: true,
+          joinedAt: Date.now(), // Use timestamp for sessionStorage
+        })
+      );
 
       onRoomCreated(roomId, playerId);
     } catch (error) {
@@ -269,6 +280,27 @@ export function PageLayout({
   // Generate room link if roomId is provided
   const roomLink = roomId ? `${window.location.origin}/${roomId}` : undefined;
 
+  // Sort players: Host first, then by join order
+  const sortedPlayers =
+    players.length > 0
+      ? [...players].sort((a, b) => {
+          // Host always first
+          if (a.isCreator && !b.isCreator) return -1;
+          if (!a.isCreator && b.isCreator) return 1;
+
+          // If both are hosts or both are not hosts, sort by joinedAt
+          // Convert Firebase timestamps to comparable values
+          const aTime = a.joinedAt?.toMillis
+            ? a.joinedAt.toMillis()
+            : a.joinedAt || 0;
+          const bTime = b.joinedAt?.toMillis
+            ? b.joinedAt.toMillis()
+            : b.joinedAt || 0;
+
+          return aTime - bTime;
+        })
+      : [];
+
   // Modal handlers
   const handleOpenCreateModal = () => {
     if (isMobile) {
@@ -356,10 +388,30 @@ export function PageLayout({
     navigate(-1);
   };
 
-  const handleHomeClick = () => {
-    if (onHomeClick) {
+  // Initialize Firebase room hook (will be null if no roomId)
+  const { leaveRoom } = useFirebaseRoom(roomId || null);
+
+  const handleHomeClick = async () => {
+    // Check if we're in multiplayer mode
+    if (roomId && leaveRoom) {
+      const currentPlayerInfo = sessionStorage.getItem("playerInfo");
+      if (currentPlayerInfo) {
+        const playerInfo = JSON.parse(currentPlayerInfo);
+
+        // Leave the room first
+        await leaveRoom(playerInfo.id);
+
+        // Clear player info from session storage
+        sessionStorage.removeItem("playerInfo");
+      }
+
+      // Navigate to single player mode (root URL)
+      navigate("/");
+    } else if (onHomeClick) {
+      // Use custom home click handler if provided (for single player internal navigation)
       onHomeClick();
     } else {
+      // Default navigation to root
       navigate("/");
     }
   };
@@ -510,39 +562,35 @@ export function PageLayout({
               <div className={styles.roomInfo}>
                 {!isMultiplayer ? (
                   <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
-                ) : roomId ? (
+                ) : (
                   <>
-                    <div className={styles.roomTitle}>Room: {roomId}</div>
                     {roomLink && (
-                      <>
-                        <div className={styles.roomLink}>{roomLink}</div>
-                        <div className={styles.copyButtonWrapper}>
-                          <button
-                            type="button"
-                            onClick={onCopyLink}
-                            className={styles.copyButton}
-                          >
-                            Copy Link
-                          </button>
-                          {onHideTooltip && (
-                            <CopyTooltip
-                              text="Link copied!"
-                              show={showTooltip}
-                              onHide={onHideTooltip}
-                            />
-                          )}
-                        </div>
-                      </>
+                      <div className={styles.copyButtonWrapper}>
+                        <button
+                          type="button"
+                          onClick={onCopyLink}
+                          className={styles.copyButton}
+                        >
+                          Copy Link
+                        </button>
+                        {onHideTooltip && (
+                          <CopyTooltip
+                            text="Link copied!"
+                            show={showTooltip}
+                            onHide={onHideTooltip}
+                          />
+                        )}
+                      </div>
                     )}
 
                     {/* Players list */}
-                    {players.length > 0 && (
+                    {sortedPlayers.length > 0 && (
                       <div className={styles.playersContainer}>
                         <h3 className={styles.playersTitle}>
-                          Players ({players.length})
+                          Players ({sortedPlayers.length})
                         </h3>
                         <div className={styles.playersList}>
-                          {players.map((player) => (
+                          {sortedPlayers.map((player) => (
                             <div key={player.id} className={styles.playerCard}>
                               <div
                                 className={styles.playerColor}
@@ -566,7 +614,7 @@ export function PageLayout({
                       </div>
                     )}
                   </>
-                ) : null}
+                )}
               </div>
             </>
           )}
@@ -647,39 +695,35 @@ export function PageLayout({
         <div className={styles.roomInfo}>
           {!isMultiplayer ? (
             <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
-          ) : roomId ? (
+          ) : (
             <>
-              <div className={styles.roomTitle}>Room: {roomId}</div>
               {roomLink && (
-                <>
-                  <div className={styles.roomLink}>{roomLink}</div>
-                  <div className={styles.copyButtonWrapper}>
-                    <button
-                      type="button"
-                      onClick={onCopyLink}
-                      className={styles.copyButton}
-                    >
-                      Copy Link
-                    </button>
-                    {onHideTooltip && (
-                      <CopyTooltip
-                        text="Link copied!"
-                        show={showTooltip}
-                        onHide={onHideTooltip}
-                      />
-                    )}
-                  </div>
-                </>
+                <div className={styles.copyButtonWrapper}>
+                  <button
+                    type="button"
+                    onClick={onCopyLink}
+                    className={styles.copyButton}
+                  >
+                    Copy Link
+                  </button>
+                  {onHideTooltip && (
+                    <CopyTooltip
+                      text="Link copied!"
+                      show={showTooltip}
+                      onHide={onHideTooltip}
+                    />
+                  )}
+                </div>
               )}
 
               {/* Players list */}
-              {players.length > 0 && (
+              {sortedPlayers.length > 0 && (
                 <div className={styles.playersContainer}>
                   <h3 className={styles.playersTitle}>
-                    Players ({players.length})
+                    Players ({sortedPlayers.length})
                   </h3>
                   <div className={styles.playersList}>
-                    {players.map((player) => (
+                    {sortedPlayers.map((player) => (
                       <div key={player.id} className={styles.playerCard}>
                         <div
                           className={styles.playerColor}
@@ -701,7 +745,7 @@ export function PageLayout({
                 </div>
               )}
             </>
-          ) : null}
+          )}
         </div>
       </div>
 

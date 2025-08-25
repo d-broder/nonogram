@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { serverTimestamp } from "firebase/firestore";
 import type { PlayerColor } from "../../types";
 import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
 import { PageLayout } from "../../components/PageLayout";
@@ -103,10 +104,20 @@ export function JoinRoomPage() {
         name: playerName.trim(),
         color: selectedColor,
         isCreator: false,
+        joinedAt: serverTimestamp(),
       };
 
       // Store player info in sessionStorage
-      sessionStorage.setItem("playerInfo", JSON.stringify(player));
+      sessionStorage.setItem(
+        "playerInfo",
+        JSON.stringify({
+          id: playerId,
+          name: playerName.trim(),
+          color: selectedColor,
+          isCreator: false,
+          joinedAt: Date.now(), // Use timestamp for sessionStorage
+        })
+      );
 
       // Join room in Firebase
       await joinRoom(player);

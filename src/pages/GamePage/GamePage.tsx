@@ -47,12 +47,16 @@ export function GamePage({
     ? JSON.parse(sessionStorage.getItem("playerInfo") || "{}")
     : null;
 
-  // Check if current player is the creator (controls game controls visibility)
-  const isCreator =
-    !isMultiplayer || (currentPlayerInfo && currentPlayerInfo.isCreator);
-
   const { room, updateGridCell, updateClueState, resetRoomToWaiting } =
     useFirebaseRoom(roomId || null);
+
+  // Check if current player is the creator (controls game controls visibility)
+  // For multiplayer, check the real-time room data; for single player, always true
+  const isCreator =
+    !isMultiplayer ||
+    (currentPlayerInfo &&
+      room &&
+      room.players[currentPlayerInfo.id]?.isCreator);
   const { migrateToMultiplayer } = useGameStateMigration();
 
   // States for multiplayer sidebar
@@ -87,6 +91,22 @@ export function GamePage({
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Sync sessionStorage with Firebase room data when player becomes host
+  useEffect(() => {
+    if (
+      isMultiplayer &&
+      currentPlayerInfo &&
+      room &&
+      room.players[currentPlayerInfo.id]
+    ) {
+      const updatedPlayerInfo = room.players[currentPlayerInfo.id];
+      // Only update if there's a change to avoid unnecessary writes
+      if (updatedPlayerInfo.isCreator !== currentPlayerInfo.isCreator) {
+        sessionStorage.setItem("playerInfo", JSON.stringify(updatedPlayerInfo));
+      }
+    }
+  }, [isMultiplayer, currentPlayerInfo, room]);
   const [stickyClues, setStickyClues] = useState(true);
   const [showPlayerIndicators, setShowPlayerIndicators] = useState(true);
 

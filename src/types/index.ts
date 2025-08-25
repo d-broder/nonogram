@@ -53,6 +53,7 @@ export interface Player {
   name: string;
   color: PlayerColor;
   isCreator: boolean;
+  joinedAt: any; // Firebase timestamp
 }
 
 export interface Room {

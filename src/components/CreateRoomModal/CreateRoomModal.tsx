@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { serverTimestamp } from "firebase/firestore";
 import type { PlayerColor } from "../../types";
 import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
 import styles from "./CreateRoomModal.module.css";
@@ -61,6 +62,7 @@ export function CreateRoomModal({
         name: playerName.trim(),
         color: selectedColor,
         isCreator: true,
+        joinedAt: serverTimestamp(),
       };
 
       // Store player info in sessionStorage
@@ -71,6 +73,7 @@ export function CreateRoomModal({
           name: playerName.trim(),
           color: selectedColor,
           isCreator: true,
+          joinedAt: Date.now(), // Use timestamp for sessionStorage
         })
       );
 
