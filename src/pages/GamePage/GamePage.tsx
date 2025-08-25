@@ -1,55 +1,81 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
-import { useGameState } from '../../hooks/useGameState';
-import { useZoom } from '../../hooks/useZoom';
-import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import { useGameStateMigration } from '../../hooks/useGameStateMigration';
-import { GameBoard } from '../../components/GameBoard';
-import { PageLayout } from '../../components/PageLayout';
-import { ConfirmationModal } from '../../components/ConfirmationModal';
-import type { CellState } from '../../types';
-import styles from './GamePage.module.css';
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { usePuzzleLoader } from "../../hooks/usePuzzleLoader";
+import { useGameState } from "../../hooks/useGameState";
+import { useZoom } from "../../hooks/useZoom";
+import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import { useGameStateMigration } from "../../hooks/useGameStateMigration";
+import { useAppNavigation } from "../../contexts/AppNavigationContext";
+import { GameBoard } from "../../components/GameBoard";
+import { PageLayout } from "../../components/PageLayout";
+import { ConfirmationModal } from "../../components/ConfirmationModal";
+import type { CellState } from "../../types";
+import styles from "./GamePage.module.css";
 
-export function GamePage() {
-  const { type, id, roomId } = useParams<{ type: 'classic' | 'super'; id: string; roomId?: string }>();
+interface GamePageProps {
+  puzzleType?: "classic" | "super";
+  puzzleId?: number;
+}
+
+export function GamePage({ puzzleType, puzzleId }: GamePageProps = {}) {
+  const { type, id, roomId } = useParams<{
+    type: "classic" | "super";
+    id: string;
+    roomId?: string;
+  }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { navigateToPuzzleSelection } = useAppNavigation();
   const { puzzle, loading, error, loadSpecificPuzzle } = usePuzzleLoader();
-  
+
+  // Use props if provided, otherwise fall back to URL params
+  const effectiveType = puzzleType || type;
+  const effectiveId = puzzleId?.toString() || id;
+  const isUsingProps = Boolean(puzzleType && puzzleId);
+
   // Check if this is multiplayer mode
-  const isMultiplayer = location.pathname.includes('/multiplayer/');
-  
+  const isMultiplayer = location.pathname.includes("/multiplayer/");
+
   // Get current player info for multiplayer
-  const currentPlayerInfo = isMultiplayer 
-    ? JSON.parse(sessionStorage.getItem('playerInfo') || '{}') 
+  const currentPlayerInfo = isMultiplayer
+    ? JSON.parse(sessionStorage.getItem("playerInfo") || "{}")
     : null;
-  
-  const { room, updateGridCell, updateClueState } = useFirebaseRoom(roomId || null);
+
+  const { room, updateGridCell, updateClueState } = useFirebaseRoom(
+    roomId || null
+  );
   const { migrateToMultiplayer } = useGameStateMigration();
-  
+
   // States for multiplayer sidebar
   const [showTooltip, setShowTooltip] = useState(false);
-  const [roomLink, setRoomLink] = useState('');
+  const [roomLink, setRoomLink] = useState("");
   const [isMigrating, setIsMigrating] = useState(false);
-  
-  const { 
-    gameState, 
-    initializeGame, 
+
+  const {
+    gameState,
+    initializeGame,
     handleCellMouseDown,
     handleCellMouseEnter,
     handleCellMouseUp,
     setPaintMode,
-    clearGameGrid, 
+    clearGameGrid,
     toggleSolution,
-    updateCellExternally
+    updateCellExternally,
   } = useGameState(puzzle, {
     onCellChange: isMultiplayer && roomId ? updateGridCell : undefined,
-    playerId: currentPlayerInfo?.id
+    playerId: currentPlayerInfo?.id,
   });
-  
-  const { config: zoomConfig, zoomIn, zoomOut, resetZoom, canZoomIn, canZoomOut, zoomPercentage } = useZoom();
-  
+
+  const {
+    config: zoomConfig,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+    canZoomIn,
+    canZoomOut,
+    zoomPercentage,
+  } = useZoom();
+
   const completionRef = useRef(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -57,8 +83,12 @@ export function GamePage() {
   const [showPlayerIndicators, setShowPlayerIndicators] = useState(true);
 
   // State for clue clicks (moved from GameBoard to sync with Firebase)
-  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(new Set());
-  const [clickedColClues, setClickedColClues] = useState<Set<string>>(new Set());
+  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(
+    new Set()
+  );
+  const [clickedColClues, setClickedColClues] = useState<Set<string>>(
+    new Set()
+  );
 
   // Check for mobile screen size
   useEffect(() => {
@@ -67,16 +97,19 @@ export function GamePage() {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Clue click handlers for multiplayer sync
-  const handleRowClueClick = async (rowIndex: number, clueIndex: number | string) => {
+  const handleRowClueClick = async (
+    rowIndex: number,
+    clueIndex: number | string
+  ) => {
     const clueId = `row-${rowIndex}-${clueIndex}`;
     const isCurrentlyClicked = clickedRowClues.has(clueId);
     const newState = !isCurrentlyClicked; // Toggle state
-    
+
     // Update local state immediately for responsive UI
     const newSet = new Set(clickedRowClues);
     if (newState) {
@@ -85,24 +118,27 @@ export function GamePage() {
       newSet.delete(clueId);
     }
     setClickedRowClues(newSet);
-    
+
     // If multiplayer, sync to Firebase
     if (isMultiplayer && roomId) {
       try {
         await updateClueState(clueId, newState);
       } catch (error) {
-        console.error('Error syncing clue to Firebase:', error);
+        console.error("Error syncing clue to Firebase:", error);
         // Revert local state on error
         setClickedRowClues(clickedRowClues);
       }
     }
   };
 
-  const handleColClueClick = async (colIndex: number, clueIndex: number | string) => {
+  const handleColClueClick = async (
+    colIndex: number,
+    clueIndex: number | string
+  ) => {
     const clueId = `col-${colIndex}-${clueIndex}`;
     const isCurrentlyClicked = clickedColClues.has(clueId);
     const newState = !isCurrentlyClicked; // Toggle state
-    
+
     // Update local state immediately for responsive UI
     const newSet = new Set(clickedColClues);
     if (newState) {
@@ -111,13 +147,13 @@ export function GamePage() {
       newSet.delete(clueId);
     }
     setClickedColClues(newSet);
-    
+
     // If multiplayer, sync to Firebase
     if (isMultiplayer && roomId) {
       try {
         await updateClueState(clueId, newState);
       } catch (error) {
-        console.error('Error syncing clue to Firebase:', error);
+        console.error("Error syncing clue to Firebase:", error);
         // Revert local state on error
         setClickedColClues(clickedColClues);
       }
@@ -140,19 +176,27 @@ export function GamePage() {
 
   // Load puzzle when params change
   useEffect(() => {
-    if (!type || !id || (type !== 'classic' && type !== 'super')) {
-      navigate('/');
+    if (
+      !effectiveType ||
+      !effectiveId ||
+      (effectiveType !== "classic" && effectiveType !== "super")
+    ) {
+      if (!isUsingProps) {
+        navigate("/");
+      }
       return;
     }
 
-    const puzzleId = parseInt(id, 10);
-    if (isNaN(puzzleId)) {
-      navigate('/');
+    const parsedPuzzleId = parseInt(effectiveId, 10);
+    if (isNaN(parsedPuzzleId)) {
+      if (!isUsingProps) {
+        navigate("/");
+      }
       return;
     }
 
-    loadSpecificPuzzle(puzzleId, type);
-  }, [type, id, navigate, loadSpecificPuzzle]);
+    loadSpecificPuzzle(parsedPuzzleId, effectiveType);
+  }, [effectiveType, effectiveId, navigate, loadSpecificPuzzle, isUsingProps]);
 
   // Initialize game when puzzle loads
   useEffect(() => {
@@ -172,17 +216,17 @@ export function GamePage() {
 
   const handleCopyRoomLink = async () => {
     if (!roomLink) return;
-    
+
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
     } catch (err) {
       // Fallback for older browsers
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = roomLink;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
       setShowTooltip(true);
     }
@@ -198,32 +242,34 @@ export function GamePage() {
       const migrationData = {
         gameState,
         puzzle,
-        puzzleType: type!, // From URL params
-        puzzleId: parseInt(id!), // From URL params
+        puzzleType: effectiveType!, // From URL params or props
+        puzzleId: parseInt(effectiveId!), // From URL params or props
         creatorId: playerId, // Creator ID for cellAuthors
         clueStates: {
           clickedRowClues,
-          clickedColClues
+          clickedColClues,
         },
         uiSettings: {
           paintMode: gameState.paintMode,
           stickyClues,
-          showPlayerIndicators
-        }
+          showPlayerIndicators,
+        },
       };
 
       // Migrate current game state to the new room
       const result = await migrateToMultiplayer(newRoomId, migrationData);
-      
+
       if (result.success) {
         // Navigate to multiplayer game page with same puzzle
-        navigate(`/multiplayer/game/${newRoomId}/${type}/${id}`);
+        navigate(
+          `/multiplayer/game/${newRoomId}/${effectiveType}/${effectiveId}`
+        );
       } else {
-        console.error('Migration failed:', result.error);
+        console.error("Migration failed:", result.error);
         // Could show error message to user here
       }
     } catch (error) {
-      console.error('Error during room creation and migration:', error);
+      console.error("Error during room creation and migration:", error);
     } finally {
       setIsMigrating(false);
     }
@@ -247,9 +293,9 @@ export function GamePage() {
 
       Object.entries(room.clues).forEach(([clueId, isClicked]) => {
         if (isClicked) {
-          if (clueId.startsWith('row-')) {
+          if (clueId.startsWith("row-")) {
             newClickedRowClues.add(clueId);
-          } else if (clueId.startsWith('col-')) {
+          } else if (clueId.startsWith("col-")) {
             newClickedColClues.add(clueId);
           }
         }
@@ -270,11 +316,13 @@ export function GamePage() {
     if (gameState.isComplete && !completionRef.current) {
       completionRef.current = true;
       animationActive = true;
-      gameBoardArea = document.querySelector(`.${styles.gameBoardArea}`) as HTMLElement;
+      gameBoardArea = document.querySelector(
+        `.${styles.gameBoardArea}`
+      ) as HTMLElement;
       if (gameBoardArea) {
-        const colorA = '#b6f5c1';
-        const colorB = gameBoardArea.style.backgroundColor || '';
-        gameBoardArea.style.transition = 'background-color 2s ease-in-out';
+        const colorA = "#b6f5c1";
+        const colorB = gameBoardArea.style.backgroundColor || "";
+        gameBoardArea.style.transition = "background-color 2s ease-in-out";
 
         const animate = () => {
           if (!animationActive) return;
@@ -293,8 +341,8 @@ export function GamePage() {
         clearTimeout(timeoutId);
       }
       if (gameBoardArea) {
-        gameBoardArea.style.backgroundColor = '';
-        gameBoardArea.style.transition = '';
+        gameBoardArea.style.backgroundColor = "";
+        gameBoardArea.style.transition = "";
       }
     };
   }, [gameState.isComplete, styles.gameBoardArea]);
@@ -316,8 +364,10 @@ export function GamePage() {
         <div className={styles.error}>
           <h2>Error Loading Puzzle</h2>
           <p>{error}</p>
-          <button 
-            onClick={() => navigate('/')}
+          <button
+            onClick={() =>
+              isUsingProps ? navigateToPuzzleSelection() : navigate("/")
+            }
             className={styles.errorButton}
           >
             Return to Home
@@ -327,14 +377,16 @@ export function GamePage() {
     );
   }
 
-  if (!puzzle || !type) {
+  if (!puzzle || !effectiveType) {
     return (
       <PageLayout>
         <div className={styles.error}>
           <h2>Puzzle Not Found</h2>
           <p>The requested puzzle could not be found.</p>
-          <button 
-            onClick={() => navigate('/')}
+          <button
+            onClick={() =>
+              isUsingProps ? navigateToPuzzleSelection() : navigate("/")
+            }
             className={styles.errorButton}
           >
             Return to Home
@@ -358,12 +410,14 @@ export function GamePage() {
       onHideTooltip={() => setShowTooltip(false)}
       onRoomCreated={handleRoomCreated}
       puzzle={puzzle}
-      currentType={type}
+      currentType={effectiveType}
       paintMode={gameState.paintMode}
       showSolution={gameState.showSolution}
       isComplete={gameState.isComplete}
       onShowSolution={toggleSolution}
       onClearGrid={handleClearGridClick}
+      onBackToPuzzles={isUsingProps ? navigateToPuzzleSelection : undefined}
+      onHomeClick={isUsingProps ? navigateToPuzzleSelection : undefined}
       onModeChange={setPaintMode}
       onZoomIn={zoomIn}
       onZoomOut={zoomOut}
@@ -374,7 +428,9 @@ export function GamePage() {
       stickyClues={stickyClues}
       onStickyToggle={() => setStickyClues(!stickyClues)}
       showPlayerIndicators={showPlayerIndicators}
-      onPlayerIndicatorToggle={() => setShowPlayerIndicators(!showPlayerIndicators)}
+      onPlayerIndicatorToggle={() =>
+        setShowPlayerIndicators(!showPlayerIndicators)
+      }
       showClearConfirmation={showClearConfirmation}
       onConfirmClear={handleConfirmClear}
       onCancelClear={handleCancelClear}
@@ -383,7 +439,8 @@ export function GamePage() {
       {gameState.isComplete && (
         <div className={styles.successOverlay}>
           <h1 className={styles.successMessage}>
-            {(type === 'classic' ? 'CLASSIC' : 'SUPER').toUpperCase()} PUZZLE {puzzle.id} SOLVED
+            {(type === "classic" ? "CLASSIC" : "SUPER").toUpperCase()} PUZZLE{" "}
+            {puzzle.id} SOLVED
           </h1>
         </div>
       )}
@@ -396,7 +453,7 @@ export function GamePage() {
           </h1>
         </div>
       )}
-      
+
       <GameBoard
         puzzle={puzzle}
         grid={gameState.grid}

@@ -1,22 +1,26 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { usePuzzleLoader } from '../../hooks/usePuzzleLoader';
-import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import { PageLayout } from '../../components/PageLayout';
-import styles from './PuzzleSelectionPage.module.css';
+import { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { usePuzzleLoader } from "../../hooks/usePuzzleLoader";
+import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import { useAppNavigation } from "../../contexts/AppNavigationContext";
+import { PageLayout } from "../../components/PageLayout";
+import styles from "./PuzzleSelectionPage.module.css";
 
 export function PuzzleSelectionPage() {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { navigateToGame } = useAppNavigation();
   const { availablePuzzles, loading, error } = usePuzzleLoader();
   const { updatePuzzleSelection, room } = useFirebaseRoom(roomId || null);
-  const [roomLink, setRoomLink] = useState('');
+  const [roomLink, setRoomLink] = useState("");
   const [showTooltip, setShowTooltip] = useState(false);
-  const [selectedType, setSelectedType] = useState<'classic' | 'super'>('classic');
+  const [selectedType, setSelectedType] = useState<"classic" | "super">(
+    "classic"
+  );
 
   // Check if this is a multiplayer context
-  const isMultiplayer = location.pathname.includes('/multiplayer/');
+  const isMultiplayer = location.pathname.includes("/multiplayer/");
 
   // Set room link for multiplayer
   useEffect(() => {
@@ -29,9 +33,9 @@ export function PuzzleSelectionPage() {
   // Check if user is creator for multiplayer rooms
   useEffect(() => {
     if (isMultiplayer && roomId) {
-      const playerInfo = sessionStorage.getItem('playerInfo');
+      const playerInfo = sessionStorage.getItem("playerInfo");
       if (!playerInfo) {
-        navigate('/');
+        navigate("/");
         return;
       }
 
@@ -45,16 +49,16 @@ export function PuzzleSelectionPage() {
 
   const handleCopyRoomLink = async () => {
     if (!roomLink) return;
-    
+
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
     } catch (err) {
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = roomLink;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
       setShowTooltip(true);
     }
@@ -79,13 +83,13 @@ export function PuzzleSelectionPage() {
         // Navigate to game
         navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
       } catch (error) {
-        console.error('Error updating puzzle selection:', error);
+        console.error("Error updating puzzle selection:", error);
         // Fallback: navigate anyway
         navigate(`/multiplayer/game/${roomId}/${selectedType}/${puzzleId}`);
       }
     } else {
-      // Single player: navigate directly
-      navigate(`/game/${selectedType}/${puzzleId}`);
+      // Single player: use internal navigation
+      navigateToGame(selectedType, puzzleId);
     }
   };
 
@@ -141,20 +145,26 @@ export function PuzzleSelectionPage() {
     >
       <header className={styles.header}>
         <h1 className={styles.title}>Select Puzzle</h1>
-        <p className={styles.subtitle}>Choose your puzzle type and select a puzzle to start playing</p>
+        <p className={styles.subtitle}>
+          Choose your puzzle type and select a puzzle to start playing
+        </p>
       </header>
 
       {/* Puzzle Type Tabs */}
       <div className={styles.typeTabs}>
         <button
-          className={`${styles.typeTab} ${selectedType === 'classic' ? styles.activeTab : ''}`}
-          onClick={() => setSelectedType('classic')}
+          className={`${styles.typeTab} ${
+            selectedType === "classic" ? styles.activeTab : ""
+          }`}
+          onClick={() => setSelectedType("classic")}
         >
           Classic
         </button>
         <button
-          className={`${styles.typeTab} ${selectedType === 'super' ? styles.activeTab : ''}`}
-          onClick={() => setSelectedType('super')}
+          className={`${styles.typeTab} ${
+            selectedType === "super" ? styles.activeTab : ""
+          }`}
+          onClick={() => setSelectedType("super")}
         >
           Super
         </button>
@@ -162,7 +172,7 @@ export function PuzzleSelectionPage() {
 
       {/* Puzzle Type Description */}
       <div className={styles.typeDescription}>
-        {selectedType === 'classic' ? (
+        {selectedType === "classic" ? (
           <p>Traditional nonogram puzzles with standard grid sizes</p>
         ) : (
           <p>Larger, more challenging nonogram puzzles</p>

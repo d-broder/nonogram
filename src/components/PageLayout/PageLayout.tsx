@@ -1,28 +1,35 @@
-import { useState, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CopyTooltip } from '../CopyTooltip';
-import { GameControls } from '../GameControls';
-import { GameControlsPanel } from '../GameControlsPanel';
-import { CreateRoomModal } from '../CreateRoomModal';
-import { RoomInfoDefault } from '../RoomInfoDefault';
-import type { PaintMode, Puzzle, Player, PlayerColor } from '../../types';
-import { useFirebaseRoom } from '../../hooks/useFirebaseRoom';
-import styles from './PageLayout.module.css';
+import { useState, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { CopyTooltip } from "../CopyTooltip";
+import { GameControls } from "../GameControls";
+import { GameControlsPanel } from "../GameControlsPanel";
+import { CreateRoomModal } from "../CreateRoomModal";
+import { RoomInfoDefault } from "../RoomInfoDefault";
+import type { PaintMode, Puzzle, Player, PlayerColor } from "../../types";
+import { useFirebaseRoom } from "../../hooks/useFirebaseRoom";
+import styles from "./PageLayout.module.css";
 
 const COLOR_VALUES = {
-  red: '#ef4444',
-  blue: '#3b82f6',
-  green: '#22c55e',
-  yellow: '#eab308',
-  purple: '#a855f7',
-  orange: '#f97316',
-  pink: '#ec4899',
-  teal: '#14b8a6'
+  red: "#ef4444",
+  blue: "#3b82f6",
+  green: "#22c55e",
+  yellow: "#eab308",
+  purple: "#a855f7",
+  orange: "#f97316",
+  pink: "#ec4899",
+  teal: "#14b8a6",
 };
 
 const AVAILABLE_COLORS: PlayerColor[] = [
-  'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink', 'teal'
+  "red",
+  "blue",
+  "green",
+  "yellow",
+  "purple",
+  "orange",
+  "pink",
+  "teal",
 ];
 
 // Mobile Create Room Form Component
@@ -31,15 +38,15 @@ interface MobileCreateRoomFormProps {
 }
 
 function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
-  const [playerName, setPlayerName] = useState('');
-  const [selectedColor, setSelectedColor] = useState<PlayerColor>('red');
+  const [playerName, setPlayerName] = useState("");
+  const [selectedColor, setSelectedColor] = useState<PlayerColor>("red");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { createRoom } = useFirebaseRoom(null);
 
   const handleCreateRoom = async () => {
     if (!playerName.trim()) {
-      setError('Please enter a display name');
+      setError("Please enter a display name");
       return;
     }
 
@@ -49,23 +56,23 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
     try {
       const roomId = Math.random().toString(36).substr(2, 8).toUpperCase();
       const playerId = Date.now().toString();
-      
+
       const player = {
         id: playerId,
         name: playerName.trim(),
         color: selectedColor,
-        isCreator: true
+        isCreator: true,
       };
 
       await createRoom(player, roomId);
 
       // Store player info
-      sessionStorage.setItem('playerInfo', JSON.stringify(player));
+      sessionStorage.setItem("playerInfo", JSON.stringify(player));
 
       onRoomCreated(roomId, playerId);
     } catch (error) {
-      console.error('Error creating room:', error);
-      setError('Failed to create room. Please try again.');
+      console.error("Error creating room:", error);
+      setError("Failed to create room. Please try again.");
     } finally {
       setIsCreating(false);
     }
@@ -74,7 +81,7 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
   return (
     <div className={styles.mobileCreateForm}>
       <h3 className={styles.formTitle}>Create New Room</h3>
-      
+
       {error && (
         <div className={styles.error}>
           <p>{error}</p>
@@ -104,7 +111,7 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
               key={color}
               type="button"
               className={`${styles.colorButton} ${
-                selectedColor === color ? styles.selected : ''
+                selectedColor === color ? styles.selected : ""
               }`}
               style={{ backgroundColor: COLOR_VALUES[color] }}
               onClick={() => setSelectedColor(color)}
@@ -120,7 +127,7 @@ function MobileCreateRoomForm({ onRoomCreated }: MobileCreateRoomFormProps) {
         disabled={isCreating || !playerName.trim()}
         className={styles.createButton}
       >
-        {isCreating ? 'Creating...' : 'Create Room'}
+        {isCreating ? "Creating..." : "Create Room"}
       </button>
     </div>
   );
@@ -132,11 +139,14 @@ interface MobileClearGridFormProps {
   onCancel: () => void;
 }
 
-function MobileClearGridForm({ onConfirm, onCancel }: MobileClearGridFormProps) {
+function MobileClearGridForm({
+  onConfirm,
+  onCancel,
+}: MobileClearGridFormProps) {
   return (
     <div className={styles.mobileClearForm}>
       <h3 className={styles.formTitle}>Clear Grid</h3>
-      
+
       <div className={styles.clearMessage}>
         <p>Are you sure you want to clear the entire grid?</p>
         <p>This action cannot be undone.</p>
@@ -164,13 +174,13 @@ function MobileClearGridForm({ onConfirm, onCancel }: MobileClearGridFormProps) 
 
 interface PageLayoutProps {
   children: ReactNode;
-  
+
   // Page configuration
   showBackButton?: boolean;
-  pageContentAreaHeight?: 'full' | '80%'; // For GamePage mobile (80%), others use full
+  pageContentAreaHeight?: "full" | "80%"; // For GamePage mobile (80%), others use full
   showMobileBottomBar?: boolean; // Only for GamePage mobile
   isGamePage?: boolean; // To use nonogramContainerArea instead of pageContentArea
-  
+
   // Multiplayer configuration
   isMultiplayer?: boolean;
   roomId?: string;
@@ -179,15 +189,17 @@ interface PageLayoutProps {
   showTooltip?: boolean;
   onCopyLink?: () => void;
   onHideTooltip?: () => void;
-  
+
   // Game configuration (for GamePage)
   puzzle?: Puzzle;
-  currentType?: 'classic' | 'super';
+  currentType?: "classic" | "super";
   paintMode?: PaintMode;
   showSolution?: boolean;
   isComplete?: boolean;
   onShowSolution?: () => void;
   onClearGrid?: () => void;
+  onBackToPuzzles?: () => void;
+  onHomeClick?: () => void;
   onModeChange?: (mode: PaintMode) => void;
   onZoomIn?: () => void;
   onZoomOut?: () => void;
@@ -195,7 +207,7 @@ interface PageLayoutProps {
   canZoomIn?: boolean;
   canZoomOut?: boolean;
   zoomPercentage?: number;
-  
+
   // Toggle buttons (for GamePage)
   stickyClues?: boolean;
   onStickyToggle?: () => void;
@@ -204,8 +216,8 @@ interface PageLayoutProps {
 
   // Create room modal callbacks
   onRoomCreated?: (roomId: string, playerId: string) => void;
-  
-  // Clear grid modal callbacks  
+
+  // Clear grid modal callbacks
   showClearConfirmation?: boolean;
   onConfirmClear?: () => void;
   onCancelClear?: () => void;
@@ -230,6 +242,8 @@ export function PageLayout({
   isComplete,
   onShowSolution,
   onClearGrid,
+  onBackToPuzzles,
+  onHomeClick,
   onModeChange,
   onZoomIn,
   onZoomOut,
@@ -243,7 +257,7 @@ export function PageLayout({
   onPlayerIndicatorToggle,
   onRoomCreated,
   onConfirmClear,
-  onCancelClear
+  onCancelClear,
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -318,20 +332,20 @@ export function PageLayout({
     // Set CSS custom property for real viewport height (fallback for older browsers)
     const setViewportHeight = () => {
       const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
     };
 
     checkMobile();
     setViewportHeight();
-    
-    window.addEventListener('resize', checkMobile);
-    window.addEventListener('resize', setViewportHeight);
-    window.addEventListener('orientationchange', setViewportHeight);
-    
+
+    window.addEventListener("resize", checkMobile);
+    window.addEventListener("resize", setViewportHeight);
+    window.addEventListener("orientationchange", setViewportHeight);
+
     return () => {
-      window.removeEventListener('resize', checkMobile);
-      window.removeEventListener('resize', setViewportHeight);
-      window.removeEventListener('orientationchange', setViewportHeight);
+      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", setViewportHeight);
+      window.removeEventListener("orientationchange", setViewportHeight);
     };
   }, []);
 
@@ -340,7 +354,11 @@ export function PageLayout({
   };
 
   const handleHomeClick = () => {
-    navigate('/');
+    if (onHomeClick) {
+      onHomeClick();
+    } else {
+      navigate("/");
+    }
   };
 
   const toggleSidebar = () => {
@@ -378,34 +396,45 @@ export function PageLayout({
         </div>
 
         {/* Page Content Area */}
-        <div 
-          className={isGamePage ? styles.nonogramContainerArea : styles.pageContentArea}
+        <div
+          className={
+            isGamePage ? styles.nonogramContainerArea : styles.pageContentArea
+          }
         >
-          {isGamePage ? children : <div className={styles.pageContent}>{children}</div>}
+          {isGamePage ? (
+            children
+          ) : (
+            <div className={styles.pageContent}>{children}</div>
+          )}
         </div>
 
         {/* Mobile Bottom Bar (only for GamePage) */}
-        {showMobileBottomBar && paintMode && onModeChange && onZoomIn && onZoomOut && onResetZoom && (
-          <div className={styles.mobileBottomBar}>
-            <GameControlsPanel
-              layout="bottombar"
-              paintMode={paintMode}
-              onPaintModeChange={onModeChange}
-              onZoomIn={onZoomIn}
-              onZoomOut={onZoomOut}
-              onResetZoom={onResetZoom}
-              canZoomIn={canZoomIn ?? true}
-              canZoomOut={canZoomOut ?? true}
-              zoomPercentage={zoomPercentage ?? 100}
-              stickyClues={stickyClues ?? true}
-              onStickyToggle={onStickyToggle || (() => {})}
-              showPlayerIndicators={showPlayerIndicators ?? true}
-              onPlayerIndicatorToggle={onPlayerIndicatorToggle}
-              isMultiplayer={isMultiplayer}
-              isComplete={isComplete ?? false}
-            />
-          </div>
-        )}
+        {showMobileBottomBar &&
+          paintMode &&
+          onModeChange &&
+          onZoomIn &&
+          onZoomOut &&
+          onResetZoom && (
+            <div className={styles.mobileBottomBar}>
+              <GameControlsPanel
+                layout="bottombar"
+                paintMode={paintMode}
+                onPaintModeChange={onModeChange}
+                onZoomIn={onZoomIn}
+                onZoomOut={onZoomOut}
+                onResetZoom={onResetZoom}
+                canZoomIn={canZoomIn ?? true}
+                canZoomOut={canZoomOut ?? true}
+                zoomPercentage={zoomPercentage ?? 100}
+                stickyClues={stickyClues ?? true}
+                onStickyToggle={onStickyToggle || (() => {})}
+                showPlayerIndicators={showPlayerIndicators ?? true}
+                onPlayerIndicatorToggle={onPlayerIndicatorToggle}
+                isMultiplayer={isMultiplayer}
+                isComplete={isComplete ?? false}
+              />
+            </div>
+          )}
       </div>
     );
   }
@@ -445,16 +474,17 @@ export function PageLayout({
             <MobileCreateRoomForm onRoomCreated={handleRoomCreated} />
           ) : showMobileClearGrid ? (
             /* Mobile Clear Grid Form - substitui todo o conteúdo */
-            <MobileClearGridForm 
-              onConfirm={handleMobileClearConfirm} 
-              onCancel={handleMobileClearCancel} 
+            <MobileClearGridForm
+              onConfirm={handleMobileClearConfirm}
+              onCancel={handleMobileClearCancel}
             />
           ) : (
             <>
               {/* Game subtitle (only for GamePage) */}
               {puzzle && currentType && (
                 <div className={styles.subtitle}>
-                  {currentType === 'classic' ? 'Classic' : 'Super'}<br />
+                  {currentType === "classic" ? "Classic" : "Super"}
+                  <br />
                   Puzzle {puzzle.id} ({puzzle.size.width}x{puzzle.size.height})
                 </div>
               )}
@@ -466,8 +496,9 @@ export function PageLayout({
                     onShowSolution={onShowSolution}
                     onClearGrid={handleClearGrid}
                     showSolution={showSolution ?? false}
-                    puzzleType={currentType ?? 'classic'}
+                    puzzleType={currentType ?? "classic"}
                     isComplete={isComplete ?? false}
+                    onBackToPuzzles={onBackToPuzzles}
                   />
                 </div>
               )}
@@ -477,53 +508,63 @@ export function PageLayout({
                 {!isMultiplayer ? (
                   <RoomInfoDefault onCreateRoom={handleOpenCreateModal} />
                 ) : roomId ? (
-              <>
-                <div className={styles.roomTitle}>Room: {roomId}</div>
-                {roomLink && (
                   <>
-                    <div className={styles.roomLink}>{roomLink}</div>
-                    <div className={styles.copyButtonWrapper}>
-                      <button
-                        type="button"
-                        onClick={onCopyLink}
-                        className={styles.copyButton}
-                      >
-                        Copy Link
-                      </button>
-                      {onHideTooltip && (
-                        <CopyTooltip 
-                          text="Link copied!" 
-                          show={showTooltip} 
-                          onHide={onHideTooltip} 
-                        />
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {/* Players list */}
-                {players.length > 0 && (
-                  <div className={styles.playersContainer}>
-                    <h3 className={styles.playersTitle}>Players ({players.length})</h3>
-                    <div className={styles.playersList}>
-                      {players.map((player) => (
-                        <div key={player.id} className={styles.playerCard}>
-                          <div
-                            className={styles.playerColor}
-                            style={{ backgroundColor: COLOR_VALUES[player.color] }}
-                          />
-                          <div className={styles.playerInfo}>
-                            <span className={styles.playerName}>{player.name}</span>
-                            {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
-                          </div>
+                    <div className={styles.roomTitle}>Room: {roomId}</div>
+                    {roomLink && (
+                      <>
+                        <div className={styles.roomLink}>{roomLink}</div>
+                        <div className={styles.copyButtonWrapper}>
+                          <button
+                            type="button"
+                            onClick={onCopyLink}
+                            className={styles.copyButton}
+                          >
+                            Copy Link
+                          </button>
+                          {onHideTooltip && (
+                            <CopyTooltip
+                              text="Link copied!"
+                              show={showTooltip}
+                              onHide={onHideTooltip}
+                            />
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : null}
-          </div>
+                      </>
+                    )}
+
+                    {/* Players list */}
+                    {players.length > 0 && (
+                      <div className={styles.playersContainer}>
+                        <h3 className={styles.playersTitle}>
+                          Players ({players.length})
+                        </h3>
+                        <div className={styles.playersList}>
+                          {players.map((player) => (
+                            <div key={player.id} className={styles.playerCard}>
+                              <div
+                                className={styles.playerColor}
+                                style={{
+                                  backgroundColor: COLOR_VALUES[player.color],
+                                }}
+                              />
+                              <div className={styles.playerInfo}>
+                                <span className={styles.playerName}>
+                                  {player.name}
+                                </span>
+                                {player.isCreator && (
+                                  <span className={styles.creatorBadge}>
+                                    Host
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : null}
+              </div>
             </>
           )}
         </div>
@@ -551,7 +592,8 @@ export function PageLayout({
           <div className={styles.gameContent}>
             {/* Subtitle */}
             <div className={styles.subtitle}>
-              {currentType === 'classic' ? 'Classic' : 'Super'}<br />
+              {currentType === "classic" ? "Classic" : "Super"}
+              <br />
               Puzzle {puzzle.id} ({puzzle.size.width}x{puzzle.size.height})
             </div>
 
@@ -564,32 +606,37 @@ export function PageLayout({
                   showSolution={showSolution ?? false}
                   puzzleType={currentType}
                   isComplete={isComplete ?? false}
+                  onBackToPuzzles={onBackToPuzzles}
                 />
               </div>
             )}
 
             {/* Paint mode and zoom controls */}
-            {paintMode && onModeChange && onZoomIn && onZoomOut && onResetZoom && (
-              <div className={styles.gameControls2}>
-                <GameControlsPanel
-                  layout="sidebar"
-                  paintMode={paintMode}
-                  onPaintModeChange={onModeChange}
-                  onZoomIn={onZoomIn}
-                  onZoomOut={onZoomOut}
-                  onResetZoom={onResetZoom}
-                  canZoomIn={canZoomIn ?? true}
-                  canZoomOut={canZoomOut ?? true}
-                  zoomPercentage={zoomPercentage ?? 100}
-                  stickyClues={stickyClues ?? true}
-                  onStickyToggle={onStickyToggle || (() => {})}
-                  showPlayerIndicators={showPlayerIndicators ?? true}
-                  onPlayerIndicatorToggle={onPlayerIndicatorToggle}
-                  isMultiplayer={isMultiplayer}
-                  isComplete={isComplete ?? false}
-                />
-              </div>
-            )}
+            {paintMode &&
+              onModeChange &&
+              onZoomIn &&
+              onZoomOut &&
+              onResetZoom && (
+                <div className={styles.gameControls2}>
+                  <GameControlsPanel
+                    layout="sidebar"
+                    paintMode={paintMode}
+                    onPaintModeChange={onModeChange}
+                    onZoomIn={onZoomIn}
+                    onZoomOut={onZoomOut}
+                    onResetZoom={onResetZoom}
+                    canZoomIn={canZoomIn ?? true}
+                    canZoomOut={canZoomOut ?? true}
+                    zoomPercentage={zoomPercentage ?? 100}
+                    stickyClues={stickyClues ?? true}
+                    onStickyToggle={onStickyToggle || (() => {})}
+                    showPlayerIndicators={showPlayerIndicators ?? true}
+                    onPlayerIndicatorToggle={onPlayerIndicatorToggle}
+                    isMultiplayer={isMultiplayer}
+                    isComplete={isComplete ?? false}
+                  />
+                </div>
+              )}
           </div>
         )}
 
@@ -612,10 +659,10 @@ export function PageLayout({
                       Copy Link
                     </button>
                     {onHideTooltip && (
-                      <CopyTooltip 
-                        text="Link copied!" 
-                        show={showTooltip} 
-                        onHide={onHideTooltip} 
+                      <CopyTooltip
+                        text="Link copied!"
+                        show={showTooltip}
+                        onHide={onHideTooltip}
                       />
                     )}
                   </div>
@@ -625,17 +672,25 @@ export function PageLayout({
               {/* Players list */}
               {players.length > 0 && (
                 <div className={styles.playersContainer}>
-                  <h3 className={styles.playersTitle}>Players ({players.length})</h3>
+                  <h3 className={styles.playersTitle}>
+                    Players ({players.length})
+                  </h3>
                   <div className={styles.playersList}>
                     {players.map((player) => (
                       <div key={player.id} className={styles.playerCard}>
                         <div
                           className={styles.playerColor}
-                          style={{ backgroundColor: COLOR_VALUES[player.color] }}
+                          style={{
+                            backgroundColor: COLOR_VALUES[player.color],
+                          }}
                         />
                         <div className={styles.playerInfo}>
-                          <span className={styles.playerName}>{player.name}</span>
-                          {player.isCreator && <span className={styles.creatorBadge}>Host</span>}
+                          <span className={styles.playerName}>
+                            {player.name}
+                          </span>
+                          {player.isCreator && (
+                            <span className={styles.creatorBadge}>Host</span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -648,9 +703,13 @@ export function PageLayout({
       </div>
 
       {/* Page Content Area */}
-      <div className={isGamePage ? styles.nonogramContainerArea : styles.pageContentArea}>
-        {showBackButton && (
-          isGamePage ? (
+      <div
+        className={
+          isGamePage ? styles.nonogramContainerArea : styles.pageContentArea
+        }
+      >
+        {showBackButton &&
+          (isGamePage ? (
             <>
               <button
                 onClick={handleBackClick}
@@ -672,11 +731,13 @@ export function PageLayout({
               </button>
               {children}
             </div>
-          )
-        )}
-        {!showBackButton && (
-          isGamePage ? children : <div className={styles.pageContent}>{children}</div>
-        )}
+          ))}
+        {!showBackButton &&
+          (isGamePage ? (
+            children
+          ) : (
+            <div className={styles.pageContent}>{children}</div>
+          ))}
       </div>
 
       {/* Create Room Modal */}
