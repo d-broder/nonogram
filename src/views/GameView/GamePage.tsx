@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { usePuzzleLoader, useGameState, useZoom } from "../../features/game";
 import { useGameStateMigration } from "../../features/game/hooks/useGameStateMigration";
@@ -7,6 +7,8 @@ import { useAppNavigation } from "../../shared/contexts/AppNavigationContext";
 import { GameBoard } from "../../features/game";
 import { PageLayout } from "../../features/layout";
 import type { CellState } from "../../shared/types";
+import { useGamePageState, useGamePageSync } from "./hooks";
+import { GameModals } from "./components";
 import styles from "./GamePage.module.css";
 
 interface GamePageProps {
@@ -55,33 +57,31 @@ export function GamePage({
   const { room, updateGridCell, updateClueState, resetRoomToWaiting } =
     useFirebaseRoom(roomId || null);
 
-  // Check if current player is the creator (controls game controls visibility)
-  // For multiplayer, check the real-time room data; for single player, always true
-  const isCreator =
-    !isMultiplayer ||
-    (currentPlayerInfo &&
-      room &&
-      room.players &&
-      currentPlayerInfo.id &&
-      room.players[currentPlayerInfo.id]?.isCreator);
-
   const { migrateToMultiplayer } = useGameStateMigration();
 
-  // States for UI
-  const [showTooltip, setShowTooltip] = useState(false);
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [stickyClues, setStickyClues] = useState(true);
-  const [showPlayerIndicators, setShowPlayerIndicators] = useState(true);
-
-  // State for clue clicks (moved from GameBoard to sync with Firebase)
-  const [clickedRowClues, setClickedRowClues] = useState<Set<string>>(
-    new Set()
-  );
-  const [clickedColClues, setClickedColClues] = useState<Set<string>>(
-    new Set()
-  );
+  // Use extracted state management hook
+  const {
+    showTooltip,
+    setShowTooltip,
+    isMigrating,
+    setIsMigrating,
+    showClearConfirmation,
+    setShowClearConfirmation,
+    isMobile,
+    stickyClues,
+    setStickyClues,
+    showPlayerIndicators,
+    setShowPlayerIndicators,
+    clickedRowClues,
+    setClickedRowClues,
+    clickedColClues,
+    setClickedColClues,
+    isCreator,
+  } = useGamePageState({
+    isMultiplayer,
+    currentPlayerInfo,
+    room,
+  });
 
   const {
     gameState,
@@ -131,75 +131,16 @@ export function GamePage({
     }
   }, [isMultiplayer, currentPlayerInfo, room]);
 
-  // Check for mobile screen size
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Clue click handlers for multiplayer sync
-  const handleRowClueClick = async (
-    rowIndex: number,
-    clueIndex: number | string
-  ) => {
-    const clueId = `row-${rowIndex}-${clueIndex}`;
-    const isCurrentlyClicked = clickedRowClues.has(clueId);
-    const newState = !isCurrentlyClicked; // Toggle state
-
-    // Update local state immediately for responsive UI
-    const newSet = new Set(clickedRowClues);
-    if (newState) {
-      newSet.add(clueId);
-    } else {
-      newSet.delete(clueId);
-    }
-    setClickedRowClues(newSet);
-
-    // If multiplayer, sync to Firebase
-    if (isMultiplayer && roomId) {
-      try {
-        await updateClueState(clueId, newState);
-      } catch (error) {
-        console.error("Error syncing clue to Firebase:", error);
-        // Revert local state on error
-        setClickedRowClues(clickedRowClues);
-      }
-    }
-  };
-
-  const handleColClueClick = async (
-    colIndex: number,
-    clueIndex: number | string
-  ) => {
-    const clueId = `col-${colIndex}-${clueIndex}`;
-    const isCurrentlyClicked = clickedColClues.has(clueId);
-    const newState = !isCurrentlyClicked; // Toggle state
-
-    // Update local state immediately for responsive UI
-    const newSet = new Set(clickedColClues);
-    if (newState) {
-      newSet.add(clueId);
-    } else {
-      newSet.delete(clueId);
-    }
-    setClickedColClues(newSet);
-
-    // If multiplayer, sync to Firebase
-    if (isMultiplayer && roomId) {
-      try {
-        await updateClueState(clueId, newState);
-      } catch (error) {
-        console.error("Error syncing clue to Firebase:", error);
-        // Revert local state on error
-        setClickedColClues(clickedColClues);
-      }
-    }
-  };
+  // Use sync hook for clue clicks
+  const { handleRowClueClick, handleColClueClick } = useGamePageSync({
+    isMultiplayer,
+    roomId,
+    updateClueState,
+    clickedRowClues,
+    setClickedRowClues,
+    clickedColClues,
+    setClickedColClues,
+  });
 
   // Clear grid with confirmation
   const handleClearGridClick = () => {
@@ -459,15 +400,19 @@ export function GamePage({
       onConfirmClear={handleConfirmClear}
       onCancelClear={handleCancelClear}
     >
-      {/* Success message overlay */}
-      {gameState.isComplete && (
-        <div className={styles.successOverlay}>
-          <h1 className={styles.successMessage}>
-            {(effectiveType === "classic" ? "CLASSIC" : "SUPER").toUpperCase()}{" "}
-            PUZZLE {puzzle.id} SOLVED
-          </h1>
-        </div>
-      )}
+      {/* Game Modals */}
+      <GameModals
+        showClearConfirmation={showClearConfirmation}
+        onClearConfirm={() => {
+          clearGameGrid();
+          setShowClearConfirmation(false);
+        }}
+        onClearCancel={() => setShowClearConfirmation(false)}
+        isComplete={gameState.isComplete}
+        onSuccessClose={() => {
+          // Handle success modal close if needed
+        }}
+      />
 
       {/* Migration loading overlay */}
       {isMigrating && (
