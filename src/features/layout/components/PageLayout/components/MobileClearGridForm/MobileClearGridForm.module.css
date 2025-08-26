@@ -1,0 +1,81 @@
+/* Mobile Clear Grid Form */
+.mobileClearForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 1.5rem;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.clearMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.clearMessage p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.clearActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.clearCancelButton,
+.clearConfirmButton {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.clearCancelButton {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.clearCancelButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.clearConfirmButton {
+  background: rgba(220, 53, 69, 0.8);
+  color: white;
+  border-color: rgba(220, 53, 69, 0.6);
+}
+
+.clearConfirmButton:hover {
+  background: rgba(220, 53, 69, 0.9);
+  border-color: rgba(220, 53, 69, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+}

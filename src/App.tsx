@@ -1,12 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AppNavigationProvider } from "./contexts/AppNavigationContext";
-import { PuzzleSelectionPage } from "./pages/PuzzleSelectionPage";
-import { GamePage } from "./pages/GamePage";
-import { JoinRoomPage } from "./pages/JoinRoomPage";
-import { WaitingRoomPage } from "./pages/WaitingRoomPage";
-import { UnifiedPage } from "./pages/UnifiedPage";
-import { MultiplayerRoomHandler } from "./pages/MultiplayerRoomHandler";
+import { AppNavigationProvider } from "./shared/contexts/AppNavigationContext";
+import {
+  PuzzleSelectionPage,
+  GamePage,
+  JoinRoomPage,
+  WaitingRoomPage,
+} from "./views";
+import { SinglePlayerRouter } from "./pages/SinglePlayerRouter";
+import { MultiplayerRouter } from "./pages/MultiplayerRouter";
 import "./App.css";
+
+// Force refresh
+console.log("App.tsx loaded");
 
 function App() {
   return (
@@ -14,10 +19,10 @@ function App() {
       <Router>
         <div className="app">
           <Routes>
-            <Route path="/" element={<UnifiedPage />} />
+            <Route path="/" element={<SinglePlayerRouter />} />
 
             {/* Multiplayer Room Route - handles all multiplayer scenarios */}
-            <Route path="/:roomId" element={<MultiplayerRoomHandler />} />
+            <Route path="/:roomId" element={<MultiplayerRouter />} />
 
             {/* Legacy Single Player Routes (kept for backward compatibility) */}
             <Route path="/puzzles" element={<PuzzleSelectionPage />} />
