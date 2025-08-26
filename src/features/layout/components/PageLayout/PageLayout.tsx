@@ -8,7 +8,11 @@ import {
   MobileExpandedContent,
 } from "./components";
 import type { PaintMode, Puzzle, Player } from "../../../../shared/types";
-import { usePageLayoutNavigation, usePageLayoutState, usePageLayoutHandlers } from "./hooks";
+import {
+  usePageLayoutNavigation,
+  usePageLayoutState,
+  usePageLayoutHandlers,
+} from "./hooks";
 import styles from "./PageLayout.module.css";
 
 interface PageLayoutProps {

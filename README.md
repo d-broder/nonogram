@@ -16,6 +16,7 @@ src/
 ```
 
 ### **Key Architectural Patterns:**
+
 - **Feature-based organization** for scalability
 - **Container-controlled spacing** for consistent layouts
 - **Unified form logic** with shared RoomForm component
@@ -34,12 +35,14 @@ src/
 ## 🎮 Game Modes
 
 ### Singleplayer
+
 - Choose between Classic or Super Nonogram puzzles
 - Solve at your own pace with local state management
 - Clue click system for visual assistance
 - Zoom and grid reset controls
 
 ### Multiplayer
+
 - Create or join private rooms with custom room IDs
 - Real-time collaboration with other players
 - Player-specific color system for visual distinction
@@ -49,12 +52,14 @@ src/
 ## 🎯 How to Play
 
 ### Basic Controls
+
 - **Left Click**: Cycles cell states (empty → filled → marked → empty)
 - **Paint Mode**: Switch between black cells, X marks, and O marks
 - **Clue Assistance**: Click row/column numbers for visual hints
 - **Zoom Controls**: Scale the game board for better visibility
 
 ### Multiplayer Features
+
 - **Room Creation**: Generate shareable room links
 - **Player Colors**: Each player gets a unique color identifier
 - **Real-time Updates**: See other players' moves instantly
@@ -63,6 +68,7 @@ src/
 ## 🛠️ Technologies Used
 
 ### Frontend
+
 - **React 18+** with Concurrent Features and modern hooks
 - **TypeScript** for type safety and developer experience
 - **Vite** for fast development and optimized builds
@@ -70,11 +76,13 @@ src/
 - **CSS Modules** with container-controlled spacing patterns
 
 ### Backend/Database
+
 - **Firebase Firestore** for real-time multiplayer synchronization
 - **Firebase Hosting** for production deployment
 - **Session Storage** for local player state management
 
 ### Development Tools
+
 - **ESLint** with TypeScript rules
 - **Feature-based** file organization
 - **Barrel exports** for clean imports
@@ -83,6 +91,7 @@ src/
 ## 🚀 **Development Workflow**
 
 ### Getting Started
+
 ```bash
 npm install
 npm run dev     # Development server
@@ -91,6 +100,7 @@ npm run lint    # Code quality check
 ```
 
 ### Project Structure
+
 - **Components**: UI rendering only, composed via props
 - **Hooks**: State management and side effects
 - **Utils**: Pure functions for data manipulation
@@ -98,6 +108,7 @@ npm run lint    # Code quality check
 - **Types**: Centralized TypeScript definitions
 
 ### Multiplayer Testing
+
 1. Start dev server: `npm run dev`
 2. Create room in one browser tab
 3. Join room in incognito/different browser
@@ -106,11 +117,13 @@ npm run lint    # Code quality check
 ## 📊 **Architecture Metrics (Post-Refactoring)**
 
 ### File Size Optimization
+
 - **PageLayout**: 731 → 302 lines (-58%)
 - **CreateRoomModal**: 166 → 60 lines (-64%)
 - **JoinRoomPage**: 265 → 113 lines (-57%)
 
 ### Organization Improvements
+
 - **Feature-based structure**: 95% implemented
 - **Form unification**: 3 implementations → 1 base + wrappers
 - **Constants centralization**: Complete in `shared/constants/`
