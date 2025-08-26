@@ -1,4 +1,4 @@
-import { GameControlButton } from "../GameControlButton";
+import { GameControlButton } from "../../../../shared";
 import { ButtonGroup } from "../../../ui";
 import type { PaintMode } from "../../../../shared/types";
 import styles from "./GameControlsPanel.module.css";

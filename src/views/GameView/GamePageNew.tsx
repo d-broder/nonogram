@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { usePuzzleLoader, useGameState, useZoom } from "../../features/game";
-import { useGameStateMigration } from "../../features/game/hooks/useGameStateMigration";
 import { useFirebaseRoom } from "../../features/room";
 import { useAppNavigation } from "../../shared/contexts/AppNavigationContext";
 import { GameBoard } from "../../features/game";
@@ -65,11 +64,8 @@ export function GamePage({
       currentPlayerInfo.id &&
       room.players[currentPlayerInfo.id]?.isCreator);
 
-  const { migrateToMultiplayer } = useGameStateMigration();
-
   // States for UI
   const [showTooltip, setShowTooltip] = useState(false);
-  const [isMigrating, setIsMigrating] = useState(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [stickyClues, setStickyClues] = useState(true);
@@ -266,45 +262,10 @@ export function GamePage({
     }
   };
 
-  // Handle room creation during game (migration from single to multiplayer)
-  const handleRoomCreated = async (newRoomId: string, playerId: string) => {
-    if (!puzzle) return;
-
-    setIsMigrating(true);
-    try {
-      // Prepare migration data
-      const migrationData = {
-        gameState,
-        puzzle,
-        puzzleType: effectiveType!, // From URL params or props
-        puzzleId: parseInt(effectiveId!), // From URL params or props
-        creatorId: playerId, // Creator ID for cellAuthors
-        clueStates: {
-          clickedRowClues,
-          clickedColClues,
-        },
-        uiSettings: {
-          paintMode: gameState.paintMode,
-          stickyClues,
-          showPlayerIndicators,
-        },
-      };
-
-      // Migrate current game state to the new room
-      const result = await migrateToMultiplayer(newRoomId, migrationData);
-
-      if (result.success) {
-        // Navigate to the new room - MultiplayerRoomHandler will handle showing the correct view
-        navigate(`/${newRoomId}`);
-      } else {
-        console.error("Migration failed:", result.error);
-        // Could show error message to user here
-      }
-    } catch (error) {
-      console.error("Error during room creation and migration:", error);
-    } finally {
-      setIsMigrating(false);
-    }
+  // Handle room creation during game (simple navigation)
+  const handleRoomCreated = (newRoomId: string, _playerId: string) => {
+    // Navigate to the new room
+    window.location.href = `/${newRoomId}`;
   };
 
   // Handle back to puzzles with room reset for multiplayer
@@ -465,15 +426,6 @@ export function GamePage({
           <h1 className={styles.successMessage}>
             {(effectiveType === "classic" ? "CLASSIC" : "SUPER").toUpperCase()}{" "}
             PUZZLE {puzzle.id} SOLVED
-          </h1>
-        </div>
-      )}
-
-      {/* Migration loading overlay */}
-      {isMigrating && (
-        <div className={styles.successOverlay}>
-          <h1 className={styles.successMessage}>
-            Creating Multiplayer Room...
           </h1>
         </div>
       )}

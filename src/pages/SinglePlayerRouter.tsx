@@ -1,14 +1,31 @@
+import { Suspense, lazy } from "react";
 import { useAppNavigation } from "../shared/contexts";
-import { PuzzleSelectionPage, GamePage } from "../views";
+
+// Lazy load views
+const PuzzleSelectionPage = lazy(() =>
+  import("../views").then((module) => ({ default: module.PuzzleSelectionPage }))
+);
+const GamePage = lazy(() =>
+  import("../views").then((module) => ({ default: module.GamePage }))
+);
 
 export function SinglePlayerRouter() {
   const { currentView, selectedPuzzle } = useAppNavigation();
 
   if (currentView === "game" && selectedPuzzle) {
     return (
-      <GamePage puzzleType={selectedPuzzle.type} puzzleId={selectedPuzzle.id} />
+      <Suspense fallback={<div>Loading game...</div>}>
+        <GamePage
+          puzzleType={selectedPuzzle.type}
+          puzzleId={selectedPuzzle.id}
+        />
+      </Suspense>
     );
   }
 
-  return <PuzzleSelectionPage />;
+  return (
+    <Suspense fallback={<div>Loading puzzles...</div>}>
+      <PuzzleSelectionPage />
+    </Suspense>
+  );
 }

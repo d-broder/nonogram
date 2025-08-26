@@ -1,12 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect } from "react";
+import iconX from "../../../../assets/icon-x.png";
+import iconO from "../../../../assets/icon-o.png";
 import type {
   Puzzle,
   CellState,
   CellPosition,
   ClueElement,
 } from "../../../../shared/types";
-import iconX from "../../../../assets/icon-x.png";
-import iconO from "../../../../assets/icon-o.png";
+import { useBoardControls } from "./components";
+import {
+  useGameBoardInteraction,
+  useGameBoardState,
+  useGameBoardZoom,
+} from "./hooks";
 import styles from "./GameBoard.module.css";
 
 interface GameBoardProps {
@@ -67,138 +73,44 @@ export function GameBoard({
   const colCluesRef = useRef<HTMLDivElement>(null);
   const rowCluesRef = useRef<HTMLDivElement>(null);
 
-  // State to track which clues are clicked/highlighted
-  // Use external state if provided (for multiplayer), otherwise use internal state
-  const [internalClickedRowClues, setInternalClickedRowClues] = useState<
-    Set<string>
-  >(new Set());
-  const [internalClickedColClues, setInternalClickedColClues] = useState<
-    Set<string>
-  >(new Set());
+  // Use hooks for state and interactions
+  const {
+    clickedRowClues,
+    clickedColClues,
+    handleRowClueClick,
+    handleColClueClick,
+  } = useGameBoardState({
+    externalClickedRowClues,
+    externalClickedColClues,
+    onRowClueClick,
+    onColClueClick,
+  });
 
-  const clickedRowClues = externalClickedRowClues || internalClickedRowClues;
-  const clickedColClues = externalClickedColClues || internalClickedColClues;
+  const {
+    handleCellMouseDown,
+    handleCellMouseEnter,
+    handleCellTouchStart,
+    handleCellTouchMove,
+    handleCellTouchEnd,
+    handleContextMenu,
+  } = useGameBoardInteraction({
+    isComplete,
+    showSolution,
+    onCellMouseDown,
+    onCellMouseEnter,
+    onCellMouseUp,
+  });
 
-  // Handle clue clicking
-  const handleRowClueClick = useCallback(
-    (e: React.MouseEvent, rowIndex: number, clueIndex: number | string) => {
-      e.preventDefault();
-      e.stopPropagation();
+  const { boardStyle } = useGameBoardZoom({
+    zoomConfig,
+    stickyClues,
+  });
 
-      if (onRowClueClick) {
-        // Use external handler (for multiplayer)
-        onRowClueClick(rowIndex, clueIndex);
-      } else {
-        // Use internal state (for single player)
-        const clueId = `row-${rowIndex}-${clueIndex}`;
-        setInternalClickedRowClues((prev) => {
-          const newSet = new Set(prev);
-          if (newSet.has(clueId)) {
-            newSet.delete(clueId);
-          } else {
-            newSet.add(clueId);
-          }
-          return newSet;
-        });
-      }
-    },
-    [onRowClueClick]
-  );
-
-  const handleColClueClick = useCallback(
-    (e: React.MouseEvent, colIndex: number, clueIndex: number | string) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (onColClueClick) {
-        // Use external handler (for multiplayer)
-        onColClueClick(colIndex, clueIndex);
-      } else {
-        // Use internal state (for single player)
-        const clueId = `col-${colIndex}-${clueIndex}`;
-        setInternalClickedColClues((prev) => {
-          const newSet = new Set(prev);
-          if (newSet.has(clueId)) {
-            newSet.delete(clueId);
-          } else {
-            newSet.add(clueId);
-          }
-          return newSet;
-        });
-      }
-    },
-    [onColClueClick]
-  );
-
-  const handleCellMouseDown = useCallback(
-    (e: React.MouseEvent, row: number, col: number) => {
-      e.preventDefault();
-      if (isComplete || showSolution) return;
-      onCellMouseDown({ row, col }, e.button);
-    },
-    [onCellMouseDown, isComplete, showSolution]
-  );
-
-  const handleCellMouseEnter = useCallback(
-    (row: number, col: number) => {
-      if (isComplete || showSolution) return;
-      onCellMouseEnter({ row, col });
-    },
-    [onCellMouseEnter, isComplete, showSolution]
-  );
-
-  // Touch event handlers for mobile support
-  const handleCellTouchStart = useCallback(
-    (e: React.TouchEvent, row: number, col: number) => {
-      e.stopPropagation();
-      if (isComplete || showSolution) return;
-      onCellMouseDown({ row, col }, 0); // Treat touch as left mouse button
-    },
-    [onCellMouseDown, isComplete, showSolution]
-  );
-
-  const handleCellTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      e.stopPropagation();
-      if (isComplete || showSolution) return;
-
-      const touch = e.touches[0];
-      if (!touch) return;
-
-      // Find the element under the touch point
-      const elementBelow = document.elementFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
-      if (!elementBelow) return;
-
-      // Check if it's a grid cell button
-      const button = elementBelow.closest("button");
-      if (!button || !button.dataset.row || !button.dataset.col) return;
-
-      const row = parseInt(button.dataset.row, 10);
-      const col = parseInt(button.dataset.col, 10);
-
-      onCellMouseEnter({ row, col });
-    },
-    [onCellMouseEnter, isComplete, showSolution]
-  );
-
-  const handleCellTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onCellMouseUp();
-    },
-    [onCellMouseUp]
-  );
-
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent right-click menu
-  }, []);
+  const { handleGridTouchStart, handleGridTouchMove, handleGridTouchEnd } =
+    useBoardControls();
 
   // Add global mouse up listener
-  useEffect(() => {
+  React.useEffect(() => {
     const handleGlobalMouseUp = () => {
       onCellMouseUp();
     };
@@ -556,38 +468,10 @@ export function GameBoard({
     return { colClueElements, rowClueElements };
   };
 
-  // Grid-specific touch handlers to prevent page scroll only in grid area
-  const handleGridTouchStart = useCallback((e: React.TouchEvent) => {
-    e.stopPropagation();
-  }, []);
-
-  const handleGridTouchMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const handleGridTouchEnd = useCallback((e: React.TouchEvent) => {
-    e.stopPropagation();
-  }, []);
-
   const { colClueElements, rowClueElements } = renderVisualClues();
 
   return (
-    <div
-      className={styles.nonogramContainer}
-      style={
-        {
-          "--cell-size": `${zoomConfig.cellSize}px`,
-          "--clue-width": `${zoomConfig.clueWidth}px`,
-          "--clue-height": `${zoomConfig.clueHeight}px`,
-          "--clue-gap": `${zoomConfig.clueGap}px`,
-          "--super-clue-width": `${zoomConfig.superClueWidth}px`,
-          "--super-clue-height": `${zoomConfig.superClueHeight}px`,
-          "--icon-size": `${Math.round(zoomConfig.cellSize * 0.6)}px`,
-          "--clue-font-size": `${zoomConfig.clueFontSize}px`,
-        } as React.CSSProperties
-      }
-    >
+    <div className={styles.nonogramContainer} style={boardStyle}>
       {/* Corner space */}
       <div
         className={`${styles.cornerSpace} ${
