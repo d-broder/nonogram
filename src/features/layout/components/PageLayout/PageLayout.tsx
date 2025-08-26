@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { CreateRoomModal } from "../../../room";
 import {
   MobileTopBar,
@@ -10,7 +8,7 @@ import {
   MobileExpandedContent,
 } from "./components";
 import type { PaintMode, Puzzle, Player } from "../../../../shared/types";
-import { useFirebaseRoom } from "../../../room";
+import { usePageLayoutNavigation, usePageLayoutState, usePageLayoutHandlers } from "./hooks";
 import styles from "./PageLayout.module.css";
 
 interface PageLayoutProps {
@@ -100,137 +98,45 @@ export function PageLayout({
   onConfirmClear,
   onCancelClear,
 }: PageLayoutProps) {
-  const navigate = useNavigate();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [showMobileCreateRoom, setShowMobileCreateRoom] = useState(false);
-  const [showMobileClearGrid, setShowMobileClearGrid] = useState(false);
+  // Custom hooks to manage state and handlers
+  const {
+    isCollapsed,
+    showCreateRoomModal,
+    isMobile,
+    showMobileCreateRoom,
+    showMobileClearGrid,
+    setIsCollapsed,
+    setShowCreateRoomModal,
+    setShowMobileCreateRoom,
+    setShowMobileClearGrid,
+    toggleSidebar,
+  } = usePageLayoutState();
+
+  const { handleHomeClick, handleBackClick } = usePageLayoutNavigation(roomId);
+
+  const handleHomeClickWrapper = () => handleHomeClick(onHomeClick);
+
+  const {
+    handleOpenCreateModal,
+    handleCloseCreateModal,
+    handleRoomCreated,
+    handleClearGrid,
+    handleMobileClearConfirm,
+    handleMobileClearCancel,
+  } = usePageLayoutHandlers(
+    isMobile,
+    setShowCreateRoomModal,
+    setShowMobileCreateRoom,
+    setShowMobileClearGrid,
+    setIsCollapsed,
+    onRoomCreated,
+    onClearGrid,
+    onConfirmClear,
+    onCancelClear
+  );
 
   // Generate room link if roomId is provided
   const roomLink = roomId ? `${window.location.origin}/${roomId}` : undefined;
-
-  // Modal handlers
-  const handleOpenCreateModal = () => {
-    if (isMobile) {
-      // No mobile, usar topBarExpanded em vez de modal
-      setShowMobileCreateRoom(true);
-      setIsCollapsed(false); // Expandir a sidebar
-    } else {
-      setShowCreateRoomModal(true);
-    }
-  };
-
-  const handleCloseCreateModal = () => {
-    setShowCreateRoomModal(false);
-    setShowMobileCreateRoom(false);
-  };
-
-  const handleRoomCreated = (roomId: string, playerId: string) => {
-    setShowCreateRoomModal(false);
-    setShowMobileCreateRoom(false);
-    // No mobile, colapsar a topBar após criar sala
-    if (isMobile) {
-      setIsCollapsed(true);
-    }
-    if (onRoomCreated) {
-      onRoomCreated(roomId, playerId);
-    }
-  };
-
-  // Clear Grid mobile handlers
-  const handleClearGrid = () => {
-    if (isMobile) {
-      // No mobile, usar topBarExpanded em vez de modal
-      setShowMobileClearGrid(true);
-      setIsCollapsed(false); // Expandir a sidebar
-    } else if (onClearGrid) {
-      onClearGrid();
-    }
-  };
-
-  const handleMobileClearConfirm = () => {
-    setShowMobileClearGrid(false);
-    if (onConfirmClear) {
-      onConfirmClear();
-    }
-  };
-
-  const handleMobileClearCancel = () => {
-    setShowMobileClearGrid(false);
-    if (onCancelClear) {
-      onCancelClear();
-    }
-  };
-
-  // Check for mobile screen size
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      if (mobile) {
-        setIsCollapsed(true); // Default collapsed on mobile
-      }
-    };
-
-    // Set CSS custom property for real viewport height (fallback for older browsers)
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
-    };
-
-    checkMobile();
-    setViewportHeight();
-
-    window.addEventListener("resize", checkMobile);
-    window.addEventListener("resize", setViewportHeight);
-    window.addEventListener("orientationchange", setViewportHeight);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-      window.removeEventListener("resize", setViewportHeight);
-      window.removeEventListener("orientationchange", setViewportHeight);
-    };
-  }, []);
-
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
-  // Initialize Firebase room hook (will be null if no roomId)
-  const { leaveRoom } = useFirebaseRoom(roomId || null);
-
-  const handleHomeClick = async () => {
-    // Check if we're in multiplayer mode
-    if (roomId && leaveRoom) {
-      const currentPlayerInfo = sessionStorage.getItem("playerInfo");
-      if (currentPlayerInfo) {
-        const playerInfo = JSON.parse(currentPlayerInfo);
-
-        // Leave the room first
-        await leaveRoom(playerInfo.id);
-
-        // Clear player info from session storage
-        sessionStorage.removeItem("playerInfo");
-      }
-
-      // Navigate to single player mode (root URL)
-      navigate("/");
-    } else if (onHomeClick) {
-      // Use custom home click handler if provided (for single player internal navigation)
-      onHomeClick();
-    } else {
-      // Default navigation to root
-      navigate("/");
-    }
-  };
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-    // Reset mobile forms when toggling sidebar
-    setShowMobileCreateRoom(false);
-    setShowMobileClearGrid(false);
-  };
 
   // Mobile collapsed view
   if (isMobile && isCollapsed) {
@@ -338,7 +244,7 @@ export function PageLayout({
     <div className={styles.pageContainer}>
       {/* Sidebar */}
       <DesktopSidebar
-        onHomeClick={handleHomeClick}
+        onHomeClick={handleHomeClickWrapper}
         puzzle={puzzle}
         currentType={currentType}
         showGameControls={showGameControls}

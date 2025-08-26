@@ -49,7 +49,7 @@ export function PuzzleSelectionPage({
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
-    } catch (err) {
+    } catch {
       const textArea = document.createElement("textarea");
       textArea.value = roomLink;
       document.body.appendChild(textArea);
@@ -65,7 +65,7 @@ export function PuzzleSelectionPage({
   };
 
   // Handle room creation during puzzle selection
-  const handleRoomCreated = (newRoomId: string, _playerId: string) => {
+  const handleRoomCreated = (newRoomId: string, _: string) => {
     // Navigate to the new room URL - MultiplayerRoomHandler will handle the rest
     navigate(`/${newRoomId}`);
   };

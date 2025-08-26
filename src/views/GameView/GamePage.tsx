@@ -195,7 +195,7 @@ export function GamePage({
     try {
       await navigator.clipboard.writeText(roomLink);
       setShowTooltip(true);
-    } catch (err) {
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
       textArea.value = roomLink;
