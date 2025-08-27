@@ -1,7 +1,7 @@
 .buttonGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   align-items: center;
   flex-grow: 1;
   flex-shrink: 1;
@@ -14,17 +14,17 @@
 }
 
 .title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: #ecf0f1;
+  color: var(--color-text-light);
   text-align: center;
 }
 
 .buttons {
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
@@ -38,16 +38,16 @@
 }
 
 /* Mobile adjustments */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-tablet)) {
   .buttonGroup {
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
   }
   
   .title {
-    font-size: 0.9rem;
+    font-size: var(--font-size-sm);
   }
   
   .buttons {
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
   }
 }

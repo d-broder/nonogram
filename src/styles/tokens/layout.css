@@ -1,0 +1,117 @@
+/* Layout Design Tokens */
+:root {
+  /* Border radius */
+  --radius-none: 0;
+  --radius-xs: 0.0625rem; /* 1px */
+  --radius-sm: 0.125rem;  /* 2px */
+  --radius-md: 0.25rem;   /* 4px */
+  --radius-lg: 0.5rem;    /* 8px */
+  --radius-xl: 0.75rem;   /* 12px */
+  --radius-2xl: 1rem;     /* 16px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Z-index layers */
+  --z-index-base: 0;
+  --z-index-dropdown: 10;
+  --z-index-sticky: 15;
+  --z-index-overlay: 20;
+  --z-index-modal: 30;
+  --z-index-toast: 40;
+  --z-index-tooltip: 50;
+
+  /* Layout dimensions */
+  --sidebar-width: 250px;
+  --sidebar-width-collapsed: 60px;
+  --header-height: 60px;
+  --footer-height: 60px;
+  --mobile-bottom-bar-height: 80px;
+
+  /* Game-specific layout */
+  --game-cell-size: 40px;
+  --game-cell-size-mobile: 32px;
+  --game-clue-width: 30px;
+  --game-clue-height: 25px;
+  --game-zoom-min: 0.5;
+  --game-zoom-max: 2.0;
+  --game-zoom-step: 0.1;
+  --grid-spacing: var(--spacing-sm);
+  --clue-size: 30px;
+  --clue-size-small: 25px;
+  --super-clue-size: 70px;
+  --clue-number-margin: calc(var(--spacing-xs) / 2);
+  --waiting-room-height: 400px;
+  --waiting-room-height-mobile: 300px;
+  --spinner-size: 60px;
+  --spinner-size-mobile: 50px;
+  --cell-size: var(--game-cell-size);
+  --icon-size: 24px;
+  --translate-hide: -30px;
+  --puzzle-card-size: 120px;
+  --puzzle-card-size-mobile: 100px;
+  --form-max-width: 400px;
+  --player-indicator-size: 16px;
+
+  /* Form elements */
+  --input-height: 40px;
+  --input-height-sm: 32px;
+  --input-height-lg: 48px;
+  --button-height: 40px;
+  --button-height-sm: 32px;
+  --button-height-lg: 48px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-medium: 1.2s ease-in-out;
+  --transition-slow: 350ms ease;
+  --transition-bounce: 250ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-delay-long: 1.2s;
+
+  /* Border widths */
+  --border-width-thin: 1px;
+  --border-width-normal: 2px;
+  --border-width-thick: 4px;
+  
+  /* Text effects */
+  --shadow-text: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-text-sm: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  --transform-lift: -2px;
+  --transform-lift-lg: -4px;
+  --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 100%;
+    --game-cell-size: var(--game-cell-size-mobile);
+    --input-height: var(--input-height-lg); /* Larger touch targets */
+    --button-height: var(--button-height-lg);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-width-normal: var(--border-width-thick);
+    --shadow-md: none;
+    --shadow-lg: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition-normal: 0ms;
+    --transition-slow: 0ms;
+    --transition-bounce: 0ms;
+  }
+}

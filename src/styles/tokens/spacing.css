@@ -1,0 +1,50 @@
+/* Spacing Design Tokens */
+:root {
+  /* Base spacing scale (8px base) */
+  --spacing-0: 0;
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem;  /* 8px */
+  --spacing-md: 1rem;    /* 16px */
+  --spacing-lg: 1.5rem;  /* 24px */
+  --spacing-xl: 2rem;    /* 32px */
+  --spacing-2xl: 3rem;   /* 48px */
+  --spacing-3xl: 4rem;   /* 64px */
+
+  /* Component-specific spacing tokens */
+  --grid-spacing: var(--spacing-xs);
+  --form-field-spacing: var(--spacing-md);
+  --button-group-spacing: var(--spacing-sm);
+  --modal-padding: var(--spacing-lg);
+  --page-section-spacing: var(--spacing-lg);
+  --card-padding: var(--spacing-md);
+  --sidebar-padding: var(--spacing-md);
+
+  /* Layout spacing */
+  --container-gap: var(--spacing-md);
+  --section-gap: var(--spacing-lg);
+  --component-gap: var(--spacing-sm);
+}
+
+/* Responsive spacing adjustments */
+@media (max-width: 480px) {
+  :root {
+    /* Reduce spacing on very small screens */
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+    --spacing-3xl: 2.5rem;
+    
+    /* Adjust component spacing */
+    --modal-padding: var(--spacing-md);
+    --page-section-spacing: var(--spacing-md);
+    --sidebar-padding: var(--spacing-sm);
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    /* Increase spacing on larger screens */
+    --container-gap: var(--spacing-lg);
+    --section-gap: var(--spacing-xl);
+  }
+}

@@ -1,0 +1,45 @@
+/* Responsive Breakpoints Design Tokens */
+:root {
+  /* Standard breakpoints */
+  --breakpoint-mobile: 320px;
+  --breakpoint-mobile-lg: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-desktop-lg: 1200px;
+  --breakpoint-wide: 1440px;
+
+  /* Container max-widths */
+  --container-mobile: 100%;
+  --container-tablet: 750px;
+  --container-desktop: 1000px;
+  --container-wide: 1200px;
+
+  /* Viewport height handling */
+  --vh-fallback: 1vh;
+  --full-height: 100vh;
+  --full-height-dynamic: 100dvh;
+}
+
+/* Viewport height progressive enhancement */
+@supports (height: 100dvh) {
+  :root {
+    --full-height: 100dvh;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  :root {
+    /* Larger touch targets on touch devices */
+    --min-touch-target: 44px;
+    --button-min-height: 44px;
+  }
+}
+
+/* High DPI screen optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :root {
+    /* Adjust for high DPI screens */
+    --border-width: 0.5px;
+  }
+}

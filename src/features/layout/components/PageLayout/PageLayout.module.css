@@ -1,43 +1,40 @@
 /* Page Container */
 .pageContainer {
   display: flex;
-  height: 100vh; /* Fallback for older browsers */
-  height: calc(var(--vh, 1vh) * 100); /* Fallback using JS-calculated viewport */
-  height: 100dvh; /* Dynamic viewport height for modern browsers */
+  height: var(--full-height); /* Uses fallback system from layout tokens */
   width: 100%;
 }
 
 /* Sidebar (Desktop) */
 .sidebar {
-  width: 250px;
-  min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height for mobile */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ecf0f1;
-  padding: 1rem;
+  width: var(--sidebar-width);
+  min-height: var(--full-height);
+  background: var(--color-bg-sidebar);
+  color: var(--color-text-light);
+  padding: var(--sidebar-padding);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--container-gap);
   overflow-y: auto;
 }
 
 /* Project Title */
 .projectTitle {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 
 .titleButton {
   background: none;
   border: none;
-  color: #ecf0f1;
+  color: var(--color-text-light);
   font-size: inherit;
   font-weight: inherit;
   cursor: pointer;
   padding: 0;
   text-decoration: none;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-fast);
 }
 
 .titleButton:hover {
@@ -48,56 +45,56 @@
 .gameContent {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--container-gap);
 }
 
 .subtitle {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--font-weight-semibold);
   text-align: center;
-  line-height: 1.4;
+  line-height: var(--line-height-normal);
 }
 
 .gameControls1,
 .gameControls2 {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--container-gap);
 }
 
 .paintModePanel,
 .zoomPanel {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--component-gap);
   justify-content: center;
 }
 
 .sectionTitle {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: #bdc3c7;
+  color: var(--color-text-muted);
 }
 
 /* Room Info */
 .roomInfo {
-  background: #34495e;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 1rem;
+  background: var(--color-gray-700);
+  border-radius: var(--radius-lg);
+  padding: var(--card-padding);
+  margin-top: var(--container-gap);
 }
 
 .roomTitle {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--component-gap);
 }
 
 .roomLink {
-  font-size: 0.9rem;
-  color: #bdc3c7;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
   word-break: break-all;
-  margin-bottom: 1rem;
+  margin-bottom: var(--container-gap);
 }
 
 .copyButtonWrapper {
@@ -105,50 +102,50 @@
 }
 
 .copyButton {
-  background: #3498db;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
+  font-size: var(--font-size-sm);
+  transition: var(--transition-fast);
 }
 
 .copyButton:hover {
-  background: #2980b9;
+  background: var(--color-primary-dark);
 }
 
 /* Players */
 .playersContainer {
-  margin-top: 1rem;
+  margin-top: var(--spacing-md);
 }
 
 .playersTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.75rem 0;
-  color: #bdc3c7;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--color-text-light);
 }
 
 .playersList {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .playerCard {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  background: #2c3e50;
-  border-radius: 4px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
 }
 
 .playerColor {
-  width: 16px;
-  height: 16px;
+  width: var(--player-indicator-size);
+  height: var(--player-indicator-size);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -156,21 +153,21 @@
 .playerInfo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--component-gap);
   flex: 1;
 }
 
 .playerName {
-  font-size: 0.9rem;
+  font-size: var(--font-size-sm);
 }
 
 .creatorBadge {
-  background: #e74c3c;
-  color: white;
-  font-size: 0.6rem;
-  padding: 0.1rem 0.2rem;
-  border-radius: 3px;
-  font-weight: 600;
+  background: var(--color-error);
+  color: var(--color-white);
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Page Content Area */
@@ -324,7 +321,7 @@
 }
 
 /* Mobile responsiveness */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-tablet)) {
   .pageContainer {
     flex-direction: column;
   }
@@ -334,12 +331,12 @@
   }
   
   .pageContent {
-    padding: 1rem;
+    padding: var(--spacing-md);
     width: 100%;
   }
   
   .backButton {
-    font-size: 1.2rem;
+    font-size: var(--font-size-lg);
     top: 50%;
     transform: translateY(-50%);
   }
@@ -350,7 +347,8 @@
 
 .nonogramContainerArea {
     height: 75vh; /* Fallback */
-    height: calc(var(--vh, 1vh) * 75); /* JS fallback */
+    height: calc(var(--vh-fallback, 1vh) * 75);
+    height: 75dvh; /* Modern browsers */
     height: 75dvh; /* Dynamic viewport height for mobile */
     width: 100vw;
   }
@@ -367,18 +365,18 @@
 }
 
 /* Mobile responsiveness for create form */
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-mobile-lg)) {
   .mobileCreateForm {
-    padding: 1rem;
-    gap: 1.25rem;
+    padding: var(--spacing-md);
+    gap: var(--spacing-lg);
   }
   
   .formTitle {
-    font-size: 1.25rem;
+    font-size: var(--font-size-xl);
   }
   
   .label {
-    font-size: 1rem;
+    font-size: var(--font-size-md);
   }
   
   .colorGrid {
