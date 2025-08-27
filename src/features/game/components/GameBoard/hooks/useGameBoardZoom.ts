@@ -36,12 +36,11 @@ export function useGameBoardZoom({
     () =>
       ({
         "--cell-size": `${zoomConfig.cellSize}px`,
-        "--clue-width": `${zoomConfig.clueWidth}px`,
-        "--clue-height": `${zoomConfig.clueHeight}px`,
-        "--clue-gap": `${zoomConfig.clueGap}px`,
-        "--super-clue-width": `${zoomConfig.superClueWidth}px`,
-        "--super-clue-height": `${zoomConfig.superClueHeight}px`,
-        "--clue-font-size": `${zoomConfig.clueFontSize}px`,
+        "--clue-size": `${zoomConfig.clueWidth}px`,
+        "--clue-size-small": `${zoomConfig.clueHeight}px`,
+        "--super-clue-size": `${zoomConfig.superClueWidth}px`,
+        "--font-size-clue": `${zoomConfig.clueFontSize}px`,
+        "--icon-size": `${Math.max(zoomConfig.cellSize * 0.6, 16)}px`,
       } as React.CSSProperties),
     [zoomConfig]
   );

@@ -1,10 +1,10 @@
 /* Main nonogram container - container-controlled spacing */
 .nonogramContainer {
   display: grid;
-  grid-template-areas: 
+  grid-template-areas:
     "corner colClues"
     "rowClues grid";
-  gap: var(--grid-spacing);
+  gap: var(--clue-number-margin);
   margin: auto;
   user-select: none; /* Prevent text selection during drag */
   -webkit-user-select: none;
@@ -19,8 +19,8 @@
   position: sticky;
   top: 0;
   left: 0;
-  z-index: var(--z-index-sticky);
-  background-color: var(--color-bg-secondary);
+  z-index: var(--z-index-overlay);
+  background-color: var(--color-bg-game-area);
 }
 
 /* Corner space without sticky positioning */
@@ -38,7 +38,7 @@
   top: 0;
   z-index: var(--z-index-sticky);
   transition: var(--transition-medium);
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-bg-game-area);
   padding-top: var(--spacing-sm);
 }
 
@@ -71,7 +71,7 @@
   left: 0;
   z-index: var(--z-index-sticky);
   transition: var(--transition-medium);
-  background-color: var(--color-bg-secondary);
+  background-color: var(--color-bg-game-area);
   padding-left: var(--spacing-sm);
 }
 
@@ -193,7 +193,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--cell-size, 40px);
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;

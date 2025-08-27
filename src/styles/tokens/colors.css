@@ -37,7 +37,7 @@
   --color-cell-o: var(--color-player-blue);
   --color-cell-border: var(--color-gray-300);
   --color-cell-hover: var(--color-gray-100);
-  
+
   /* Overlay colors */
   --color-overlay-light: rgba(255, 255, 255, 0.1);
   --color-overlay-medium: rgba(255, 255, 255, 0.2);
@@ -49,6 +49,7 @@
   --color-bg-sidebar: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   --color-bg-modal: var(--color-white);
   --color-bg-overlay: rgba(0, 0, 0, 0.5);
+  --color-bg-game-area: #f0f2f5;
 
   /* Text colors */
   --color-text-primary: #213547;
