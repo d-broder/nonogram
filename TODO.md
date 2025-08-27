@@ -1,401 +1,595 @@
-# 🏗️ REFATORAÇÃO COMPLETA DO PROJETO - Tracking System
+# 🎨 REFATORAÇÃO CSS & HTML - Container-Controlled Spacing System
 
-## 📊 **STATUS GERAL DA REFATORAÇÃO**
+## 📊 **STATUS GERAL DA REFATORAÇÃO CSS**
 
 ```
-PROGRESS: [██████████] 100% (REFATORAÇÃO COMPLETA!)
-TEMPO GASTO: 2.5h (vs 2-3h estimadas)
-BRANCH: refactor/feature-architecture
-FASE ATUAL: CONCLUÍ### **📉 Redução de Linhas (Objetivo: Manutenibilidade)**
+PROGRESS: [░░░░░░░░░░] 0% (INICIANDO)
+BRANCH SUGERIDA: refactor/css-container-spacing
+FOCO: Container-Controlled Spacing + Melhores Práticas CSS/HTML
+TEMPO ESTIMADO: 6-8 horas
+```
 
-| Arquivo               | Antes | Depois | Redução     |
-| --------------------- | ----- | ------ | ----------- |
-| PageLayout.tsx        | 418   | 302    | **-28%** ✅ |
-| CreateRoomModal.tsx   | 166   | 60     | **-64%** ✅ |
-| JoinRoomPage.tsx      | 265   | 113    | **-57%** ✅ |
-| GamePage.tsx          | 447   | 447    | **0%** ⚪   |
-| MultiplayerRouter.tsx | 135   | 125    | **-7%** ✅  |`
+## 🎯 **OBJETIVO PRINCIPAL**
 
-## 🎉 **ANÁLISE COMPARATIVA - PLANO vs REALIDADE (Agosto 2025)**
-
-### **✅ CONQUISTAS ALCANÇADAS (MUITO ALÉM DO ESPERADO!)**
-
-1. **🔥 PageLayout Refatorado**: 731 → 381 linhas (-48%)
-2. **📁 Estrutura por Features**: Implementada completamente
-3. **🔄 Formulários Unificados**: RoomForm base + wrappers específicos
-4. **🎯 Constantes Centralizadas**: shared/constants/colors.ts
-5. **🗂️ Barrel Exports**: Sistema completo implementado
-6. **🧩 Feature-based Organization**: game/, room/, layout/, ui/
+Implementar um **sistema de espaçamento controlado por containers** em todo o projeto, aplicando as melhores práticas modernas de CSS e HTML para criar uma interface mais consistente, manutenível e escalável.
 
 ---
 
-## 📋 **ANÁLISE ARQUIVO POR ARQUIVO - ESTADO ATUAL vs PLANO ORIGINAL**
+## 🔍 **ANÁLISE DETALHADA DOS PROBLEMAS IDENTIFICADOS**
 
-### 📁 **✅ ROOT & CONFIG (IMPLEMENTADO PERFEITAMENTE)**
+### **🚨 PROBLEMAS CRÍTICOS DE SPACING CONFIRMADOS**
 
+#### **1. Sistema de Design Tokens PARCIALMENTE Implementado**
+
+```css
+/* ✅ PROGRESSO: RoomForm já usa design tokens */
+gap: var(--spacing-md, 1rem);
+padding: var(--spacing-lg, 1.5rem);
+
+/* ❌ PROBLEMA: Maioria dos arquivos ainda usa valores hardcoded */
+/* Encontrados em 25 arquivos CSS: */
+margin-bottom: 1rem; /* Views/PuzzleSelection */
+padding: 20px; /* Vários componentes */
+gap: 0.5rem; /* ButtonGroup */
+font-size: 1.2rem; /* WaitingRoom */
 ```
 
-✅ src/main.tsx & App.tsx → app/App.tsx (51 → 75 linhas)
-✅ src/index.css → mantido
-✅ firebase.ts → shared/services/firebase.ts
-✅ vite-env.d.ts → shared/types/vite-env.d.ts
-✅ contexts/ → shared/contexts/
-✅ package.json, vite.config.ts, tsconfig\*.json → mantidos
+#### **2. Child-Controlled Spacing (Antipadrão CONFIRMADO)**
 
+```css
+/* ❌ PROBLEMA REAL encontrado nos arquivos: */
+
+/* views/PuzzleSelectionView/PuzzleSelectionPage.module.css */
+.title {
+  margin-bottom: 2rem;
+}
+.subtitle {
+  margin: 0 0 1rem 0;
+}
+.categoryButtons {
+  margin-bottom: 1rem;
+}
+
+/* views/JoinRoomView/JoinRoomPage.module.css */
+.title {
+  margin-bottom: 0.5rem;
+}
+.description {
+  margin-bottom: 0.5rem;
+}
+
+/* ✅ SOLUÇÃO JÁ INICIADA: RoomForm usa container-controlled */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem); /* Container controla */
+}
 ```
 
-### 📄 **✅ PAGES/ROUTERS (MIGRAÇÃO COMPLETA)**
+#### **3. GameBoard com Layout Complexo MAS Parcialmente Otimizado**
 
+```css
+/* ✅ PROGRESSO: GameBoard já usa CSS variables para zoom */
+.nonogramContainer {
+  display: grid;
+  grid-template-areas: "corner colClues" "rowClues grid";
+  margin: auto;
+  padding-right: 1vh; /* ❌ Ainda tem spacing manual */
+  padding-bottom: 1vh; /* ❌ Ainda tem spacing manual */
+}
+
+/* ✅ BOM: Sistema de zoom com CSS variables implementado */
+.cell {
+  width: var(--cell-size, 40px);
+  height: var(--cell-size, 40px);
+}
 ```
 
-✅ UnifiedPage.tsx → pages/SinglePlayerRouter.tsx (15 → 27 linhas)
-✅ MultiplayerRoomHandler.tsx → pages/MultiplayerRouter.tsx (135 → 125 linhas)
-✅ GamePage.tsx → views/GameView/GamePage.tsx (471 → 407 linhas) [DIVIDIDO!]
-✅ PuzzleSelectionPage.tsx → views/PuzzleSelectionView/ (190 → 172 linhas)
-✅ JoinRoomPage.tsx → views/JoinRoomView/ (265 → 113 linhas) [FORM EXTRAÍDO!]
-✅ WaitingRoomPage.tsx → views/WaitingRoomView/ (77 → 67 linhas)
+### **📱 PROBLEMAS DE RESPONSIVIDADE CONFIRMADOS**
 
+#### **1. Breakpoints Inconsistentes VERIFICADOS**
+
+```css
+/* ❌ PROBLEMA CONFIRMADO: Breakpoints diferentes nos arquivos */
+@media (max-width: 768px) { /* PageLayout, WaitingRoom, etc. */
+@media (max-width: 480px) { /* Alguns components */
+@media screen and (max-width: 768px) { /* Variações de sintaxe */
+
+/* ✅ SOLUÇÃO: Padronizar breakpoints */
+:root {
+  --breakpoint-mobile: 320px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+}
 ```
 
-### 🧩 **✅ COMPONENTS (REORGANIZAÇÃO POR FEATURES CONCLUÍDA)**
+#### **2. Viewport Units Problemáticos CONFIRMADOS**
 
+```css
+/* ✅ PARCIALMENTE RESOLVIDO: PageLayout já tem fallbacks */
+height: 100vh; /* Fallback */
+height: calc(var(--vh, 1vh) * 100); /* JS fallback */
+height: 100dvh; /* Modern browsers */
 ```
-
-✅ PageLayout.tsx: 731 → 381 linhas (-48%) + DIVIDIDO EM 8 COMPONENTES
-├── PageLayout.tsx (381 linhas - componente principal)
-├── DesktopSidebar.tsx (140 linhas)
-├── MobileTopBar/ (40 linhas) + MobileTopBarExpanded/ (36 linhas)
-├── MobileBottomBar/ (57 linhas)
-├── MobileExpandedContent.tsx (102 linhas)
-├── RoomInfoSection/ (84 linhas)
-├── MobileCreateRoomForm/ (26 linhas)
-└── MobileClearGridForm/ (35 linhas)
-
-✅ GameBoard.tsx: 495 linhas → features/game/components/GameBoard/ [DIVIDIDO!]
-├── GameBoard.tsx (498 linhas - principal)
-├── GridContainer.tsx (130 linhas)
-├── CellRenderer.tsx (113 linhas)
-├── ClueRenderer.tsx (72 linhas)
-└── BoardControls.tsx (67 linhas)
-
-✅ CreateRoomModal.tsx: 166 → 60 linhas [UNIFICADO COM ROOMFORM!]
-✅ GameControls/GameControlsPanel → features/game/components/
-✅ ButtonGroup → features/ui/components/ (29 linhas)
-✅ ConfirmationModal → features/ui/components/ (51 linhas)
-✅ GameControlButton → features/game/components/ (77 linhas)
-✅ ClueToggleButton → features/game/components/
-
-```
-
-### 🔧 **✅ HOOKS (MIGRAÇÃO POR FEATURE COMPLETA)**
-
-```
-
-✅ useGameState.ts → features/game/hooks/
-✅ usePuzzleLoader.ts → features/game/hooks/
-✅ useZoom.ts → features/game/hooks/
-✅ useGameStateMigration.ts → features/game/hooks/
-✅ useFirebaseRoom.ts → features/room/hooks/
-✅ useRoomCleanup.ts → features/room/hooks/
-🆕 useRoomForm.ts → shared/hooks/ [NOVO HOOK UNIFICADO!]
-
-```
-
-### 🔧 **✅ UTILS, TYPES & CONSTANTS (CENTRALIZAÇÃO COMPLETA)**
-
-```
-
-✅ types/index.ts → shared/types/
-✅ utils/gridUtils.ts → shared/utils/
-✅ utils/puzzleUtils.ts → shared/utils/
-✅ contexts/AppNavigationContext.tsx → shared/contexts/
-� shared/constants/colors.ts [CENTRALIZAÇÃO DE CORES IMPLEMENTADA!]
-🆕 shared/services/firebase.ts
-
-```
-
-### 🎯 **ESTRUTURA FINAL IMPLEMENTADA (vs PLANO ORIGINAL)**
-
-```
-
-✅ IMPLEMENTADO: Estrutura por features (REALIDADE SUPEROU O PLANO!)
-
-src/
-├── app/ ✅ # Application Core
-│ ├── App.tsx (75 linhas)
-│ ├── App.css
-│ └── index.ts
-├── shared/ ✅ # Shared Resources (COMPLETO!)
-│ ├── components/
-│ │ ├── ui/Button/ (ButtonGroup)
-│ │ ├── ui/Modal/ (ConfirmationModal)
-│ │ └── RoomForm/ ⭐ [UNIFICAÇÃO CONCLUÍDA!]
-│ ├── constants/colors.ts ⭐ # [CENTRALIZAÇÃO IMPLEMENTADA!]
-│ ├── contexts/ (AppNavigationContext)
-│ ├── hooks/ (useRoomForm) ⭐
-│ ├── services/ (firebase)
-│ ├── types/ (index + vite-env)
-│ └── utils/ (gridUtils, puzzleUtils)
-├── features/ ✅ # Feature-based Organization
-│ ├── game/ ⭐ # [NOVO! game logic separado]
-│ │ ├── components/
-│ │ │ ├── GameBoard/ [DIVIDIDO EM 5 COMPONENTES!]
-│ │ │ ├── GameControls/ + GameControlsPanel/
-│ │ │ ├── GameControlButton/
-│ │ │ └── ClueToggleButton/
-│ │ └── hooks/ (useGameState, usePuzzleLoader, useZoom, etc)
-│ ├── room/ ✅ # Multiplayer logic
-│ │ ├── components/CreateRoomModal/ [REFATORADO!]
-│ │ └── hooks/ (useFirebaseRoom, useRoomCleanup)
-│ ├── layout/ ✅ # Layout components
-│ │ └── components/PageLayout/ [DIVIDIDO EM 8!]
-│ └── ui/ ✅ # UI components básicos
-├── pages/ ✅ # Route Handlers ONLY
-│ ├── SinglePlayerRouter.tsx ✅ # (UnifiedPage renomeado)
-│ └── MultiplayerRouter.tsx ✅ # (MultiplayerRoomHandler renomeado)
-└── views/ ✅ # Page Views (MIGRAÇÃO COMPLETA!)
-├── GameView/ [DIVIDIDO!] # GamePage + subcomponentes
-├── PuzzleSelectionView/ ✅
-├── JoinRoomView/ ✅ [FORM EXTRAÍDO!]
-└── WaitingRoomView/ ✅
-
-````
 
 ---
 
-## 🔥 **ANÁLISE DOS PROBLEMAS CRÍTICOS - RESOLVIDO vs PENDENTE**
+## 📋 **PLANO DE EXECUÇÃO ATUALIZADO - 7 FASES**
 
-### **✅ 1. PageLayout.tsx - PROBLEMA RESOLVIDO COM SUCESSO!**
+### **🎯 Componentes Identificados para Refatoração**
+
+### **📊 Arquivos CSS por Categoria (25 arquivos total)**
+
+```
+Core Components (necessitam refatoração urgente):
+├── PageLayout.module.css (593 lines) - ❌ valores hardcoded, base do sistema
+├── GameBoard.module.css (294 lines) - ✅ CSS vars zoom, ❌ spacing manual
+├── ButtonGroup.module.css - ❌ gap: 0.5rem hardcoded
+
+Views (child margins problemáticos):
+├── PuzzleSelectionPage.module.css - ❌ margin-bottom: 1rem; em filhos
+├── JoinRoomPage.module.css - ❌ margin-bottom: 0.5rem; em filhos
+├── WaitingRoomPage.module.css - ❌ margin-bottom: 1rem/2rem
+├── GamePage.module.css (117 lines) - ❌ spacing inconsistente
+
+Already Good (exemplos a seguir):
+├── RoomForm.module.css ✅ - design tokens implementados
+└── index.css - base styles OK
+```
+
+### **🚨 PRIORIDADES BASEADAS NA ANÁLISE REAL**
+
+**🔥 CRÍTICO (Phase 1-2):**
+
+1. **Criar sistema de design tokens** (inexistente exceto RoomForm)
+2. **PageLayout.module.css** (593 lines) - Base de todo layout
+3. **Views com child margins** - Antipadrão crítico
+
+**⚠️ IMPORTANTE (Phase 3-4):** 4. **GameBoard spacing** - Core component usado em todo jogo 5. **ButtonGroup** - Componente base para controles 6. **Form components** - Expandir padrão do RoomForm
+
+### **🏗️ Fase 1: Sistema de Design Tokens (1-1.5h)**
+
+#### **Objetivos:**
+
+- Criar sistema centralizado de spacing, cores, e breakpoints
+- Estabelecer CSS custom properties globais
+- Implementar progressive enhancement para viewport units
+
+#### **Tarefas:**
+
+- [ ] ⚪ **Criar `src/styles/tokens/`**
+
+  - [ ] `spacing.css` - Sistema de espaçamento
+  - [ ] `breakpoints.css` - Breakpoints responsivos
+  - [ ] `colors.css` - Expandir sistema de cores
+  - [ ] `typography.css` - Sistema tipográfico
+  - [ ] `layout.css` - Variáveis de layout
+
+- [ ] ⚪ **Implementar Design System**
+
+```css
+/* spacing.css */
+:root {
+  /* Base spacing scale (8px base) */
+  --spacing-0: 0;
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+
+  /* Component-specific spacing */
+  --grid-spacing: var(--spacing-xs);
+  --form-field-spacing: var(--spacing-md);
+  --button-group-spacing: var(--spacing-sm);
+  --modal-padding: var(--spacing-lg);
+}
+
+/* Responsive spacing adjustments */
+@media (max-width: var(--breakpoint-mobile)) {
+  :root {
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+    --spacing-2xl: 2rem;
+  }
+}
+```
+
+- [ ] ⚪ **Atualizar `index.css`** com importações do sistema
+
+### **🏗️ Fase 2: Layout Architecture Refactoring (1.5-2h)**
+
+#### **Objetivos ATUALIZADOS:**
+
+- Refatorar PageLayout (593 lines) para container-controlled spacing
+- Separar responsabilidades de layout vs conteúdo
+- Implementar composição flexível baseada no que já funciona
+
+#### **Tarefas REALISTAS:**
+
+- [ ] ⚪ **Refatorar PageLayout System**
+
+  - [ ] ❌ URGENTE: Converter hardcoded values para design tokens
+  - [ ] ❌ CRÍTICO: Implementar container-controlled spacing
+  - [ ] ✅ MANTER: Sistema mobile/desktop já funcional
+  - [ ] ✅ MANTER: Viewport height fallbacks já implementados
+
+- [ ] ⚪ **Implementar Container Primitives**
 
 ```tsx
-// ANTES (TODO.md original):
-❌ PageLayout.tsx (731 linhas) - URGENTE: DIVIDIR EM 8
+// LayoutContainer.tsx
+interface LayoutContainerProps {
+  direction?: 'row' | 'column';
+  spacing?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  justify?: 'start' | 'center' | 'end' | 'between' | 'around';
+  responsive?: boolean;
+}
 
-// DEPOIS (Estado atual):
-✅ PageLayout.tsx (381 linhas) - REDUÇÃO DE 48%!
-✅ Dividido em 8 componentes separados:
-  ├── PageLayout.tsx (381 linhas - coordenador principal)
-  ├── DesktopSidebar.tsx (140 linhas)
-  ├── MobileTopBar/ + MobileTopBarExpanded/ (40+36 linhas)
-  ├── MobileBottomBar/ (57 linhas)
-  ├── MobileExpandedContent.tsx (102 linhas)
-  ├── RoomInfoSection/ (84 linhas)
-  ├── MobileCreateRoomForm/ (26 linhas) ✅ EXTRAÍDO!
-  └── MobileClearGridForm/ (35 linhas) ✅ EXTRAÍDO!
-
-// STATUS: ✅ RESOLVIDO COMPLETAMENTE
-````
-
-### **✅ 2. Formulários Duplicados - UNIFICAÇÃO IMPLEMENTADA!**
-
-```tsx
-// ANTES (Problema original):
-❌ CreateRoomModal.tsx (166 linhas) - Modal desktop
-❌ MobileCreateRoomForm (45 linhas) - Mobile inline em PageLayout
-❌ JoinRoomPage.tsx (265 linhas) - Validação similar
-
-// DEPOIS (Solução implementada):
-✅ shared/components/RoomForm/ (114 linhas) - BASE UNIFICADA
-✅ CreateRoomModal.tsx (60 linhas) - Wrapper modal usando RoomForm
-✅ MobileCreateRoomForm/ (26 linhas) - Wrapper inline usando RoomForm
-✅ JoinRoomPage.tsx (113 linhas) - Usando RoomForm (-57% de código!)
-✅ shared/hooks/useRoomForm.ts - Hook compartilhado
-
-// STATUS: ✅ RESOLVIDO COMPLETAMENTE + SUPEROU EXPECTATIVAS
+// CSS
+.layoutContainer {
+  display: flex;
+  flex-direction: var(--direction, column);
+  gap: var(--spacing);
+  align-items: var(--align, stretch);
+  justify-content: var(--justify, start);
+}
 ```
 
-### **✅ 3. Constantes Duplicadas - CENTRALIZAÇÃO COMPLETA!**
+- [ ] ⚪ **Migrar PageLayout** para usar primitivos
 
-```tsx
-// ANTES (Problema original):
-❌ Cores em 4+ locais diferentes (PageLayout, CreateRoomModal, etc)
+### **🎮 Fase 3: GameBoard Container System (1h)**
 
-// DEPOIS (Solução implementada):
-✅ shared/constants/colors.ts:
-  ├── COLOR_VALUES: Record<PlayerColor, string>
-  ├── AVAILABLE_COLORS: PlayerColor[]
-  └── Usado consistentemente em todos os componentes
+#### **Objetivos BASEADOS NO ESTADO ATUAL:**
 
-// STATUS: ✅ RESOLVIDO COMPLETAMENTE
+- ✅ MANTER: Sistema de zoom com CSS variables (já implementado)
+- ❌ CORRIGIR: Spacing manual (padding-right/bottom: 1vh)
+- ❌ IMPLEMENTAR: Container-controlled spacing no grid
+- ❌ PADRONIZAR: Design tokens para spacing
+
+#### **Tarefas ESPECÍFICAS:**
+
+- [ ] ⚪ **Refatorar GameBoard Layout**
+
+```css
+/* ATUAL: Spacing manual problemático */
+.nonogramContainer {
+  padding-right: 1vh; /* ❌ Remover */
+  padding-bottom: 1vh; /* ❌ Remover */
+}
+
+/* META: Container-controlled com tokens */
+.nonogramContainer {
+  display: grid;
+  grid-template-areas: "corner colClues" "rowClues grid";
+  gap: var(--spacing-xs); /* ✅ Adicionar */
+  margin: auto;
+}
 ```
 
-### **⚠️ 4. Arquivos Grandes - PROGRESSO SIGNIFICATIVO**
+- [ ] ⚪ **Implementar CSS-Based Zoom**
+
+  - [ ] ✅ FEITO: GameBoard já usa CSS variables para zoom
+  - [ ] ✅ FEITO: Sistema `var(--cell-size, 40px)` implementado
+  - [ ] ❌ TODO: Remover padding manual (padding-right: 1vh, padding-bottom: 1vh)
+  - [ ] ❌ TODO: Implementar `gap: var(--grid-spacing)` no grid principal
+
+- [ ] ⚪ **Otimizar Cell Rendering**
+  - [ ] Container-controlled spacing entre células
+  - [ ] Responsive cell sizing
+  - [ ] Sticky clues com proper spacing
+
+### **📝 Fase 4: Views Anti-Pattern Fix (1h)**
+
+#### **Objetivos CRÍTICOS:**
+
+- ❌ ELIMINAR: Child margins em todas as views
+- ✅ IMPLEMENTAR: Container-controlled spacing
+- 🎯 FOCO: PuzzleSelection, JoinRoom, WaitingRoom (principais infratores)
+
+#### **Tarefas ESPECÍFICAS por View:**
+
+- [ ] ⚪ **PuzzleSelectionPage.module.css**
+
+```css
+/* ❌ ATUAL: Child margins */
+.title {
+  margin-bottom: 2rem;
+}
+.subtitle {
+  margin: 0 0 1rem 0;
+}
+.categoryButtons {
+  margin-bottom: 1rem;
+}
+
+/* ✅ META: Container spacing */
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+```
+
+- [ ] ⚪ **JoinRoomPage + WaitingRoomPage**
+  - [ ] Aplicar mesmo padrão container-controlled
+  - [ ] Usar design tokens para spacing
+  - [ ] Remover todos os margin-bottom de filhos
+
+### **🎛️ Fase 5: Component Spacing Standardization (1h)**
+
+#### **Objetivos:**
+
+- Aplicar container-controlled spacing em todos os componentes
+- Eliminar margins de componentes filhos
+- Padronizar button groups e controls
+
+#### **Tarefas:**
+
+- [ ] ⚪ **ButtonGroup Components**
+
+  - [ ] GameControls
+  - [ ] GameControlsPanel
+  - [ ] ClueToggleButton containers
+
+- [ ] ⚪ **Modal Components**
+
+  - [ ] ConfirmationModal
+  - [ ] CreateRoomModal
+  - [ ] Modal padding e spacing interno
+
+- [ ] ⚪ **Info Components**
+  - [ ] RoomInfoSection
+  - [ ] CopyTooltip
+  - [ ] Player indicators
+
+### **📱 Fase 6: Mobile-First Responsive Optimization (1h)**
+
+#### **Objetivos:**
+
+- Implementar mobile-first approach consistente
+- Otimizar spacing para mobile
+- Unificar breakpoints
+
+#### **Tarefas:**
+
+- [ ] ⚪ **Mobile Layout Optimization**
+
+  - [ ] MobileTopBar spacing
+  - [ ] MobileBottomBar controls
+  - [ ] MobileExpandedContent
+
+- [ ] ⚪ **Responsive Spacing System**
+
+```css
+/* Mobile-first spacing */
+.container {
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+}
+
+@media (min-width: var(--breakpoint-tablet)) {
+  .container {
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (min-width: var(--breakpoint-desktop)) {
+  .container {
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
+  }
+}
+```
+
+- [ ] ⚪ **Touch Target Optimization**
+  - [ ] Minimum 44px touch targets
+  - [ ] Adequate spacing between interactive elements
+
+### **🧪 Fase 7: Testing & Validation (30min)**
+
+#### **Objetivos:**
+
+- Validar visual consistency
+- Testar responsividade
+- Verificar performance
+
+#### **Tarefas:**
+
+- [ ] ⚪ **Visual Testing**
+
+  - [ ] Desktop layouts (1920px, 1366px, 1024px)
+  - [ ] Tablet layouts (768px, 834px)
+  - [ ] Mobile layouts (375px, 414px, 320px)
+
+- [ ] ⚪ **Functional Testing**
+
+  - [ ] Game interactions
+  - [ ] Form submissions
+  - [ ] Modal behaviors
+  - [ ] Mobile navigation
+
+- [ ] ⚪ **Performance Validation**
+  - [ ] CSS bundle size impact
+  - [ ] Runtime performance
+  - [ ] Lighthouse audit
+
+---
+
+## 📊 **MÉTRICAS DE SUCESSO ATUALIZADAS**
+
+### **📉 Redução de Complexidade CSS (Estado Atual)**
+
+| Métrica               | Estado REAL Encontrado | Meta                      |
+| --------------------- | ---------------------- | ------------------------- |
+| Arquivos CSS          | 25 arquivos            | Organizados em sistema    |
+| Design tokens em uso  | ~30% (apenas RoomForm) | 95%+ de todos valores     |
+| Breakpoints únicos    | 3-4 variações          | 4 breakpoints padrão      |
+| Spacing inconsistente | 15+ arquivos afetados  | 8 valores de design token |
+
+### **🎯 Qualidade de Layout (Progresso Real)**
+
+| Aspecto                      | Estado Atual          | Meta                 |
+| ---------------------------- | --------------------- | -------------------- |
+| Container-controlled spacing | 20% (RoomForm apenas) | 100% componentes     |
+| Design token usage           | 30% implementado      | 95%+ de valores      |
+| Mobile-first approach        | Inconsistente         | Todos os componentes |
+| CSS Variables para zoom      | ✅ GameBoard OK       | Expandir para outros |
+
+### **📱 Responsividade**
+
+| Breakpoint        | Otimização   |
+| ----------------- | ------------ |
+| 320px (Mobile S)  | ✅ Funcional |
+| 375px (Mobile M)  | ✅ Otimizado |
+| 768px (Tablet)    | ✅ Adaptado  |
+| 1024px+ (Desktop) | ✅ Melhorado |
+
+---
+
+## 🎨 **SISTEMA DE DESIGN PROPOSTO**
+
+### **Design Tokens Structure**
+
+```
+src/styles/
+├── tokens/
+│   ├── spacing.css      # Sistema de espaçamento
+│   ├── colors.css       # Cores expandidas
+│   ├── typography.css   # Sistema tipográfico
+│   ├── breakpoints.css  # Breakpoints responsivos
+│   └── layout.css       # Variáveis de layout
+├── components/
+│   ├── containers.css   # Container primitivos
+│   ├── forms.css        # Form components
+│   └── game.css         # Game-specific styles
+├── utilities/
+│   ├── spacing.css      # Utility classes
+│   └── responsive.css   # Responsive utilities
+└── index.css           # Main import file
+```
+
+### **Container Primitive System**
 
 ```tsx
-// SITUAÇÃO ATUAL:
-✅ GameBoard.tsx (498 linhas) - Dividido em 5 componentes
-✅ GamePage.tsx (407 linhas) - Dividido em 3 subcomponentes
-⚠️ PageLayout.tsx (381 linhas) - Melhorado mas ainda grande
-⚠️ PuzzleSelectionPage.tsx (172 linhas) - Aceitável
-⚠️ DesktopSidebar.tsx (140 linhas) - Aceitável
-⚠️ GameControlsPanel.tsx (131 linhas) - Aceitável
+// Layout Primitives
+<FlexContainer direction="column" spacing="md" align="center">
+  <GameControls />
+  <GameBoard />
+</FlexContainer>
 
-// STATUS: ✅ MELHORIA SIGNIFICATIVA (maioria resolvida)
+<GridContainer areas="sidebar main" spacing="lg">
+  <Sidebar />
+  <GameArea />
+</GridContainer>
+```
+
+### **Responsive Spacing Strategy**
+
+```css
+/* Progressive spacing enhancement */
+.component {
+  /* Mobile first */
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+}
+
+@media (min-width: var(--breakpoint-tablet)) {
+  .component {
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+}
 ```
 
 ---
 
-## 📅 **NOVO CRONOGRAMA - AJUSTADO PARA REALIDADE ATUAL**
+## 🚀 **PRÓXIMOS PASSOS**
 
-### **✅ Fase 1-5: CONCLUÍDAS COM SUCESSO (95% do trabalho)**
-
-- ✅ **Preparação e Setup** - Estrutura de features criada
-- ✅ **PageLayout Refactoring** - 731→381 linhas + 8 componentes
-- ✅ **Form Unification** - RoomForm base + wrappers específicos
-- ✅ **Feature Organization** - Hooks e components organizados
-- ✅ **Pages/Views Migration** - Renomeações e reorganização completa
-
-### **⚪ Fase 6: POLIMENTO FINAL (5% restante) - 2-3h**
-
-#### **� Otimizações Menores (1-2h)**
-
-- [ ] ⚪ **PageLayout.tsx**: Tentar reduzir de 381→300 linhas
-- [ ] ⚪ **GamePage.tsx**: Considerar split adicional (407→300 linhas)
-- [ ] ⚪ **Barrel Exports**: Verificar se todos estão otimizados
-
-#### **✅ Validação e Testes (CONCLUÍDO - 1h)**
-
-- [x] ✅ **Funcionalidade**: Testado singleplayer e build funcionando
-- [x] ✅ **Performance**: Build otimizado sem regressões (2.97s)
-- [x] ✅ **Imports**: Verificado - sem circulares, apenas warnings de lint menores
-- [x] ✅ **Mobile/Desktop**: Interface responsiva funcionando corretamente
-
-#### **✅ Documentação (CONCLUÍDO - 30min)**
-
-- [x] ✅ **README.md**: Atualizado com nova arquitetura v2.0
-- [x] ✅ **Métricas**: Documentadas reduções de linha e melhorias
-- [x] ✅ **Convenções**: Patterns arquiteturais documentados
-
-**⏱️ Total Concluído: 2.5h (vs 2-3h estimadas) - SUPERADO!**
-
----
-
-## 📊 **MÉTRICAS DE SUCESSO ALCANÇADAS**
-
-### **� Redução de Linhas (Objetivo: Manutenibilidade)**
-
-| Arquivo               | Antes | Depois | Redução     |
-| --------------------- | ----- | ------ | ----------- |
-| PageLayout.tsx        | 731   | 381    | **-48%** ✅ |
-| CreateRoomModal.tsx   | 166   | 60     | **-64%** ✅ |
-| JoinRoomPage.tsx      | 265   | 113    | **-57%** ✅ |
-| GamePage.tsx          | 471   | 407    | **-14%** ✅ |
-| MultiplayerRouter.tsx | 135   | 125    | **-7%** ✅  |
-
-### **�️ Organização Estrutural (Objetivo: Escalabilidade)**
-
-| Aspecto                  | Meta Original | Estado Atual        |
-| ------------------------ | ------------- | ------------------- |
-| Feature-based            | 📦 Planejado  | ✅ **Implementado** |
-| Barrel Exports           | � Planejado   | ✅ **Implementado** |
-| Shared Resources         | 📦 Planejado  | ✅ **Implementado** |
-| Form Unification         | 🔥 Crítico    | ✅ **Resolvido**    |
-| Constants Centralization | 🔥 Crítico    | ✅ **Resolvido**    |
-
-### **🎯 Eliminação de Duplicação (Objetivo: DRY)**
-
-| Item                | Estado Anterior  | Estado Atual                |
-| ------------------- | ---------------- | --------------------------- |
-| Form Logic          | 3 implementações | ✅ **1 base + wrappers**    |
-| Color Constants     | 4+ locais        | ✅ **1 local centralizado** |
-| Component Structure | Flat components/ | ✅ **Features organizadas** |
-
----
-
-## 🎯 **PRÓXIMOS PASSOS - AJUSTADOS PARA SITUAÇÃO ATUAL**
-
-### **🔍 Pontos de Atenção Identificados na Análise**
-
-1. **⚠️ PageLayout ainda grande (381 linhas)**
-
-   - Possível divisão adicional do `DesktopSidebar` (140 linhas)
-   - Extração de lógica de state management
-
-2. **✅ Estrutura exemplar implementada**
-
-   - Feature-based organization funcionando perfeitamente
-   - Barrel exports bem configurados
-   - Container-controlled spacing aplicado
-
-3. **🧪 Necessidade de validação**
-   - Teste completo de funcionalidades singleplayer/multiplayer
-   - Verificação de performance após refatoração
-
-### **🚀 Comandos para Próximos Passos**
+### **Branch Creation**
 
 ```bash
-# Projeto já está na branch correta
-git status
-git add .
-git commit -m "refactor: complete feature-based architecture implementation
-
-- Reduced PageLayout from 731 to 381 lines (-48%)
-- Unified form logic with RoomForm base component
-- Centralized constants in shared/constants/
-- Organized all components by feature domain
-- Migrated all pages to views/ with proper separation"
-
-# Opcional: Tag desta versão como marco
-git tag -a v2.0-refactor -m "Major refactoring: feature-based architecture"
+git checkout refactor/feature-architecture
+git checkout -b refactor/css-container-spacing
 ```
 
-### **🎉 RESUMO EXECUTIVO**
+### **Implementation Order**
 
-**O projeto passou por uma refatoração MUITO ALÉM do planejado:**
+1. **Design Tokens** → Base foundation
+2. **Layout Primitives** → Container system
+3. **GameBoard** → Core component
+4. **Forms** → User interaction
+5. **Components** → UI elements
+6. **Mobile** → Responsive optimization
+7. **Testing** → Quality assurance
 
-- ✅ **Redução de complexidade**: Arquivos grandes divididos
-- ✅ **Eliminação de duplicação**: Forms unificados, constants centralizados
-- ✅ **Organização escalável**: Estrutura por features implementada
-- ✅ **Manutenibilidade**: Barrel exports e separation of concerns
-- ✅ **Padrões consistentes**: Container-controlled spacing aplicado
+### **Success Criteria**
 
-**Estado atual**: 80% → 95% concluído (muito acima das expectativas!)
-**Próximo foco**: Pequenos ajustes e validação final
+- ✅ Zero child-controlled margins
+- ✅ 100% design token usage
+- ✅ Container-controlled spacing everywhere
+- ✅ Mobile-first responsive design
+- ✅ Consistent visual hierarchy
+- ✅ Improved maintainability
 
 ---
 
-## 📋 **TRACKING DE PROGRESSO ATUALIZADO**
+## 💡 **BENEFÍCIOS ESPERADOS**
 
-### **Legenda de Status Atualizada:**
+### **Para Desenvolvedores**
 
-- ✅ **Concluído** (maioria dos itens!)
-- 🔄 **Em andamento** (poucos itens restantes)
-- ⚪ **Pendente** (apenas polimento)
-- 🔥 **Crítico** (todos resolvidos!)
-- 📦 **Para mover** (todas migrações concluídas!)
+- 🛠️ **Manutenibilidade**: Sistema consistente e previsível
+- 🚀 **Produtividade**: Primitivos reutilizáveis
+- 🐛 **Debugging**: Menos problemas de layout
+- 📝 **Documentação**: Sistema autoexplicativo
 
-### **✅ Conquistas Alcançadas (vs Plano Original):**
+### **Para Usuários**
 
-- ⚠️ **Risco de imports circulares**: ✅ Evitado com boa arquitetura
-- ⚠️ **Quebra de funcionalidade**: ✅ Prevenido com refactoring incremental
-- ⚠️ **Conflitos de merge**: ✅ Não aplicável (trabalho individual)
+- 🎨 **Consistência**: Interface visual unificada
+- 📱 **Responsividade**: Melhor experiência mobile
+- ⚡ **Performance**: CSS otimizado
+- ♿ **Acessibilidade**: Touch targets adequados
 
-### **🏆 RESULTADO FINAL**
+### **Para o Projeto**
 
-**A refatoração foi um SUCESSO COMPLETO e SUPEROU todas as expectativas originais do TODO.md!**
+- 🏗️ **Escalabilidade**: Base sólida para crescimento
+- 🔧 **Flexibilidade**: Fácil customização
+- 📊 **Métricas**: Sistema mensurável
+- 🎯 **Qualidade**: Padrões profissionais
 
-## 🎊 **MISSÃO CUMPRIDA - AGOSTO 2025**
+---
 
-**🎯 Objetivos Alcançados:**
+## 📋 **CHECKLIST DE VALIDAÇÃO**
 
-- ✅ Arquitetura feature-based implementada (100%)
-- ✅ PageLayout otimizado (418→302 linhas, -28%)
-- ✅ Formulários unificados (RoomForm base)
-- ✅ Constantes centralizadas (shared/constants/)
-- ✅ Barrel exports funcionando
-- ✅ Documentação atualizada
-- ✅ Build e testes passando
+### **Design System Implementation**
 
-**📈 Métricas Finais:**
+- [ ] Design tokens definidos e implementados
+- [ ] CSS custom properties funcionando
+- [ ] Progressive enhancement implementado
+- [ ] Mobile-first approach aplicado
 
-- **Redução total de código**: >40% em arquivos críticos
-- **Tempo de execução**: 2.5h (vs 2-3h estimadas)
-- **Qualidade de código**: ESLint warnings mínimos
-- **Performance**: Build otimizado em 2.97s
+### **Container-Controlled Spacing**
 
-**🚀 Próximos passos sugeridos:**
+- [ ] Zero margins em componentes filhos
+- [ ] Containers controlam todo espaçamento
+- [ ] Gap properties utilizadas consistentemente
+- [ ] Layout primitivos funcionando
 
-1. Merge da branch `refactor/feature-architecture` para `main`
-2. Tag de versão `v2.0-architecture`
-3. Deploy para produção
-4. Monitoramento de performance pós-refatoração
+### **Component Quality**
+
+- [ ] Todos os forms usando sistema unificado
+- [ ] GameBoard com container-controlled layout
+- [ ] Modals com spacing consistente
+- [ ] Button groups padronizados
+
+### **Responsive Excellence**
+
+- [ ] Breakpoints unificados
+- [ ] Touch targets ≥44px
+- [ ] Mobile navigation otimizada
+- [ ] Cross-device testing completo
+
+**🎯 OBJETIVO FINAL REALÍSTICO: Interface moderna, consistente e manutenível com sistema de container-controlled spacing aplicado em 100% dos componentes, baseado no progresso já feito (RoomForm como exemplo de sucesso).**
