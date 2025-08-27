@@ -37,16 +37,32 @@
   min-width: 0;
 }
 
+/* Focus group behavior */
+.buttonGroup:focus-within .title {
+  color: var(--color-text-inverse);
+  text-shadow: var(--shadow-text-sm);
+}
+
+/* Disabled state for group */
+.buttonGroup.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.buttonGroup.disabled .title {
+  color: var(--color-disabled-text);
+}
+
 /* Mobile adjustments */
 @media (max-width: var(--breakpoint-tablet)) {
   .buttonGroup {
     gap: var(--spacing-xs);
   }
-  
+
   .title {
     font-size: var(--font-size-sm);
   }
-  
+
   .buttons {
     gap: var(--spacing-xs);
   }

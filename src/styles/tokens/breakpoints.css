@@ -1,18 +1,20 @@
 /* Responsive Breakpoints Design Tokens */
 :root {
-  /* Standard breakpoints */
-  --breakpoint-mobile: 320px;
-  --breakpoint-mobile-lg: 480px;
-  --breakpoint-tablet: 768px;
-  --breakpoint-desktop: 1024px;
-  --breakpoint-desktop-lg: 1200px;
-  --breakpoint-wide: 1440px;
+  /* Standard breakpoints - Mobile First Approach */
+  --breakpoint-mobile: 320px; /* Small mobile devices */
+  --breakpoint-mobile-lg: 480px; /* Large mobile devices */
+  --breakpoint-tablet: 768px; /* Tablets and small laptops */
+  --breakpoint-desktop: 1024px; /* Desktop screens */
+  --breakpoint-desktop-lg: 1200px; /* Large desktop screens */
+  --breakpoint-wide: 1440px; /* Wide desktop screens */
+  --breakpoint-ultra-wide: 1920px; /* Ultra-wide screens */
 
-  /* Container max-widths */
+  /* Container max-widths - Design System Aligned */
   --container-mobile: 100%;
   --container-tablet: 750px;
   --container-desktop: 1000px;
   --container-wide: 1200px;
+  --container-ultra-wide: 1400px;
 
   /* Viewport height handling */
   --vh-fallback: 1vh;
@@ -41,5 +43,30 @@
   :root {
     /* Adjust for high DPI screens */
     --border-width: 0.5px;
+  }
+}
+
+/* Container Queries - Modern CSS Support */
+@supports (container-type: inline-size) {
+  :root {
+    /* Container query breakpoints */
+    --container-query-small: 20rem; /* 320px */
+    --container-query-medium: 48rem; /* 768px */
+    --container-query-large: 64rem; /* 1024px */
+    --container-query-wide: 80rem; /* 1280px */
+  }
+
+  /* Utility for container queries */
+  .container-query {
+    container-type: inline-size;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    /* Disable animations for users who prefer reduced motion */
+    --transition-duration: 0s;
+    --animation-duration: 0s;
   }
 }

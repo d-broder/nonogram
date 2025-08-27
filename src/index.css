@@ -1,5 +1,5 @@
 /* Import Design Tokens First */
-@import './styles/tokens/index.css';
+@import "./styles/tokens/index.css";
 
 :root {
   font-family: var(--font-family-primary);
@@ -15,20 +15,24 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  /* Smooth scrolling for better UX */
+  scroll-behavior: smooth;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
 body {
-  margin: 0;
+  /* Removed duplicate margin: 0 */
   display: flex;
   place-items: center;
   min-width: var(--breakpoint-mobile);
@@ -40,7 +44,12 @@ body {
   height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
   font-weight: var(--font-weight-semibold);
 }

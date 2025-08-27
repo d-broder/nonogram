@@ -1,6 +1,10 @@
 /* Design Tokens - Import All */
-@import './spacing.css';
-@import './breakpoints.css';
-@import './colors.css';
-@import './typography.css';
-@import './layout.css';
+@import "./spacing.css";
+@import "./breakpoints.css";
+@import "./colors.css";
+@import "./typography.css";
+@import "./layout.css";
+
+/* Utilities - Layout and Responsive */
+@import "../utilities/layout.css";
+@import "../utilities/responsive.css";
