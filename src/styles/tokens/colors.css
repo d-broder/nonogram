@@ -20,6 +20,15 @@
   --color-primary-light: #dbeafe;
   --color-primary-dark: #1d4ed8;
 
+  /* Nonogram theme identity */
+  --color-brand-primary: #4f46e5; /* Indigo - represents puzzle logic */
+  --color-brand-secondary: #06b6d4; /* Cyan - represents solution clarity */
+  --color-brand-gradient: linear-gradient(
+    135deg,
+    var(--color-brand-primary) 0%,
+    var(--color-brand-secondary) 100%
+  );
+
   /* Player colors (from constants) */
   --color-player-red: #ef4444;
   --color-player-blue: #3b82f6;
@@ -29,6 +38,35 @@
   --color-player-orange: #f97316;
   --color-player-pink: #ec4899;
   --color-player-teal: #14b8a6;
+
+  /* Shadow tokens */
+  --color-shadow-light: rgba(0, 0, 0, 0.1);
+  --color-shadow-medium: rgba(0, 0, 0, 0.2);
+  --color-shadow-heavy: rgba(0, 0, 0, 0.3);
+  --color-shadow-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Glassmorphism effect tokens */
+  --color-glass-bg: rgba(255, 255, 255, 0.1);
+  --color-glass-bg-hover: rgba(255, 255, 255, 0.2);
+  --color-glass-bg-active: rgba(255, 255, 255, 0.25);
+  --color-glass-bg-strong: rgba(255, 255, 255, 0.3);
+  --color-glass-border: rgba(255, 255, 255, 0.3);
+  --color-glass-border-hover: rgba(255, 255, 255, 0.6);
+  --color-glass-text: rgba(255, 255, 255, 0.7);
+  --color-glass-text-strong: rgba(255, 255, 255, 0.8);
+  --color-glass-text-full: rgba(255, 255, 255, 0.95);
+  --color-glass-shadow: rgba(255, 255, 255, 0.2);
+
+  /* Error glassmorphism tokens */
+  --color-error-glassmorphism: rgba(220, 53, 69, 0.8);
+  --color-error-glassmorphism-hover: rgba(220, 53, 69, 0.9);
+  --color-error-glassmorphism-active: rgba(200, 35, 51, 0.9);
+  --color-error-border: rgba(220, 53, 69, 0.6);
+  --color-error-border-hover: rgba(220, 53, 69, 0.8);
+
+  /* Tooltip tokens */
+  --color-tooltip-bg: rgba(0, 0, 0, 0.9);
+  --color-tooltip-text: white;
 
   /* Game-specific colors */
   --color-cell-white: var(--color-white);
@@ -46,7 +84,7 @@
   /* Background colors */
   --color-bg-primary: var(--color-white);
   --color-bg-secondary: var(--color-gray-50);
-  --color-bg-sidebar: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-bg-sidebar: var(--color-brand-gradient);
   --color-bg-modal: var(--color-white);
   --color-bg-overlay: rgba(0, 0, 0, 0.5);
   --color-bg-game-area: #f0f2f5;
@@ -64,8 +102,14 @@
 
   /* State colors */
   --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-success-dark: #166534;
   --color-warning: #eab308;
+  --color-warning-light: #fef3c7;
+  --color-warning-dark: #92400e;
   --color-error: #ef4444;
+  --color-error-light: #fef2f2;
+  --color-error-dark: #991b1b;
   --color-info: var(--color-primary);
 
   /* Missing colors - adding variables found in components */

@@ -8,18 +8,18 @@
 /* Layout Variants */
 .form.modal {
   padding: var(--spacing-lg, 1.5rem);
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: var(--color-bg-modal);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
   min-width: 320px;
-  max-width: 400px;
+  max-width: var(--form-max-width);
 }
 
 .form.inline {
   padding: var(--spacing-md, 1rem);
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  background: var(--color-bg-primary);
+  border: var(--border-width-thin) solid var(--color-border);
+  border-radius: var(--radius-sm);
 }
 
 .form.page {
@@ -31,9 +31,9 @@
 /* Title */
 .title {
   margin: 0 0 var(--spacing-md, 1rem) 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
   text-align: center;
 }
 
@@ -57,27 +57,27 @@
 }
 
 .label {
-  font-weight: 500;
-  color: #555;
-  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-label);
 }
 
 .input {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
+  padding: var(--spacing-sm);
+  border: var(--border-width-thin) solid var(--color-border-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-input);
+  transition: var(--transition-fast);
 }
 
 .input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px var(--color-glass-shadow);
 }
 
 .input:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-secondary);
   cursor: not-allowed;
 }
 
@@ -90,23 +90,23 @@
 }
 
 .colorButton {
-  width: 40px;
-  height: 40px;
-  border: 2px solid transparent;
+  width: var(--button-size-md);
+  height: var(--button-size-md);
+  border: var(--border-width-normal) solid transparent;
   border-radius: 50%;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   position: relative;
 }
 
 .colorButton:hover:not(.disabled) {
   transform: scale(1.1);
-  border-color: #333;
+  border-color: var(--color-text-primary);
 }
 
 .colorButton.selected {
-  border-color: #333;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 3px var(--color-glass-shadow);
 }
 
 .colorButton.disabled {
@@ -121,20 +121,20 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #fff;
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  color: var(--color-white);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  text-shadow: var(--shadow-text-sm);
 }
 
 /* Error Message */
 .error {
-  color: #dc3545;
-  font-size: 0.875rem;
+  color: var(--color-error-dark);
+  font-size: var(--font-size-caption);
   padding: var(--spacing-sm, 0.5rem);
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
+  background-color: var(--color-error-light);
+  border: var(--border-width-thin) solid var(--color-error);
+  border-radius: var(--radius-sm);
   text-align: center;
 }
 
@@ -147,32 +147,32 @@
 }
 
 .actions button {
-  padding: 0.75rem 1.5rem;
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-button);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
   min-width: 120px;
 }
 
 .cancelButton {
-  background-color: #6c757d;
+  background-color: var(--color-text-secondary);
   color: white;
 }
 
 .cancelButton:hover:not(:disabled) {
-  background-color: #5a6268;
+  background-color: var(--color-text-primary);
 }
 
 .submitButton {
-  background-color: #007bff;
+  background-color: var(--color-primary);
   color: white;
 }
 
 .submitButton:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--color-primary-dark);
 }
 
 .submitButton:disabled,
@@ -182,31 +182,31 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-tablet)) {
   .form.modal {
     min-width: auto;
     max-width: 90vw;
     padding: var(--spacing-md, 1rem);
   }
-  
+
   .form.page {
     padding: var(--spacing-md, 1rem);
   }
-  
+
   .colorGrid {
     grid-template-columns: repeat(4, 1fr);
     max-width: 160px;
   }
-  
+
   .colorButton {
-    width: 32px;
-    height: 32px;
+    width: var(--button-size-sm);
+    height: var(--button-size-sm);
   }
-  
+
   .actions {
     flex-direction: column;
   }
-  
+
   .actions button {
     min-width: auto;
   }

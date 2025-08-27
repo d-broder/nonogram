@@ -175,7 +175,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-brand-gradient);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     sans-serif;
@@ -184,7 +184,7 @@
 .pageContent {
   max-width: 1200px;
   margin: auto;
-  padding: 2rem;
+  padding: var(--spacing-xl);
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -216,7 +216,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 1rem;
+  padding: var(--spacing-md);
   box-sizing: border-box;
   overflow: auto;
   position: relative;
@@ -225,7 +225,7 @@
 .backButton,
 .hamburgerButton,
 .closeButton {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-glass-bg);
   color: white;
   border: none;
   border-radius: 50%;
@@ -244,7 +244,7 @@
 .backButton {
   left: 5vw;
   top: 2vh;
-  font-size: 1.5rem;
+  font-size: var(--font-size-title);
 }
 
 .hamburgerButton,
@@ -258,15 +258,15 @@
 .backButton:hover,
 .hamburgerButton:hover,
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-glass-bg-strong);
 }
 
 /* Mobile Styles */
 .mobileTopBar {
   height: 10vh;
   height: 10dvh; /* Dynamic viewport height */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ecf0f1;
+  background: var(--color-brand-gradient);
+  color: var(--color-gray-50);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -275,13 +275,13 @@
 }
 
 .topBarExpanded {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ecf0f1;
+  background: var(--color-brand-gradient);
+  color: var(--color-gray-50);
   padding: 1rem;
   height: 90vh;
   height: 90dvh; /* Dynamic viewport height */
   overflow-y: auto;
-  border-bottom: 1px solid #2c3e50;
+  border-bottom: 1px solid var(--color-gray-600);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -294,13 +294,13 @@
   right: 0;
   height: 15vh;
   height: 15dvh; /* Dynamic viewport height */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ecf0f1;
+  background: var(--color-brand-gradient);
+  color: var(--color-gray-50);
   display: flex;
   align-items: center;
   justify-content: center;
   /* padding: 0 1rem; */
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 10px var(--color-shadow-light);
   z-index: 1000;
 }
 
@@ -310,7 +310,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-shadow-overlay);
   z-index: 999;
 }
 
@@ -410,43 +410,43 @@
   margin: 0;
   text-align: center;
   color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: var(--shadow-text-sm);
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 .label {
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
   color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: var(--shadow-text-sm);
 }
 
 .input {
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  padding: var(--spacing-md);
+  border: var(--border-width-thin) solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+  background: var(--color-glass-bg-hover);
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-input);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: var(--transition-fast);
   box-sizing: border-box;
 }
 
 .input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+  border-color: var(--color-glass-border-hover);
+  background: var(--color-glass-bg-active);
+  box-shadow: 0 0 0 3px var(--color-glass-shadow);
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-glass-text);
 }
 
 .colorGrid {
@@ -458,44 +458,44 @@
 }
 
 .colorButton {
-  width: 50px;
-  height: 50px;
+  width: var(--button-size-lg);
+  height: var(--button-size-lg);
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: var(--border-width-medium) solid transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-fast);
   position: relative;
 }
 
 .colorButton:hover:not(:disabled) {
   transform: scale(1.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
 }
 
 .colorButton.selected {
   border-color: white;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 2px var(--color-glass-border-active);
   transform: scale(1.15);
 }
 
 .createButton {
-  padding: 1rem 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border: var(--border-width-thin) solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+  background: var(--color-glass-bg);
+  backdrop-filter: var(--glass-backdrop-blur);
   color: white;
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
+  transition: var(--transition-fast);
+  margin-top: var(--spacing-lg);
 }
 
 .createButton:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-glass-bg-active);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 .createButton:disabled {
@@ -504,12 +504,12 @@
 }
 
 .error {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: var(--color-error-glassmorphism);
+  border: var(--border-width-thin) solid var(--color-error-border);
   color: #fef2f2;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
   text-align: center;
 }
 
@@ -537,10 +537,10 @@
 
 .clearMessage p {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   line-height: 1.6;
   color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: var(--shadow-text-sm);
 }
 
 .clearActions {
@@ -554,38 +554,38 @@
 .clearCancelButton,
 .clearConfirmButton {
   flex: 1;
-  padding: 1rem 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border: var(--border-width-thin) solid var(--color-glass-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  transition: var(--transition-fast);
+  backdrop-filter: var(--glass-backdrop-blur);
+  text-shadow: var(--shadow-text-sm);
 }
 
 .clearCancelButton {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--color-glass-bg);
   color: white;
 }
 
 .clearCancelButton:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-glass-bg-active);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-glass-border-active);
 }
 
 .clearConfirmButton {
-  background: rgba(220, 53, 69, 0.8);
+  background: var(--color-error-glassmorphism);
   color: white;
-  border-color: rgba(220, 53, 69, 0.6);
+  border-color: var(--color-error-border);
 }
 
 .clearConfirmButton:hover {
-  background: rgba(220, 53, 69, 0.9);
-  border-color: rgba(220, 53, 69, 0.8);
+  background: var(--color-danger);
+  border-color: var(--color-danger);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+  box-shadow: 0 8px 25px var(--color-error-glassmorphism);
 }
