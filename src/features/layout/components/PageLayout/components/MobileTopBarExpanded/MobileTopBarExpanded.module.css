@@ -2,33 +2,33 @@
 .mobileTopBar {
   height: 10vh;
   height: 10dvh; /* Dynamic viewport height */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ecf0f1;
+  background: var(--color-brand-gradient);
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
   position: relative;
 }
 
 .projectTitle {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
   text-align: center;
 }
 
 .backButton,
 .closeButton {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--color-overlay-light);
+  color: var(--color-text-inverse);
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
+  font-weight: var(--font-weight-bold);
+  transition: var(--transition-fast);
   aspect-ratio: 1 / 1;
-  min-width: 2.5em;
-  min-height: 2.5em;
+  min-width: var(--button-min-height);
+  min-height: var(--button-min-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,11 +38,11 @@
 .backButton {
   left: 5vw;
   top: 2vh;
-  font-size: 1.5rem;
+  font-size: var(--font-size-title);
 }
 
 .closeButton {
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
   top: 50%;
   transform: translateY(-50%);
   right: 5vw;
@@ -50,11 +50,11 @@
 
 .backButton:hover,
 .closeButton:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--color-overlay-medium);
 }
 
 /* Responsive adjustments */
-@media (min-width: 769px) {
+@media (min-width: var(--breakpoint-tablet)) {
   .mobileTopBar {
     display: none;
   }

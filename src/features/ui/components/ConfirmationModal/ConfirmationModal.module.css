@@ -16,14 +16,14 @@
 .modal {
   background: var(--color-brand-gradient);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 20px 40px var(--color-shadow-medium);
-  max-width: 420px;
+  box-shadow: var(--shadow-xl);
+  max-width: var(--form-max-width);
   width: 100%;
   max-height: 90vh;
   overflow: hidden;
   animation: modalAppear 0.3s ease-out;
   border: var(--border-width-thin) solid var(--color-glass-border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 @keyframes modalAppear {
@@ -78,8 +78,8 @@
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: var(--transition-fast);
-  min-width: 90px;
-  backdrop-filter: blur(10px);
+  min-width: var(--button-size-2xl);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 .cancelBtn {

@@ -1,7 +1,7 @@
 .buttonGroup {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   align-items: center;
   flex-grow: 1;
   flex-shrink: 1;
@@ -14,7 +14,7 @@
 }
 
 .title {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   margin: 0;
   color: var(--color-text-light);
@@ -24,7 +24,7 @@
 .buttons {
   display: flex;
   flex-direction: row;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
@@ -53,17 +53,17 @@
   color: var(--color-disabled-text);
 }
 
-/* Mobile adjustments */
-@media (max-width: var(--breakpoint-tablet)) {
+/* Desktop enhancements */
+@media (min-width: var(--breakpoint-tablet)) {
   .buttonGroup {
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
   }
 
   .title {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
   }
 
   .buttons {
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
   }
 }

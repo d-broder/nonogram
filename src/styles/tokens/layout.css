@@ -112,6 +112,9 @@
   --transform-lift: -2px;
   --transform-lift-lg: -4px;
   --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.3);
+
+  /* Backdrop effects */
+  --backdrop-blur: blur(10px);
 }
 
 /* Mobile layout adjustments */

@@ -28,18 +28,13 @@
   margin: 0 auto;
 }
 
-/* Title */
+/* Title - Container-controlled spacing */
 .title {
-  margin: 0 0 var(--spacing-md, 1rem) 0;
+  margin: 0;
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   text-align: center;
-}
-
-/* Additional Content */
-.additionalContent {
-  margin-bottom: var(--spacing-md, 1rem);
 }
 
 /* Field Group - Container-controlled spacing */
@@ -138,12 +133,11 @@
   text-align: center;
 }
 
-/* Actions Section */
+/* Actions Section - Container-controlled spacing */
 .actions {
   display: flex;
   gap: var(--spacing-sm, 0.5rem);
   justify-content: flex-end;
-  margin-top: var(--spacing-md, 1rem);
 }
 
 .actions button {
