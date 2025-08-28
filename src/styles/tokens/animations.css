@@ -1,0 +1,131 @@
+/* Animation Design Tokens */
+:root {
+  /* Transform tokens */
+  --transform-hover-lift: translateY(-2px);
+  --transform-reset: translateY(0);
+  --transform-lift-sm: translateY(-10px);
+  --transform-lift-md: translateY(-20px);
+  --transform-lift-lg: translateY(-30px);
+  --transform-scale-sm: scale(0.95);
+  --transform-scale-md: scale(1.05);
+  --transform-scale-lg: scale(1.1);
+
+  /* Combined transforms */
+  --transform-modal-enter: scale(0.9) translateY(-20px);
+  --transform-modal-enter-lg: scale(0.9) translateY(-30px);
+  --transform-tooltip-enter: translateX(-50%) translateY(-10px);
+  --transform-tooltip-reset: translateX(-50%) translateY(0px);
+  --transform-success-enter: translateX(-50%) translateY(-30px);
+  --transform-success-reset: translateX(-50%) translateY(0);
+
+  /* Animation durations */
+  --animation-duration-fast: 0.15s;
+  --animation-duration-normal: 0.3s;
+  --animation-duration-slow: 0.5s;
+  --animation-duration-slower: 0.8s;
+
+  /* Animation timing functions */
+  --animation-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --animation-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --animation-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Common animation combinations */
+  --animation-button-hover: var(--animation-duration-fast)
+    var(--animation-ease-out);
+  --animation-modal-enter: var(--animation-duration-normal)
+    var(--animation-ease-out);
+  --animation-tooltip-show: var(--animation-duration-fast)
+    var(--animation-ease-in-out);
+
+  /* Transition properties */
+  --transition-all: all var(--animation-duration-fast)
+    var(--animation-ease-in-out);
+  --transition-transform: transform var(--animation-duration-fast)
+    var(--animation-ease-out);
+  --transition-opacity: opacity var(--animation-duration-fast)
+    var(--animation-ease-in-out);
+  --transition-colors: color var(--animation-duration-fast)
+      var(--animation-ease-in-out),
+    background-color var(--animation-duration-fast) var(--animation-ease-in-out),
+    border-color var(--animation-duration-fast) var(--animation-ease-in-out);
+
+  /* Hover effects */
+  --hover-transform-lift: var(--transform-hover-lift);
+  --hover-transition: var(--transition-transform);
+
+  /* Loading animations */
+  --animation-spin: spin 1s linear infinite;
+  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animation-bounce: bounce 1s infinite;
+}
+
+/* Keyframe animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Fade animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Slide animations */
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

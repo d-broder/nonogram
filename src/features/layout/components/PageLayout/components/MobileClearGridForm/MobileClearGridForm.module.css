@@ -62,7 +62,7 @@
 
 .clearCancelButton:hover {
   background: var(--color-overlay-medium);
-  transform: translateY(-2px);
+  transform: var(--transform-hover-lift);
   box-shadow: var(--shadow-lg);
   border-color: var(--color-overlay-medium);
 }
@@ -76,6 +76,6 @@
 .clearConfirmButton:hover {
   background: var(--color-danger-glass-hover);
   border-color: var(--color-danger);
-  transform: translateY(-2px);
+  transform: var(--transform-hover-lift);
   box-shadow: var(--shadow-danger);
 }

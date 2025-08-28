@@ -12,7 +12,7 @@
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  z-index: 1000;
+  z-index: var(--z-tooltip);
   transition: var(--transition-fast);
   transform-origin: center bottom;
 }
@@ -29,17 +29,17 @@
 
 .tooltip.visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(-10px);
+  transform: var(--transform-tooltip-enter);
   animation: slideUp 0.3s ease-out;
 }
 
 @keyframes slideUp {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(0px);
+    transform: var(--transform-tooltip-reset);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-10px);
+    transform: var(--transform-tooltip-enter);
   }
 }

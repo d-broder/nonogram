@@ -4,6 +4,9 @@
 @import "./colors.css";
 @import "./typography.css";
 @import "./layout.css";
+@import "./gradients.css";
+@import "./z-index.css";
+@import "./animations.css";
 
 /* Utilities - Layout and Responsive */
 @import "../utilities/layout.css";

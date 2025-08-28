@@ -118,6 +118,9 @@
   --color-info: var(--color-primary);
 
   /* Missing colors - adding variables found in components */
+  --color-surface: var(--color-brand-gradient);
+  --color-surface-dark: var(--color-brand-gradient);
+  --color-background: var(--color-gray-50);
   --color-text-inverse: var(--color-white);
   --color-text-inverse-muted: rgba(255, 255, 255, 0.7);
   --color-primary-dark: #1e40af;
