@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras temporárias simplificadas para teste
+    match /rooms/{roomId} {
+      
+      // Permitir leitura para qualquer usuário autenticado
+      allow read: if request.auth != null;
+      
+      // Permitir criação para qualquer usuário autenticado
+      allow create: if request.auth != null;
+      
+      // Permitir atualizações para qualquer usuário autenticado
+      allow update: if request.auth != null;
+      
+      // Permitir delete para qualquer usuário autenticado
+      allow delete: if request.auth != null;
+    }
+  }
+}

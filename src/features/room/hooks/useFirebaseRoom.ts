@@ -8,7 +8,10 @@ import {
   deleteField,
   deleteDoc,
 } from "firebase/firestore";
-import { firestore } from "../../../shared/services/firebase";
+import {
+  firestore,
+  ensureAuthenticated,
+} from "../../../shared/services/firebase";
 import type { Player, Room, CellState } from "../../../shared/types";
 
 export function useFirebaseRoom(roomId: string | null) {
@@ -48,6 +51,9 @@ export function useFirebaseRoom(roomId: string | null) {
   // Create a new room
   const createRoom = async (creator: Player, roomId: string): Promise<void> => {
     try {
+      // Ensure user is authenticated
+      await ensureAuthenticated();
+
       const roomData: Omit<Room, "id"> = {
         createdAt: serverTimestamp(),
         createdBy: creator.id,
@@ -74,6 +80,9 @@ export function useFirebaseRoom(roomId: string | null) {
     if (!roomId) throw new Error("No room ID provided");
 
     try {
+      // Ensure user is authenticated
+      await ensureAuthenticated();
+
       await updateDoc(doc(firestore, "rooms", roomId), {
         [`players.${player.id}`]: player,
       });

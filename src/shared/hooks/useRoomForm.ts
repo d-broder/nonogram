@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { serverTimestamp } from "firebase/firestore";
 import { AVAILABLE_COLORS } from "../constants";
+import { ensureAuthenticated } from "../services/firebase";
 import type { PlayerColor } from "../types";
 import { useFirebaseRoom } from "../../features/room";
 
@@ -70,9 +71,11 @@ export function useRoomForm({
     setError(null);
 
     try {
+      // Get authenticated user ID
+      const playerId = await ensureAuthenticated();
+
       // Generate random room ID
       const newRoomId = Math.random().toString(36).substr(2, 8).toUpperCase();
-      const playerId = Date.now().toString();
 
       const player = {
         id: playerId,
@@ -132,7 +135,8 @@ export function useRoomForm({
     setError(null);
 
     try {
-      const playerId = Date.now().toString();
+      // Get authenticated user ID
+      const playerId = await ensureAuthenticated();
 
       const player = {
         id: playerId,

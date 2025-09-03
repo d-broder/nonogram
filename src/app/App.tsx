@@ -3,6 +3,7 @@ import { Suspense, lazy } from "react";
 import { AppNavigationProvider } from "../shared/contexts/AppNavigationContext";
 import { SinglePlayerRouter } from "../pages/SinglePlayerRouter";
 import { MultiplayerRouter } from "../pages/MultiplayerRouter";
+import { useAuth } from "../shared/hooks";
 import "./App.css";
 
 // Lazy load views for better performance
@@ -40,6 +41,31 @@ function LoadingSpinner() {
 console.log("App.tsx loaded");
 
 function App() {
+  const { authLoading, isAuthenticated } = useAuth();
+
+  // Show loading while authenticating
+  if (authLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // Show error if authentication failed (though this shouldn't happen with anonymous auth)
+  if (!isAuthenticated) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "18px",
+          color: "red",
+        }}
+      >
+        Authentication failed. Please refresh the page.
+      </div>
+    );
+  }
+
   return (
     <AppNavigationProvider>
       <Router>
