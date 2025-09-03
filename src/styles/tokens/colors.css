@@ -28,6 +28,13 @@
     var(--color-brand-primary) 0%,
     var(--color-brand-secondary) 100%
   );
+  --color-brand-primary-dark: #3730a3; /* Darker version of brand-primary */
+  --color-brand-secondary-dark: #0891b2; /* Darker version of brand-secondary */
+  --color-brand-gradient-dark: linear-gradient(
+    135deg,
+    var(--color-brand-primary-dark) 0%,
+    var(--color-brand-secondary-dark) 100%
+  );
 
   /* Player colors (from constants) */
   --color-player-red: #ef4444;
@@ -91,9 +98,9 @@
 
   /* Text colors */
   --color-text-primary: #213547;
-  --color-text-secondary: var(--color-gray-600);
-  --color-text-light: var(--color-white);
-  --color-text-muted: var(--color-gray-500);
+  --color-text-secondary: var(--color-gray-50);
+  --color-text-light: var(--color-gray-50);
+  --color-text-muted: var(--color-gray-50);
 
   /* Border colors */
   --color-border-primary: var(--color-gray-200);
@@ -119,7 +126,7 @@
 
   /* Missing colors - adding variables found in components */
   --color-surface: var(--color-brand-gradient);
-  --color-surface-dark: var(--color-brand-gradient);
+  --color-surface-dark: var(--color-brand-gradient-dark);
   --color-background: var(--color-gray-50);
   --color-text-inverse: var(--color-white);
   --color-text-inverse-muted: rgba(255, 255, 255, 0.7);
