@@ -1,0 +1,180 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras para a coleção de salas (rooms)
+    match /rooms/{roomId} {
+      
+      // Permitir leitura para usuários autenticados que estão na sala
+      allow read: if request.auth != null && 
+                     (request.auth.uid in resource.data.players ||
+                      // Permitir leitura durante tentativa de entrada na sala
+                      resource == null);
+      
+      // Permitir criação de sala apenas para usuários autenticados
+      allow create: if request.auth != null &&
+                       // O criador deve ser o usuário autenticado
+                       request.resource.data.createdBy == request.auth.uid &&
+                       // O criador deve estar na lista de jogadores
+                       request.auth.uid in request.resource.data.players &&
+                       // O criador deve ter a flag isCreator = true
+                       request.resource.data.players[request.auth.uid].isCreator == true &&
+                       // Status inicial deve ser 'waiting'
+                       request.resource.data.status == 'waiting' &&
+                       // Validar estrutura básica
+                       request.resource.data.keys().hasAll(['createdAt', 'createdBy', 'players', 'status']) &&
+                       // Máximo de 8 jogadores
+                       request.resource.data.players.size() <= 8;
+      
+      // Permitir atualizações para usuários que estão na sala
+      allow update: if request.auth != null &&
+                       request.auth.uid in resource.data.players &&
+                       // Validações específicas para diferentes tipos de atualização
+                       (
+                         // 1. Adicionar novo jogador
+                         isValidPlayerJoin() ||
+                         // 2. Remover jogador (leave room)
+                         isValidPlayerLeave() ||
+                         // 3. Atualizar seleção de puzzle (apenas criador)
+                         isValidPuzzleSelection() ||
+                         // 4. Atualizar estado da grade (jogadores na sala)
+                         isValidGridUpdate() ||
+                         // 5. Atualizar estado das pistas (jogadores na sala)
+                         isValidClueUpdate() ||
+                         // 6. Reset da sala para estado waiting (apenas criador)
+                         isValidRoomReset() ||
+                         // 7. Migração de estado do jogo
+                         isValidGameMigration()
+                       );
+      
+      // Permitir delete apenas se for o último jogador ou criador
+      allow delete: if request.auth != null &&
+                       (resource.data.players.size() == 1 &&
+                        request.auth.uid in resource.data.players);
+    }
+    
+    // Funções auxiliares para validação
+    function isValidPlayerJoin() {
+      return (
+        // Apenas adicionar jogadores, não remover
+        request.resource.data.players.size() > resource.data.players.size() &&
+        request.resource.data.players.size() <= 8 &&
+        // Todos os jogadores existentes devem permanecer
+        resource.data.players.keys().hasAll(
+          request.resource.data.players.keys().removeAll([request.auth.uid])
+        ) &&
+        // Novo jogador deve ter estrutura válida
+        request.auth.uid in request.resource.data.players &&
+        request.resource.data.players[request.auth.uid].id == request.auth.uid &&
+        request.resource.data.players[request.auth.uid].isCreator == false
+      );
+    }
+    
+    function isValidPlayerLeave() {
+      return (
+        // Removendo jogadores
+        request.resource.data.players.size() < resource.data.players.size() &&
+        // Apenas campos relacionados a jogadores e criador podem mudar
+        onlyPlayersAndCreatorChanged() &&
+        // Se removendo o criador, deve haver transferência de host válida
+        (!isRemovingCreator() || hasValidHostTransfer())
+      );
+    }
+    
+    function isValidPuzzleSelection() {
+      return (
+        // Apenas o criador pode selecionar puzzle
+        resource.data.players[request.auth.uid].isCreator == true &&
+        // Campos que podem mudar: puzzleType, puzzleId, status, grid, cellAuthors, clues
+        onlyPuzzleFieldsChanged() &&
+        // Status deve mudar para 'playing'
+        request.resource.data.status == 'playing' &&
+        // puzzleType deve ser válido
+        request.resource.data.puzzleType in ['classic', 'super'] &&
+        // puzzleId deve ser número
+        request.resource.data.puzzleId is int
+      );
+    }
+    
+    function isValidGridUpdate() {
+      return (
+        // Apenas campos grid e cellAuthors podem mudar
+        onlyGridFieldsChanged() &&
+        // Estado do jogo deve ser 'playing'
+        resource.data.status == 'playing'
+      );
+    }
+    
+    function isValidClueUpdate() {
+      return (
+        // Apenas campo clues pode mudar
+        onlyClueFieldsChanged() &&
+        // Estado do jogo deve ser 'playing'
+        resource.data.status == 'playing'
+      );
+    }
+    
+    function isValidRoomReset() {
+      return (
+        // Apenas o criador pode resetar
+        resource.data.players[request.auth.uid].isCreator == true &&
+        // Estado deve voltar para 'waiting'
+        request.resource.data.status == 'waiting' &&
+        // Campos de jogo devem ser limpos
+        request.resource.data.puzzleType == null &&
+        request.resource.data.puzzleId == null &&
+        request.resource.data.grid == {} &&
+        request.resource.data.cellAuthors == {} &&
+        request.resource.data.clues == {}
+      );
+    }
+    
+    function isValidGameMigration() {
+      return (
+        // Jogador deve estar na sala
+        request.auth.uid in resource.data.players &&
+        // Campos de migração permitidos
+        onlyMigrationFieldsChanged()
+      );
+    }
+    
+    // Funções auxiliares para verificar quais campos mudaram
+    function onlyPlayersAndCreatorChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['players', 'createdBy']);
+    }
+    
+    function onlyPuzzleFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['puzzleType', 'puzzleId', 'status', 'grid', 'cellAuthors', 'clues']);
+    }
+    
+    function onlyGridFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['grid', 'cellAuthors']);
+    }
+    
+    function onlyClueFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['clues']);
+    }
+    
+    function onlyMigrationFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['grid', 'cellAuthors', 'clues', 'status', 'puzzleType', 'puzzleId', 'gameSettings', 'updatedAt']);
+    }
+    
+    function isRemovingCreator() {
+      return !(request.auth.uid in request.resource.data.players) &&
+             resource.data.players[request.auth.uid].isCreator == true;
+    }
+    
+    function hasValidHostTransfer() {
+      // Se está removendo o criador, deve haver um novo criador válido
+      return request.resource.data.createdBy != resource.data.createdBy &&
+             request.resource.data.createdBy in request.resource.data.players &&
+             request.resource.data.players[request.resource.data.createdBy].isCreator == true;
+    }
+  }
+}
