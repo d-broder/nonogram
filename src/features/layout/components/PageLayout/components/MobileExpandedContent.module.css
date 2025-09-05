@@ -14,7 +14,6 @@
   line-height: var(--line-height-relaxed);
   margin-bottom: var(--spacing-sm);
   padding: var(--spacing-sm);
-  background: var(--color-background);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-sm);
 }

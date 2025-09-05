@@ -60,7 +60,7 @@
 }
 
 /* Desktop Enhancements - Mobile First */
-@media (min-width: var(--breakpoint-tablet)) {
+@media (min-width: 768px) {
   .statusContainer {
     min-height: var(--waiting-room-height);
     gap: var(--spacing-xl);

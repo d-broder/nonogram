@@ -210,7 +210,7 @@
 }
 
 /* Mobile Responsiveness */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .title {
     font-size: var(--font-size-3xl);
   }

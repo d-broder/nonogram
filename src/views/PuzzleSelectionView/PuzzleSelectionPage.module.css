@@ -69,7 +69,10 @@
 /* Puzzle Grid */
 .puzzleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--puzzle-card-size), 1fr));
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--puzzle-card-size), 1fr)
+  );
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
   justify-items: center;
@@ -113,7 +116,8 @@
 }
 
 /* Loading and Error States */
-.loading, .error {
+.loading,
+.error {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -129,7 +133,7 @@
 }
 
 /* Mobile Responsiveness */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .title {
     font-size: var(--font-size-3xl);
   }
@@ -148,7 +152,10 @@
   }
 
   .puzzleGrid {
-    grid-template-columns: repeat(auto-fill, minmax(var(--puzzle-card-size-mobile), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(var(--puzzle-card-size-mobile), 1fr)
+    );
     gap: var(--spacing-md);
   }
 

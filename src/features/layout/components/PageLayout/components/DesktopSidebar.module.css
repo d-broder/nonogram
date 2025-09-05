@@ -25,12 +25,23 @@
   color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0;
-  text-align: left;
+  text-align: center;
   width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .titleButton:hover {
-  color: var(--color-primary);
+  opacity: 0.8;
+  color: var(--color-text-light);
+}
+
+.titleButton:focus {
+  outline: none;
+  /* Foco customizado sem azul */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 /* Game Content Section */

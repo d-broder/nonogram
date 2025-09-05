@@ -273,7 +273,7 @@
   padding-right: var(--spacing-md);
 }
 
-@media (min-width: var(--breakpoint-tablet)) {
+@media (min-width: 768px) {
   .container {
     max-width: var(--container-tablet);
     padding-left: var(--spacing-lg);
@@ -281,13 +281,13 @@
   }
 }
 
-@media (min-width: var(--breakpoint-desktop)) {
+@media (min-width: 1024px) {
   .container {
     max-width: var(--container-desktop);
   }
 }
 
-@media (min-width: var(--breakpoint-wide)) {
+@media (min-width: 1440px) {
   .container {
     max-width: var(--container-wide);
   }

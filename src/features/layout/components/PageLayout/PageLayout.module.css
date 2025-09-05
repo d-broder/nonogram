@@ -35,10 +35,25 @@
   padding: 0;
   text-decoration: none;
   transition: opacity var(--transition-fast);
+
+  /* Centralizar texto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
 }
 
 .titleButton:hover {
   opacity: 0.8;
+  /* Não ficará azul - mantém cor original */
+  color: var(--color-text-light);
+}
+
+.titleButton:focus {
+  outline: none;
+  /* Foco customizado sem azul */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 /* Game Content */
@@ -270,6 +285,8 @@
   justify-content: center;
   padding: 0 1rem;
   position: relative;
+  flex-shrink: 0; /* Prevent shrinking */
+  z-index: var(--z-sticky);
 }
 
 .topBarExpanded {
@@ -286,9 +303,6 @@
 }
 
 .mobileBottomBar {
-  bottom: 0;
-  left: 0;
-  right: 0;
   height: 15vh;
   height: 15dvh; /* Dynamic viewport height */
   background: var(--color-brand-gradient);
@@ -299,6 +313,7 @@
   padding: 0 var(--spacing-md);
   box-shadow: 0 -2px 10px var(--color-shadow-light);
   z-index: var(--z-sticky);
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .overlay {
@@ -319,9 +334,11 @@
 }
 
 /* Mobile responsiveness */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .pageContainer {
     flex-direction: column;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile */
   }
 
   .sidebar {
@@ -329,8 +346,13 @@
   }
 
   .pageContent {
-    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .backButton {
@@ -344,11 +366,19 @@
   }
 
   .nonogramContainerArea {
-    height: 75vh; /* Fallback */
-    height: calc(var(--vh-fallback, 1vh) * 75);
-    height: 75dvh; /* Modern browsers */
-    height: 75dvh; /* Dynamic viewport height for mobile */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     width: 100vw;
+    overflow: hidden;
+    height: auto; /* Let flex handle the height */
+  }
+
+  .nonogramContainer {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+    padding: var(--spacing-sm);
   }
 }
 
@@ -363,7 +393,7 @@
 }
 
 /* Mobile responsiveness for create form */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .mobileCreateForm {
     padding: var(--spacing-md);
     gap: var(--spacing-lg);
