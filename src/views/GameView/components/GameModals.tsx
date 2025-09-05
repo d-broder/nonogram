@@ -1,5 +1,6 @@
 import React from "react";
 import { ConfirmationModal } from "../../../features/ui";
+import styles from "./GameModals.module.css";
 
 interface GameModalsProps {
   showClearConfirmation: boolean;
@@ -14,7 +15,6 @@ export const GameModals: React.FC<GameModalsProps> = ({
   onClearConfirm,
   onClearCancel,
   isComplete,
-  onSuccessClose,
 }) => {
   return (
     <>
@@ -33,16 +33,8 @@ export const GameModals: React.FC<GameModalsProps> = ({
 
       {/* Success modal */}
       {isComplete && (
-        <div className="success-modal-overlay" onClick={onSuccessClose}>
-          <div className="success-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="success-content">
-              <h2>🎉 Parabéns!</h2>
-              <p>Você completou o puzzle com sucesso!</p>
-              <button onClick={onSuccessClose} className="success-close-btn">
-                Continuar
-              </button>
-            </div>
-          </div>
+        <div className={styles.successContent}>
+          <p>YOU COMPLETED THE PUZZLE</p>
         </div>
       )}
     </>

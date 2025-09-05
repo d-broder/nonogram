@@ -98,7 +98,7 @@
 .button.zoom {
   background: var(--color-secondary-light);
   border-color: var(--color-secondary-border);
-  color: var(--color-text-white-primary);
+  color: var(--color-text-black-primary);
 }
 
 .button.zoom:not(:disabled):hover {
