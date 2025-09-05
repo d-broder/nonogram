@@ -280,7 +280,7 @@
   border-radius: var(--radius-full);
   border: var(--border-width-thin) solid var(--color-overlay-light);
   box-shadow: var(--shadow-xs);
-  z-index: var(--z-index-overlay);
+  z-index: var(--z-index-player-indicator);
   pointer-events: none;
 }
 

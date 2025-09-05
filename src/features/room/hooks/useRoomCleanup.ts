@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useFirebaseRoom } from './useFirebaseRoom';
+import { useEffect, useRef } from "react";
+import { useFirebaseRoom } from "./useFirebaseRoom";
 
 export function useRoomCleanup(roomId: string | null) {
   const { leaveRoom } = useFirebaseRoom(roomId);
@@ -8,7 +8,7 @@ export function useRoomCleanup(roomId: string | null) {
   useEffect(() => {
     if (!roomId) return;
 
-    const playerInfo = sessionStorage.getItem('playerInfo');
+    const playerInfo = sessionStorage.getItem("playerInfo");
     if (!playerInfo) return;
 
     const player = JSON.parse(playerInfo);
@@ -16,12 +16,12 @@ export function useRoomCleanup(roomId: string | null) {
     const cleanup = async () => {
       if (cleanupExecuted.current) return;
       cleanupExecuted.current = true;
-      
+
       try {
         await leaveRoom(player.id);
-        sessionStorage.removeItem('playerInfo');
+        sessionStorage.removeItem("playerInfo");
       } catch (error) {
-        console.error('Error during cleanup:', error);
+        console.error("Error during cleanup:", error);
       }
     };
 
@@ -30,11 +30,11 @@ export function useRoomCleanup(roomId: string | null) {
       cleanup();
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     // Cleanup listeners on unmount, but don't execute cleanup
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       cleanupExecuted.current = false;
     };
   }, [roomId, leaveRoom]);

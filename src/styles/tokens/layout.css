@@ -24,6 +24,7 @@
   /* Z-index layers */
   --z-index-base: 0;
   --z-index-dropdown: 10;
+  --z-index-player-indicator: 12;
   --z-index-sticky: 15;
   --z-index-overlay: 20;
   --z-index-modal: 30;

@@ -29,6 +29,33 @@ export function WaitingRoomPage() {
     // No manual navigation needed here
   }, [roomId, room, navigate]);
 
+  // Sync sessionStorage with Firebase room data when player becomes host
+  useEffect(() => {
+    const playerInfoString = sessionStorage.getItem("playerInfo");
+    if (!playerInfoString || !room?.players) return;
+
+    const currentPlayerInfo = JSON.parse(playerInfoString);
+    if (!currentPlayerInfo.id) return;
+
+    const updatedPlayerInfo = room.players[currentPlayerInfo.id];
+    if (!updatedPlayerInfo) return;
+
+    // Check if this player became the host
+    if (
+      updatedPlayerInfo &&
+      updatedPlayerInfo.isCreator !== currentPlayerInfo.isCreator
+    ) {
+      sessionStorage.setItem("playerInfo", JSON.stringify(updatedPlayerInfo));
+
+      // If player became host, immediately redirect to force re-evaluation
+      if (updatedPlayerInfo.isCreator && !currentPlayerInfo.isCreator) {
+        console.log("Player became host, redirecting to puzzle selection");
+        // Use window.location to force a complete re-evaluation
+        window.location.href = `/${roomId}`;
+      }
+    }
+  }, [room, roomId]);
+
   if (loading) {
     return (
       <PageLayout isMultiplayer roomId={roomId} players={players}>

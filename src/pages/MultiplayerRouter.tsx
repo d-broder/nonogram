@@ -12,20 +12,30 @@ export function MultiplayerRouter() {
   const { roomId } = useParams<{ roomId: string }>();
   const { room, loading } = useFirebaseRoom(roomId || null);
   const [isPlayerInRoom, setIsPlayerInRoom] = useState(false);
+  const [playerInfo, setPlayerInfo] = useState<{
+    id: string;
+    isCreator: boolean;
+  } | null>(null);
 
   // Auto cleanup when leaving the room (with conservative approach)
   useRoomCleanup(roomId || null);
 
-  // Check if current player is already in the room
+  // Check if current player is already in the room and update player info
   useEffect(() => {
-    const playerInfo = sessionStorage.getItem("playerInfo");
-    if (playerInfo && room) {
-      const player = JSON.parse(playerInfo);
+    const playerInfoString = sessionStorage.getItem("playerInfo");
+    if (playerInfoString && room) {
+      const player = JSON.parse(playerInfoString);
       const playerExists = room.players[player.id];
       setIsPlayerInRoom(!!playerExists);
-    } else if (!playerInfo) {
+
+      // Update local player info state to trigger re-renders
+      if (playerExists) {
+        setPlayerInfo(room.players[player.id]);
+      }
+    } else if (!playerInfoString) {
       // Only set to false if there's no player info at all
       setIsPlayerInRoom(false);
+      setPlayerInfo(null);
     }
     // If playerInfo exists but room is still loading, don't change the state
   }, [room]);
@@ -81,22 +91,25 @@ export function MultiplayerRouter() {
     );
   }
 
-  // If player is not in the room, show join page (but not if still loading and has playerInfo)
-  const playerInfo = sessionStorage.getItem("playerInfo");
-  if (!isPlayerInRoom && !(loading && playerInfo)) {
+  // Check if player info exists and if player is in room
+  const playerInfoString = sessionStorage.getItem("playerInfo");
+  if (!isPlayerInRoom && !(loading && playerInfoString)) {
     return <JoinRoomPage />;
   }
+
+  // Use the state playerInfo for routing decisions (more reliable than sessionStorage)
+  const currentPlayerInfo =
+    playerInfo || (playerInfoString ? JSON.parse(playerInfoString) : {});
 
   // Player is in room - determine view based on room status
   switch (room.status) {
     case "waiting":
       // Show puzzle selection for creator, waiting room for others
-      const playerInfo = JSON.parse(
-        sessionStorage.getItem("playerInfo") || "{}"
-      );
-      if (playerInfo.isCreator) {
+      if (currentPlayerInfo.isCreator) {
+        console.log("Showing PuzzleSelectionPage for creator");
         return <PuzzleSelectionPage isMultiplayerMode={true} />;
       } else {
+        console.log("Showing WaitingRoomPage for non-creator");
         return <WaitingRoomPage />;
       }
 
