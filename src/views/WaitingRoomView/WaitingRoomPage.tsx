@@ -31,12 +31,7 @@ export function WaitingRoomPage() {
 
   if (loading) {
     return (
-      <PageLayout
-        showBackButton
-        isMultiplayer
-        roomId={roomId}
-        players={players}
-      >
+      <PageLayout isMultiplayer roomId={roomId} players={players}>
         <div className={styles.loading}>Loading room...</div>
       </PageLayout>
     );
@@ -44,12 +39,7 @@ export function WaitingRoomPage() {
 
   if (error || !room) {
     return (
-      <PageLayout
-        showBackButton
-        isMultiplayer
-        roomId={roomId}
-        players={players}
-      >
+      <PageLayout isMultiplayer roomId={roomId} players={players}>
         <div className={styles.error}>
           <h2>Room not found</h2>
           <p>The room doesn't exist or has been removed.</p>
@@ -61,7 +51,7 @@ export function WaitingRoomPage() {
   if (!roomId) return null;
 
   return (
-    <PageLayout showBackButton isMultiplayer roomId={roomId} players={players}>
+    <PageLayout isMultiplayer roomId={roomId} players={players}>
       <div className={styles.statusContainer}>
         <div className={styles.loadingSpinner}></div>
         <p className={styles.statusText}>

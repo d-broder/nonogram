@@ -17,7 +17,6 @@
   text-align: center;
 }
 
-.backButton,
 .hamburgerButton {
   background: var(--color-overlay-light);
   color: var(--color-text-white-inverse);
@@ -33,28 +32,18 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-}
-
-.backButton {
-  left: 5vw;
-  top: 2vh;
-  font-size: var(--font-size-xl);
-}
-
-.hamburgerButton {
   font-size: var(--font-size-lg);
   top: 50%;
   transform: translateY(-50%);
   right: 5vw;
 }
 
-.backButton:hover,
 .hamburgerButton:hover {
   background: var(--color-overlay-medium);
 }
 
 /* Desktop Hidden - Mobile First */
-@media (min-width: var(--breakpoint-tablet)) {
+@media (min-width: 768px) {
   .mobileTopBar {
     display: none;
   }

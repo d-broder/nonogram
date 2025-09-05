@@ -65,7 +65,7 @@ export function PuzzleSelectionPage({
   };
 
   // Handle room creation during puzzle selection
-  const handleRoomCreated = (newRoomId: string, _: string) => {
+  const handleRoomCreated = (newRoomId: string) => {
     // Navigate to the new room URL - MultiplayerRoomHandler will handle the rest
     navigate(`/${newRoomId}`);
   };
@@ -110,7 +110,6 @@ export function PuzzleSelectionPage({
   if (error) {
     return (
       <PageLayout
-        showBackButton
         isMultiplayer={isMultiplayer}
         roomId={roomId}
         players={room ? Object.values(room.players) : []}

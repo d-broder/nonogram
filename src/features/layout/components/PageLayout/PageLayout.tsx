@@ -19,7 +19,6 @@ interface PageLayoutProps {
   children: ReactNode;
 
   // Page configuration
-  showBackButton?: boolean;
   pageContentAreaHeight?: "full" | "80%"; // For GamePage mobile (80%), others use full
   showMobileBottomBar?: boolean; // Only for GamePage mobile
   isGamePage?: boolean; // To use nonogramContainerArea instead of pageContentArea
@@ -68,7 +67,6 @@ interface PageLayoutProps {
 
 export function PageLayout({
   children,
-  showBackButton = false,
   showMobileBottomBar = false,
   isGamePage = false,
   isMultiplayer = false,
@@ -116,7 +114,7 @@ export function PageLayout({
     toggleSidebar,
   } = usePageLayoutState();
 
-  const { handleHomeClick, handleBackClick } = usePageLayoutNavigation(roomId);
+  const { handleHomeClick } = usePageLayoutNavigation(roomId);
 
   const handleHomeClickWrapper = () => handleHomeClick(onHomeClick);
 
@@ -148,8 +146,6 @@ export function PageLayout({
       <div className={styles.pageContainer}>
         {/* Mobile Top Bar */}
         <MobileTopBar
-          showBackButton={showBackButton}
-          onBackClick={handleBackClick}
           isGamePage={isGamePage}
           isMultiplayer={isMultiplayer}
           onToggleSidebar={toggleSidebar}
@@ -284,36 +280,11 @@ export function PageLayout({
           isGamePage ? styles.nonogramContainerArea : styles.pageContentArea
         }
       >
-        {showBackButton &&
-          (isGamePage ? (
-            <>
-              <button
-                onClick={handleBackClick}
-                className={styles.backButton}
-                aria-label="Go back"
-              >
-                ⯇
-              </button>
-              {children}
-            </>
-          ) : (
-            <div className={styles.pageContent}>
-              <button
-                onClick={handleBackClick}
-                className={styles.backButton}
-                aria-label="Go back"
-              >
-                ⯇
-              </button>
-              {children}
-            </div>
-          ))}
-        {!showBackButton &&
-          (isGamePage ? (
-            children
-          ) : (
-            <div className={styles.pageContent}>{children}</div>
-          ))}
+        {isGamePage ? (
+          children
+        ) : (
+          <div className={styles.pageContent}>{children}</div>
+        )}
       </div>
 
       {/* Create Room Modal */}
