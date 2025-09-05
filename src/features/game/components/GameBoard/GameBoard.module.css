@@ -283,7 +283,7 @@
   pointer-events: none;
 }
 
-@media (min-width: var(--breakpoint-mobile)) and (max-width: var(--breakpoint-tablet)) {
+@media (min-width: 320px) and (max-width: 768px) {
   .nonogramContainer {
     display: grid;
     /* Container-controlled spacing maintained in mobile */
