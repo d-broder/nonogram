@@ -7,11 +7,11 @@ import type {
   CellPosition,
   ClueElement,
 } from "../../../../shared/types";
-import { useBoardControls } from "./components";
 import {
   useGameBoardInteraction,
   useGameBoardState,
   useGameBoardZoom,
+  useBoardControls,
 } from "./hooks";
 import styles from "./GameBoard.module.css";
 
@@ -296,7 +296,7 @@ export function GameBoard({
                                 handleColClueClick(
                                   e,
                                   index,
-                                  `${blockIndex}-${lineIndex}-${clueIndex}` as any
+                                  `${blockIndex}-${lineIndex}-${clueIndex}` as string
                                 )
                               }
                             >
@@ -419,7 +419,7 @@ export function GameBoard({
                                 handleRowClueClick(
                                   e,
                                   index,
-                                  `${blockIndex}-${lineIndex}-${clueIndex}` as any
+                                  `${blockIndex}-${lineIndex}-${clueIndex}` as string
                                 )
                               }
                             >
