@@ -17,8 +17,6 @@
 
 .form.inline {
   padding: var(--spacing-md, 1rem);
-  background: var(--color-bg-primary);
-  border: var(--border-width-thin) solid var(--color-border);
   border-radius: var(--radius-sm);
 }
 
