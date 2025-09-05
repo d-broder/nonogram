@@ -32,6 +32,7 @@ interface GameBoardProps {
     superClueHeight: number;
     clueFontSize: number;
     clueRadius: number;
+    playerIndicatorSize: number;
   };
   // Optional clue click handlers for multiplayer sync
   onRowClueClick?: (rowIndex: number, clueIndex: number | string) => void;

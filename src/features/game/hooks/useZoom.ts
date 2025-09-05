@@ -9,6 +9,7 @@ interface ZoomConfig {
   superClueHeight: number;
   clueFontSize: number;
   clueRadius: number;
+  playerIndicatorSize: number;
 }
 
 const MIN_CELL_SIZE = 10;
@@ -28,6 +29,7 @@ export function useZoom() {
       superClueHeight: size * 1.75,
       clueFontSize: size * 0.55,
       clueRadius: size * 0.1,
+      playerIndicatorSize: size * 0.25,
     }),
     []
   );

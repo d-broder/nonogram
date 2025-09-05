@@ -28,8 +28,16 @@
     var(--color-brand-primary) 0%,
     var(--color-brand-secondary) 100%
   );
-  --color-brand-primary-dark: #3730a3; /* Darker version of brand-primary */
-  --color-brand-secondary-dark: #0891b2; /* Darker version of brand-secondary */
+  --color-brand-primary-dark: hsl(
+    243,
+    75%,
+    20%
+  ); /* Darker version of brand-primary */
+  --color-brand-secondary-dark: hsl(
+    189,
+    94%,
+    20%
+  ); /* Darker version of brand-secondary */
   --color-brand-gradient-dark: linear-gradient(
     135deg,
     var(--color-brand-primary-dark) 0%,

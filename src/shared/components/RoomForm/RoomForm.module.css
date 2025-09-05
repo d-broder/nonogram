@@ -89,6 +89,7 @@
   cursor: pointer;
   transition: var(--transition-fast);
   position: relative;
+  box-shadow: var(--shadow-text-sm);
 }
 
 .colorButton:hover:not(.disabled) {

@@ -11,11 +11,6 @@
   text-align: center;
   color: var(--color-text-white-muted);
   font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  margin-bottom: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-sm);
 }
 
 /* Game Controls */
