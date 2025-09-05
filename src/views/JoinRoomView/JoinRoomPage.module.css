@@ -2,7 +2,7 @@
 .header {
   text-align: center;
   margin-bottom: var(--spacing-xl);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
@@ -52,7 +52,7 @@
 
 .label {
   display: block;
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   text-shadow: var(--shadow-text-sm);

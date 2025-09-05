@@ -15,7 +15,7 @@
   font-weight: var(--font-weight-semibold);
   margin: 0;
   text-align: center;
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   text-shadow: var(--text-shadow);
 }
 
@@ -29,7 +29,7 @@
   margin: 0;
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   text-shadow: var(--text-shadow);
 }
 
@@ -57,7 +57,7 @@
 
 .clearCancelButton {
   background: var(--color-overlay-light);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
 }
 
 .clearCancelButton:hover {
@@ -69,7 +69,7 @@
 
 .clearConfirmButton {
   background: var(--color-danger-glass);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   border-color: var(--color-danger-border);
 }
 

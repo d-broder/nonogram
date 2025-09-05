@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useFirebaseRoom } from "../../features/room";
 import { PageLayout } from "../../features/layout";
-import type { Player } from "../../shared/types";
 import styles from "./WaitingRoomPage.module.css";
 
 export function WaitingRoomPage() {
@@ -66,9 +65,7 @@ export function WaitingRoomPage() {
       <div className={styles.statusContainer}>
         <div className={styles.loadingSpinner}></div>
         <p className={styles.statusText}>
-          Waiting for{" "}
-          {players.find((p: Player) => p.isCreator)?.name || "creator"} to
-          select a puzzle...
+          Waiting for creator to select a puzzle...
         </p>
       </div>
     </PageLayout>

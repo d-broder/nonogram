@@ -101,9 +101,9 @@
 .clueNumber {
   font-family: var(--font-monospace);
   font-size: var(--font-size-clue);
-  color: var(--color-text-primary);
+  color: var(--color-clue-text);
   background: var(--color-clue-bg);
-  border-radius: var(--radius-xs);
+  border-radius: var(--clue-radius, var(--radius-xs));
   text-align: center;
   display: flex;
   align-items: center;
@@ -123,13 +123,13 @@
 }
 
 .clueNumber:hover {
-  background: var(--color-clue-bg-hover);
+  filter: brightness(0.9);
   transform: scale(1.05);
 }
 
 .clueNumberClicked {
   background: var(--color-primary) !important;
-  color: var(--color-text-inverse) !important;
+  color: var(--color-text-white-inverse) !important;
   box-shadow: var(--shadow-sm);
 }
 
@@ -149,20 +149,21 @@
 
 /* Super clue number styling - from reference project */
 .superClueNumber {
-  color: var(--color-text-inverse);
-  background: var(--color-text-primary);
+  color: var(--color-superclue-text);
+  background: var(--color-superclue-bg);
+  border-radius: var(--clue-radius, var(--radius-xs));
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
 .superClueNumber:hover {
-  background: var(--color-text-secondary);
+  filter: brightness(0.9);
   transform: scale(1.05);
 }
 
 .superClueNumber.clueNumberClicked {
   background: var(--color-secondary) !important;
-  color: var(--color-text-inverse) !important;
+  color: var(--color-text-white-inverse) !important;
   box-shadow: var(--shadow-sm);
 }
 
@@ -249,7 +250,7 @@
 
 .solutionFilled {
   background: var(--color-success) !important;
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
 }
 
 /* Thick borders for 5x5 sections - from reference */

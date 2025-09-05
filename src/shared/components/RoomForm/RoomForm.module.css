@@ -8,9 +8,6 @@
 /* Layout Variants */
 .form.modal {
   padding: var(--spacing-lg, 1.5rem);
-  background: var(--color-bg-modal);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
   min-width: 320px;
   max-width: var(--form-max-width);
 }
@@ -31,7 +28,7 @@
   margin: 0;
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-text-white-primary);
   text-align: center;
 }
 
@@ -51,7 +48,7 @@
 
 .label {
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  color: var(--color-text-white-secondary);
   font-size: var(--font-size-label);
 }
 
@@ -78,13 +75,15 @@
 .colorGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-sm, 0.5rem);
-  max-width: 200px;
+  gap: var(--spacing-md);
+
+  justify-items: center;
+  align-items: center;
 }
 
 .colorButton {
-  width: var(--button-size-md);
-  height: var(--button-size-md);
+  width: var(--button-size-lg);
+  height: var(--button-size-lg);
   border: var(--border-width-normal) solid transparent;
   border-radius: 50%;
   cursor: pointer;
@@ -94,11 +93,11 @@
 
 .colorButton:hover:not(.disabled) {
   transform: scale(1.1);
-  border-color: var(--color-text-primary);
+  border-color: var(--color-text-white-primary);
 }
 
 .colorButton.selected {
-  border-color: var(--color-text-primary);
+  border-color: var(--color-text-white-primary);
   box-shadow: 0 0 0 3px var(--color-glass-shadow);
 }
 
@@ -150,12 +149,12 @@
 }
 
 .cancelButton {
-  background-color: var(--color-text-secondary);
+  background-color: var(--color-text-white-secondary);
   color: white;
 }
 
 .cancelButton:hover:not(:disabled) {
-  background-color: var(--color-text-primary);
+  background-color: var(--color-text-white-primary);
 }
 
 .submitButton {

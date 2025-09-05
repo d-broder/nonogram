@@ -8,6 +8,7 @@ interface ZoomConfig {
   superClueWidth: number;
   superClueHeight: number;
   clueFontSize: number;
+  clueRadius: number;
 }
 
 interface UseGameBoardZoomProps {
@@ -41,6 +42,7 @@ export function useGameBoardZoom({
         "--super-clue-size": `${zoomConfig.superClueWidth}px`,
         "--font-size-clue": `${zoomConfig.clueFontSize}px`,
         "--icon-size": `${Math.max(zoomConfig.cellSize * 0.6, 16)}px`,
+        "--clue-radius": `${zoomConfig.clueRadius}px`,
       } as React.CSSProperties),
     [zoomConfig]
   );

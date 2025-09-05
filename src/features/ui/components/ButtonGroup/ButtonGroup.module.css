@@ -17,7 +17,7 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: var(--color-text-light);
+  color: var(--color-text-white-light);
   text-align: center;
 }
 
@@ -39,7 +39,7 @@
 
 /* Focus group behavior */
 .buttonGroup:focus-within .title {
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   text-shadow: var(--shadow-text-sm);
 }
 

@@ -73,7 +73,7 @@
 .button.paint {
   background: var(--color-secondary-light);
   border-color: var(--color-secondary-border);
-  color: var(--color-text-primary);
+  color: var(--color-text-white-primary);
 }
 
 .button.paint:not(:disabled):hover {
@@ -98,7 +98,7 @@
 .button.zoom {
   background: var(--color-secondary-light);
   border-color: var(--color-secondary-border);
-  color: var(--color-text-primary);
+  color: var(--color-text-white-primary);
 }
 
 .button.zoom:not(:disabled):hover {
@@ -110,7 +110,7 @@
 /* Toggle variant - enabled state */
 .button.toggle.active {
   background: var(--color-success);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
 }
 
 .button.toggle.active:not(:disabled):hover {
@@ -122,7 +122,7 @@
 /* Toggle variant - disabled state */
 .button.toggle:not(.active) {
   background: var(--color-danger);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
 }
 
 .button.toggle:not(.active):not(:disabled):hover {

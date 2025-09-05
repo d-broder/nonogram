@@ -9,7 +9,7 @@
 /* Game Subtitle */
 .subtitle {
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--color-text-white-muted);
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
   margin-bottom: var(--spacing-sm);

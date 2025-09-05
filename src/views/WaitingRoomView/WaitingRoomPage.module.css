@@ -5,14 +5,14 @@
   align-items: center;
   justify-content: center;
   min-height: var(--waiting-room-height-mobile);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   text-align: center;
   gap: var(--spacing-lg);
 }
 
 .statusText {
   font-size: var(--font-size-lg);
-  color: var(--color-text-inverse-muted);
+  color: var(--color-text-white-inverse-muted);
   margin: 0;
   font-weight: var(--font-weight-light);
 }
@@ -22,9 +22,9 @@
   width: var(--spinner-size-mobile);
   height: var(--spinner-size-mobile);
   border: var(--spacing-xs) solid var(--color-overlay-light);
-  border-top: var(--spacing-xs) solid var(--color-text-inverse);
+  border-top: var(--spacing-xs) solid var(--color-text-white-inverse);
   border-radius: 50%;
-  animation: spin var(--transition-medium) linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: center;
   min-height: var(--waiting-room-height-mobile);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   font-size: var(--font-size-lg);
   text-align: center;
 }

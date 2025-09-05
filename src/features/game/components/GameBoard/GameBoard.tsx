@@ -31,6 +31,7 @@ interface GameBoardProps {
     superClueWidth: number;
     superClueHeight: number;
     clueFontSize: number;
+    clueRadius: number;
   };
   // Optional clue click handlers for multiplayer sync
   onRowClueClick?: (rowIndex: number, clueIndex: number | string) => void;
@@ -275,6 +276,7 @@ export function GameBoard({
                         flexDirection: "column",
                         minWidth: `${zoomConfig.cellSize}px`,
                         alignItems: "center",
+                        gap: "var(--clue-number-margin)",
                       }}
                     >
                       {!(

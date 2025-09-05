@@ -97,10 +97,15 @@
   --color-bg-game-area: #f0f2f5;
 
   /* Text colors */
-  --color-text-primary: #213547;
-  --color-text-secondary: var(--color-gray-50);
-  --color-text-light: var(--color-gray-50);
-  --color-text-muted: var(--color-gray-50);
+  --color-text-white-primary: var(--color-gray-50);
+  --color-text-white-secondary: var(--color-gray-100);
+  --color-text-white-light: var(--color-gray-50);
+  --color-text-white-muted: var(--color-gray-50);
+
+  --color-text-black-primary: var(--color-gray-800);
+  --color-text-black-secondary: var(--color-gray-700);
+  --color-text-black-light: var(--color-gray-600);
+  --color-text-black-muted: var(--color-gray-500);
 
   /* Border colors */
   --color-border-primary: var(--color-gray-200);
@@ -128,8 +133,8 @@
   --color-surface: var(--color-brand-gradient);
   --color-surface-dark: var(--color-brand-gradient-dark);
   --color-background: var(--color-gray-50);
-  --color-text-inverse: var(--color-white);
-  --color-text-inverse-muted: rgba(255, 255, 255, 0.7);
+  --color-text-white-inverse: var(--color-white);
+  --color-text-white-inverse-muted: rgba(255, 255, 255, 0.7);
   --color-primary-dark: #1e40af;
   --color-primary-border: #8dbddd;
   --color-secondary: #8b5cf6;
@@ -139,7 +144,10 @@
   --color-overlay-light: rgba(255, 255, 255, 0.1);
   --color-overlay-medium: rgba(255, 255, 255, 0.2);
   --color-overlay-dark: rgba(255, 255, 255, 0.3);
-  --color-clue-bg: rgba(0, 0, 0, 0.05);
+  --color-clue-text: var(--color-gray-900);
+  --color-clue-bg: var(--color-gray-200);
+  --color-superclue-text: var(--color-gray-100);
+  --color-superclue-bg: var(--color-gray-700);
   --color-clue-bg-hover: rgba(0, 0, 0, 0.1);
   --color-border: var(--color-gray-300);
 
@@ -159,8 +167,8 @@
   :root {
     --color-bg-primary: var(--color-gray-900);
     --color-bg-secondary: var(--color-gray-800);
-    --color-text-primary: var(--color-white);
-    --color-text-secondary: var(--color-gray-300);
+    --color-text-white-primary: var(--color-white);
+    --color-text-white-secondary: var(--color-gray-300);
     --color-border-primary: var(--color-gray-700);
     --color-cell-border: var(--color-gray-600);
   }

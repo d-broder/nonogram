@@ -10,7 +10,7 @@
   width: var(--sidebar-width);
   min-height: var(--full-height);
   background: var(--color-bg-sidebar);
-  color: var(--color-text-light);
+  color: var(--color-text-white-light);
   padding: var(--sidebar-padding);
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@
 .titleButton {
   background: none;
   border: none;
-  color: var(--color-text-light);
+  color: var(--color-text-white-light);
   font-size: inherit;
   font-weight: inherit;
   cursor: pointer;
@@ -47,7 +47,7 @@
 .titleButton:hover {
   opacity: 0.8;
   /* Não ficará azul - mantém cor original */
-  color: var(--color-text-light);
+  color: var(--color-text-white-light);
 }
 
 .titleButton:focus {
@@ -89,7 +89,7 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
   margin: 0;
-  color: var(--color-text-muted);
+  color: var(--color-text-white-muted);
 }
 
 /* Room Info */
@@ -107,7 +107,7 @@
 
 .roomLink {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text-white-muted);
   word-break: break-all;
   margin-bottom: var(--container-gap);
 }
@@ -118,7 +118,7 @@
 
 .copyButton {
   background: var(--color-primary);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   border: none;
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-sm);
@@ -140,7 +140,7 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
   margin: 0 0 var(--spacing-sm) 0;
-  color: var(--color-text-light);
+  color: var(--color-text-white-light);
 }
 
 .playersList {
@@ -291,7 +291,7 @@
 
 .topBarExpanded {
   background: var(--color-brand-gradient);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   padding: var(--spacing-md);
   height: 90vh;
   height: 90dvh; /* Dynamic viewport height */
@@ -306,7 +306,7 @@
   height: 15vh;
   height: 15dvh; /* Dynamic viewport height */
   background: var(--color-brand-gradient);
-  color: var(--color-text-inverse);
+  color: var(--color-text-white-inverse);
   display: flex;
   align-items: center;
   justify-content: center;

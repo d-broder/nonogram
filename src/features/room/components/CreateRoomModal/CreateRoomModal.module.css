@@ -15,7 +15,7 @@
 }
 
 .modal {
-  background: var(--color-bg-modal);
+  background: var(--color-brand-gradient);
   border-radius: var(--radius-md);
   width: 100%;
   max-width: var(--form-max-width);
@@ -50,14 +50,14 @@
   margin: 0;
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-text-white-primary);
 }
 
 .closeButton {
   background: none;
   border: none;
   font-size: var(--font-size-title);
-  color: var(--color-text-secondary);
+  color: var(--color-text-white-secondary);
   cursor: pointer;
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);

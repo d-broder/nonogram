@@ -110,7 +110,6 @@
   --shadow-text-sm: 1px 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.3);
   --transform-lift: -2px;
-  --transform-lift-lg: -4px;
   --shadow-outline: 0 0 0 3px rgba(59, 130, 246, 0.3);
 
   /* Backdrop effects */

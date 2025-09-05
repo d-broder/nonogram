@@ -3,9 +3,9 @@
   /* Transform tokens */
   --transform-hover-lift: translateY(-2px);
   --transform-reset: translateY(0);
-  --transform-lift-sm: translateY(-10px);
-  --transform-lift-md: translateY(-20px);
-  --transform-lift-lg: translateY(-30px);
+  --transform-lift-sm: translateY(-1px);
+  --transform-lift-md: translateY(-2px);
+  --transform-lift-lg: translateY(-4px);
   --transform-scale-sm: scale(0.95);
   --transform-scale-md: scale(1.05);
   --transform-scale-lg: scale(1.1);
