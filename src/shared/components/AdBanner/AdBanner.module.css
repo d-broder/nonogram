@@ -1,0 +1,38 @@
+/* AdBanner Component Styles */
+.adBanner {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  position: relative;
+}
+
+.adBanner .adsbygoogle {
+  width: 100%;
+  height: 100%;
+}
+
+/* Fallback styling when ad is not available */
+.fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666666;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 500;
+  background: #f5f5f5;
+  border: 1px dashed #cccccc;
+  z-index: 1;
+}
+
+/* Hide fallback when ad loads successfully */
+.adBanner:has(.adsbygoogle[data-ad-status="filled"]) .fallback {
+  display: none;
+}

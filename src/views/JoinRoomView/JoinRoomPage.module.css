@@ -216,7 +216,7 @@
   }
 
   .form {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-md);
   }
 
   .colorGrid {

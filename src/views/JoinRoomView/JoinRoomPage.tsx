@@ -110,13 +110,7 @@ export function JoinRoomPage() {
           onSubmit={formActions.joinRoom}
           submitLabel="Join Room"
           layout="page"
-        >
-          {usedColors.length > 0 && (
-            <p className={styles.colorNote}>
-              Grayed out colors are already taken by other players
-            </p>
-          )}
-        </RoomForm>
+        ></RoomForm>
       </div>
     </PageLayout>
   );

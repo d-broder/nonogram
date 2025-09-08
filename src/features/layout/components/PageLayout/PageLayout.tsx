@@ -13,6 +13,7 @@ import {
   usePageLayoutState,
   usePageLayoutHandlers,
 } from "./hooks";
+import { AdBanner } from "../../../../shared/components";
 import styles from "./PageLayout.module.css";
 
 interface PageLayoutProps {
@@ -188,6 +189,9 @@ export function PageLayout({
               isComplete={isComplete ?? false}
             />
           )}
+
+        {/* Ad Banner */}
+        <AdBanner className={styles.adBanner} />
       </div>
     );
   }
@@ -274,17 +278,23 @@ export function PageLayout({
         onHideTooltip={onHideTooltip}
       />
 
-      {/* Page Content Area */}
-      <div
-        className={
-          isGamePage ? styles.nonogramContainerArea : styles.pageContentArea
-        }
-      >
-        {isGamePage ? (
-          children
-        ) : (
-          <div className={styles.pageContent}>{children}</div>
-        )}
+      {/* Main Container (Content + Ad Banner) */}
+      <div className={styles.mainContainer}>
+        {/* Page Content Area */}
+        <div
+          className={
+            isGamePage ? styles.nonogramContainerArea : styles.pageContentArea
+          }
+        >
+          {isGamePage ? (
+            children
+          ) : (
+            <div className={styles.pageContent}>{children}</div>
+          )}
+        </div>
+
+        {/* Ad Banner */}
+        <AdBanner />
       </div>
 
       {/* Create Room Modal */}
