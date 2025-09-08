@@ -17,6 +17,9 @@ interface GamePageState {
   showClearConfirmation: boolean;
   setShowClearConfirmation: (show: boolean) => void;
 
+  showExitConfirmation: boolean;
+  setShowExitConfirmation: (show: boolean) => void;
+
   isMobile: boolean;
 
   stickyClues: boolean;
@@ -48,6 +51,7 @@ export const useGamePageState = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [stickyClues, setStickyClues] = useState(true);
   const [showPlayerIndicators, setShowPlayerIndicators] = useState(true);
@@ -86,6 +90,8 @@ export const useGamePageState = ({
     setIsMigrating,
     showClearConfirmation,
     setShowClearConfirmation,
+    showExitConfirmation,
+    setShowExitConfirmation,
     isMobile,
     stickyClues,
     setStickyClues,

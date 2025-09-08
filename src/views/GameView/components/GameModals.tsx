@@ -8,6 +8,9 @@ interface GameModalsProps {
   onClearCancel: () => void;
   isComplete: boolean;
   onSuccessClose: () => void;
+  showExitConfirmation?: boolean;
+  onExitConfirm?: () => void;
+  onExitCancel?: () => void;
 }
 
 export const GameModals: React.FC<GameModalsProps> = ({
@@ -15,6 +18,9 @@ export const GameModals: React.FC<GameModalsProps> = ({
   onClearConfirm,
   onClearCancel,
   isComplete,
+  showExitConfirmation,
+  onExitConfirm,
+  onExitCancel,
 }) => {
   return (
     <>
@@ -22,12 +28,25 @@ export const GameModals: React.FC<GameModalsProps> = ({
       {showClearConfirmation && (
         <ConfirmationModal
           isOpen={showClearConfirmation}
-          title="Limpar Tabuleiro"
-          message="Tem certeza que deseja limpar todo o progresso do tabuleiro?"
-          confirmText="Sim, limpar"
-          cancelText="Cancelar"
+          title="Clear Grid"
+          message="Are you sure you want to clear all grid progress?"
+          confirmText="Yes, clear"
+          cancelText="Cancel"
           onConfirm={onClearConfirm}
           onCancel={onClearCancel}
+        />
+      )}
+
+      {/* Exit confirmation modal */}
+      {showExitConfirmation && onExitConfirm && onExitCancel && (
+        <ConfirmationModal
+          isOpen={showExitConfirmation}
+          title="Leave Game"
+          message="Are you sure you want to leave? Your progress will be lost."
+          confirmText="Yes, leave"
+          cancelText="Cancel"
+          onConfirm={onExitConfirm}
+          onCancel={onExitCancel}
         />
       )}
 

@@ -4,6 +4,7 @@ import { usePuzzleLoader, useGameState, useZoom } from "../../features/game";
 import { useGameStateMigration } from "../../features/game/hooks/useGameStateMigration";
 import { useFirebaseRoom } from "../../features/room";
 import { useAppNavigation } from "../../shared/contexts/AppNavigationContext";
+import { hasGridModifications } from "../../shared/utils";
 import { GameBoard } from "../../features/game";
 import { PageLayout } from "../../features/layout";
 import type { CellState } from "../../shared/types";
@@ -60,6 +61,7 @@ export function GamePage({
     updateClueState,
     updateRoomStatus,
     resetRoomToWaiting,
+    leaveRoom,
   } = useFirebaseRoom(roomId || null);
 
   const { migrateToMultiplayer } = useGameStateMigration();
@@ -72,6 +74,8 @@ export function GamePage({
     setIsMigrating,
     showClearConfirmation,
     setShowClearConfirmation,
+    showExitConfirmation,
+    setShowExitConfirmation,
     isMobile,
     stickyClues,
     setStickyClues,
@@ -152,13 +156,47 @@ export function GamePage({
     setShowClearConfirmation(true);
   };
 
-  const handleConfirmClear = () => {
-    clearGameGrid();
-    setShowClearConfirmation(false);
+  // Exit confirmation handlers
+  const handleConfirmExit = async () => {
+    setShowExitConfirmation(false);
+
+    // Different behavior based on context
+    if (isMultiplayer && roomId && currentPlayerInfo?.id) {
+      // In multiplayer, leave the room first
+      try {
+        await leaveRoom(currentPlayerInfo.id);
+      } catch (error) {
+        console.error("Error leaving room:", error);
+      }
+
+      // Navigate to home
+      navigate("/");
+    } else {
+      // In singleplayer, could be back to puzzles or home
+      await performBackToPuzzles();
+    }
   };
 
-  const handleCancelClear = () => {
-    setShowClearConfirmation(false);
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
+  };
+
+  // Home click handler with confirmation
+  const handleHomeClick = () => {
+    if (isMultiplayer) {
+      // In multiplayer, always ask for confirmation when leaving room
+      setShowExitConfirmation(true);
+    } else if (hasGridModifications(gameState.grid)) {
+      // In singleplayer, ask for confirmation only if there are modifications
+      setShowExitConfirmation(true);
+    } else {
+      // No modifications, proceed directly
+      if (isUsingProps) {
+        navigateToPuzzleSelection();
+      } else {
+        navigate("/");
+      }
+    }
   };
 
   // Load puzzle when params change
@@ -255,6 +293,17 @@ export function GamePage({
 
   // Handle back to puzzles with room reset for multiplayer
   const handleBackToPuzzles = async () => {
+    // Check if there are modifications and show confirmation
+    if (hasGridModifications(gameState.grid)) {
+      setShowExitConfirmation(true);
+      return;
+    }
+
+    // No modifications, proceed directly
+    await performBackToPuzzles();
+  };
+
+  const performBackToPuzzles = async () => {
     if (isMultiplayer && isCreator && roomId) {
       try {
         await resetRoomToWaiting();
@@ -395,7 +444,7 @@ export function GamePage({
       onShowSolution={toggleSolution}
       onClearGrid={handleClearGridClick}
       onBackToPuzzles={handleBackToPuzzles}
-      onHomeClick={isUsingProps ? navigateToPuzzleSelection : undefined}
+      onHomeClick={handleHomeClick}
       onModeChange={setPaintMode}
       onZoomIn={zoomIn}
       onZoomOut={zoomOut}
@@ -409,9 +458,6 @@ export function GamePage({
       onPlayerIndicatorToggle={() =>
         setShowPlayerIndicators(!showPlayerIndicators)
       }
-      showClearConfirmation={showClearConfirmation}
-      onConfirmClear={handleConfirmClear}
-      onCancelClear={handleCancelClear}
     >
       {/* Game Modals */}
       <GameModals
@@ -425,6 +471,9 @@ export function GamePage({
         onSuccessClose={() => {
           // Handle success modal close if needed
         }}
+        showExitConfirmation={showExitConfirmation}
+        onExitConfirm={handleConfirmExit}
+        onExitCancel={handleCancelExit}
       />
 
       {/* Migration loading overlay */}

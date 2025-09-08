@@ -5,3 +5,4 @@
 
 export * from "./gridUtils";
 export * from "./puzzleUtils";
+export * from "./gameProgressUtils";

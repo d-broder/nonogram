@@ -11,9 +11,7 @@ interface GameControlsProps {
 }
 
 export function GameControls({
-  onShowSolution,
   onClearGrid,
-  showSolution,
   isComplete,
   onBackToPuzzles,
 }: GameControlsProps) {
@@ -32,16 +30,6 @@ export function GameControls({
           ⯇ Back to Puzzles
         </Link>
       )}
-      <button
-        onClick={onShowSolution}
-        className={`${styles.button} ${styles.solutionButton} ${
-          showSolution ? styles.active : ""
-        }`}
-        disabled={isComplete}
-        type="button"
-      >
-        {showSolution ? "Hide Solution" : "Show Solution"}
-      </button>
 
       <button
         onClick={onClearGrid}
