@@ -112,7 +112,7 @@ export function GameControlsPanel({
       </ButtonGroup>
 
       {/* Toggle Controls Group */}
-      <ButtonGroup direction="column">
+      <ButtonGroup direction="column" variant="toggleButtons">
         <GameControlButton
           variant="toggle"
           icon={stickyClues ? "📌" : "📍"}

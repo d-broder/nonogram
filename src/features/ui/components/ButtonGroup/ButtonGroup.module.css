@@ -23,7 +23,7 @@
 
 .buttons {
   display: flex;
-  flex-direction: row;
+  flex-direction: row; /* Default: buttons in a row */
   gap: var(--spacing-xs);
   justify-content: center;
   align-items: center;
@@ -39,6 +39,12 @@
 
   /* Enable smooth scaling of children */
   overflow: visible;
+}
+
+/* Specific class for toggle controls (LOCK/SHOW buttons) */
+.buttonGroup.toggleButtons .buttons {
+  flex-direction: column;
+  align-items: center;
 }
 
 .buttons > * {

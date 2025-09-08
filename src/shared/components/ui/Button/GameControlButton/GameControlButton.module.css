@@ -50,6 +50,14 @@
 .icon {
   font-size: var(--font-size-lg);
   line-height: 1;
+
+  /* Normalize icon display for consistent button sizing */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
 }
 
 .paintIcon {
@@ -60,6 +68,8 @@
 
 .button.small .icon {
   font-size: var(--font-size-base);
+  width: 1em;
+  height: 1em;
 }
 
 .button.small .paintIcon {
@@ -180,10 +190,14 @@
 
   .icon {
     font-size: var(--font-size-lg);
+    width: 1em;
+    height: 1em;
   }
 
   .button.small .icon {
     font-size: var(--font-size-base);
+    width: 1em;
+    height: 1em;
   }
 
   .label {
