@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { CreateRoomModal } from "../../../room";
 import {
   MobileTopBar,
-  MobileTopBarExpanded,
   MobileBottomBar,
   DesktopSidebar,
   MobileExpandedContent,
@@ -200,15 +199,25 @@ export function PageLayout({
   if (isMobile && !isCollapsed) {
     return (
       <div className={styles.pageContainer}>
-        {/* Mobile Top Bar */}
-        <MobileTopBarExpanded
-          showMobileCreateRoom={showMobileCreateRoom}
-          showMobileClearGrid={showMobileClearGrid}
-          onBackClick={() => {
-            setShowMobileCreateRoom(false);
-            setShowMobileClearGrid(false);
+        {/* Mobile Top Bar - Unified with back button when needed */}
+        <MobileTopBar
+          leftButton={
+            showMobileCreateRoom || showMobileClearGrid
+              ? {
+                  icon: "⯇",
+                  onClick: () => {
+                    setShowMobileCreateRoom(false);
+                    setShowMobileClearGrid(false);
+                  },
+                  ariaLabel: "Go back",
+                }
+              : undefined
+          }
+          rightButton={{
+            icon: "×",
+            onClick: toggleSidebar,
+            ariaLabel: "Close menu",
           }}
-          onToggleSidebar={toggleSidebar}
         />
 
         {/* Top Bar Expanded */}

@@ -1,6 +1,7 @@
 import { GameControls } from "../../../../game";
 import { GameControlsPanel } from "../../../../game";
 import { RoomInfoSection } from "./RoomInfoSection";
+import { ProjectTitle } from "./ProjectTitle";
 import type { PaintMode, Puzzle, Player } from "../../../../../shared/types";
 import styles from "./DesktopSidebar.module.css";
 
@@ -76,9 +77,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
     <div className={styles.sidebar}>
       {/* Project Title */}
       <div className={styles.projectTitle}>
-        <button onClick={onHomeClick} className={styles.titleButton}>
-          NonoParty
-        </button>
+        <ProjectTitle onClick={onHomeClick} className={styles.titleButton} />
       </div>
 
       {/* Game content (only if puzzle exists) */}

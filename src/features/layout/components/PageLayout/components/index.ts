@@ -6,7 +6,7 @@
 export { MobileCreateRoomForm } from "./MobileCreateRoomForm";
 export { MobileClearGridForm } from "./MobileClearGridForm";
 export { MobileTopBar } from "./MobileTopBar";
-export { MobileTopBarExpanded } from "./MobileTopBarExpanded";
+export { ProjectTitle } from "./ProjectTitle";
 export { RoomInfoSection } from "./RoomInfoSection";
 export { MobileBottomBar } from "./MobileBottomBar";
 export { DesktopSidebar } from "./DesktopSidebar";

@@ -1,4 +1,4 @@
-/* Mobile Top Bar */
+/* Mobile Top Bar - Unified Component */
 .mobileTopBar {
   height: 10vh;
   height: 10dvh; /* Dynamic viewport height */
@@ -17,6 +17,42 @@
   text-align: center;
 }
 
+/* Unified button styles for left and right positions */
+.leftButton,
+.rightButton {
+  background: var(--color-overlay-light);
+  color: var(--color-text-white-inverse);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: var(--font-weight-bold);
+  transition: var(--transition-fast);
+  aspect-ratio: 1 / 1;
+  min-width: var(--button-min-height);
+  min-height: var(--button-min-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  font-size: var(--font-size-lg);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.leftButton {
+  left: 5vw;
+}
+
+.rightButton {
+  right: 5vw;
+}
+
+.leftButton:hover,
+.rightButton:hover {
+  background: var(--color-overlay-medium);
+}
+
+/* Legacy support - keep hamburgerButton for backwards compatibility */
 .hamburgerButton {
   background: var(--color-overlay-light);
   color: var(--color-text-white-inverse);
