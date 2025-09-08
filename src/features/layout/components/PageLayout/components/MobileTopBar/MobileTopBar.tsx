@@ -15,7 +15,7 @@ export function MobileTopBar({
 
   return (
     <div className={styles.mobileTopBar}>
-      <div className={styles.projectTitle}>Nonogram</div>
+      <div className={styles.projectTitle}>NonoParty</div>
       {showHamburger && (
         <button
           onClick={onToggleSidebar}

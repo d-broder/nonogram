@@ -89,7 +89,7 @@ export function GameControlsPanel({
           size="small"
           variant="zoom"
           icon="+"
-          disabled={!canZoomIn || isComplete}
+          disabled={!canZoomIn}
           onClick={onZoomIn}
           title="Zoom in"
         />
@@ -97,7 +97,7 @@ export function GameControlsPanel({
           size="small"
           variant="zoom"
           icon="−"
-          disabled={!canZoomOut || isComplete}
+          disabled={!canZoomOut}
           onClick={onZoomOut}
           title="Zoom out"
         />
@@ -105,7 +105,7 @@ export function GameControlsPanel({
           size="small"
           variant="zoom"
           icon="🎯"
-          disabled={isComplete}
+          disabled={false}
           onClick={onResetZoom}
           title="Reset zoom"
         />

@@ -77,7 +77,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       {/* Project Title */}
       <div className={styles.projectTitle}>
         <button onClick={onHomeClick} className={styles.titleButton}>
-          Nonogram
+          NonoParty
         </button>
       </div>
 

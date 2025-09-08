@@ -135,29 +135,45 @@
   gap: var(--spacing-md);
 }
 
+/* Join button - unified glassmorphism style */
 .joinButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   width: 100%;
-  padding: var(--spacing-md) var(--spacing-xl);
+  padding: var(--spacing-sm) var(--spacing-lg);
   background: var(--color-glass-bg);
   color: white;
-  border: var(--border-width-thin) solid var(--color-glass-border);
+  border: var(--border-width-normal) solid var(--color-glass-border);
   border-radius: var(--radius-md);
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: var(--transition-fast);
-  backdrop-filter: blur(10px);
 }
 
 .joinButton:hover:not(:disabled) {
-  background: var(--color-glass-bg-strong);
+  background: var(--color-glass-bg-hover);
+  border-color: var(--color-glass-border-hover);
   transform: translateY(var(--transform-lift));
-  box-shadow: var(--shadow-xl);
+}
+
+.joinButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-glass-shadow);
+}
+
+.joinButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .joinButton:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
+  background: var(--color-glass-bg) !important;
+  border-color: var(--color-glass-border) !important;
+  transform: none !important;
 }
 
 .errorMessage {
@@ -193,20 +209,36 @@
   opacity: 0.9;
 }
 
+/* Back button - unified glassmorphism style */
 .backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: var(--color-glass-bg);
   color: white;
-  border: var(--border-width-thin) solid var(--color-glass-border);
+  border: var(--border-width-normal) solid var(--color-glass-border);
   border-radius: var(--radius-md);
   padding: var(--spacing-sm) var(--spacing-lg);
-  font-size: var(--font-size-button);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
 .backButton:hover {
   background: var(--color-glass-bg-hover);
+  border-color: var(--color-glass-border-hover);
   transform: translateY(var(--transform-lift));
+}
+
+.backButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-glass-shadow);
+}
+
+.backButton:active {
+  transform: translateY(0);
 }
 
 /* Mobile Responsiveness */

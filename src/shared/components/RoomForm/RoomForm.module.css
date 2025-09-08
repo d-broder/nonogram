@@ -138,39 +138,45 @@
   justify-content: flex-end;
 }
 
+/* Unified button style matching site-wide glassmorphism design */
 .actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-button);
+  background: var(--color-glass-bg);
+  color: white;
+  border: var(--border-width-normal) solid var(--color-glass-border);
+  border-radius: var(--radius-md);
   font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
   cursor: pointer;
   transition: var(--transition-fast);
   min-width: 120px;
 }
 
-.cancelButton {
-  background-color: var(--color-text-white-secondary);
-  color: white;
+.actions button:hover:not(:disabled) {
+  background: var(--color-glass-bg-hover);
+  border-color: var(--color-glass-border-hover);
+  transform: translateY(var(--transform-lift));
 }
 
-.cancelButton:hover:not(:disabled) {
-  background-color: var(--color-text-white-primary);
+.actions button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-glass-shadow);
 }
 
-.submitButton {
-  background-color: var(--color-primary);
-  color: white;
+.actions button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-.submitButton:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-}
-
-.submitButton:disabled,
-.cancelButton:disabled {
+.actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: var(--color-glass-bg) !important;
+  border-color: var(--color-glass-border) !important;
+  transform: none !important;
 }
 
 /* Mobile Responsive */

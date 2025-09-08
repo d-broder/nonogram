@@ -26,7 +26,7 @@ export function MobileTopBarExpanded({
           ⯇
         </button>
       )}
-      <div className={styles.projectTitle}>Nonogram</div>
+      <div className={styles.projectTitle}>NonoParty</div>
       <button
         onClick={onToggleSidebar}
         className={styles.closeButton}
