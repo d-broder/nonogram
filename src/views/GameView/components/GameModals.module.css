@@ -9,6 +9,8 @@
 
   /* Position within 10% of parent element */
   padding-top: 10%;
+
+  z-index: var(--z-index-modal);
 }
 
 .successContent p {

@@ -54,8 +54,13 @@ export function GamePage({
       })()
     : null;
 
-  const { room, updateGridCell, updateClueState, resetRoomToWaiting } =
-    useFirebaseRoom(roomId || null);
+  const {
+    room,
+    updateGridCell,
+    updateClueState,
+    updateRoomStatus,
+    resetRoomToWaiting,
+  } = useFirebaseRoom(roomId || null);
 
   const { migrateToMultiplayer } = useGameStateMigration();
 
@@ -293,14 +298,22 @@ export function GamePage({
       setClickedRowClues(newClickedRowClues);
       setClickedColClues(newClickedColClues);
     }
-  }, [room, isMultiplayer, updateCellExternally]);
+  }, [
+    room,
+    isMultiplayer,
+    updateCellExternally,
+    setClickedRowClues,
+    setClickedColClues,
+  ]);
 
   // Handle puzzle completion
   useEffect(() => {
     if (gameState.isComplete && !completionRef.current) {
       completionRef.current = true;
-      if (isMultiplayer && isCreator && roomId) {
-        resetRoomToWaiting();
+      if (isMultiplayer && isCreator && roomId && updateRoomStatus) {
+        // Instead of resetting to waiting, set status to completed
+        // This keeps all players in the game page to see the success modal
+        updateRoomStatus("completed");
       }
     }
   }, [
@@ -308,7 +321,7 @@ export function GamePage({
     isMultiplayer,
     isCreator,
     roomId,
-    resetRoomToWaiting,
+    updateRoomStatus,
   ]);
 
   // Loading and error states

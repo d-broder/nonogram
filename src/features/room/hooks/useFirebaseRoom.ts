@@ -14,6 +14,17 @@ import {
 } from "../../../shared/services/firebase";
 import type { Player, Room, CellState } from "../../../shared/types";
 
+// Type for migration data
+interface MigrationData {
+  grid?: Record<string, CellState>;
+  cellAuthors?: Record<string, string>;
+  clues?: Record<string, boolean>;
+  status?: Room["status"];
+  puzzleType?: "classic" | "super" | null;
+  puzzleId?: number | null;
+  gameSettings?: Record<string, unknown>;
+}
+
 export function useFirebaseRoom(roomId: string | null) {
   const [room, setRoom] = useState<Room | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,7 +121,7 @@ export function useFirebaseRoom(roomId: string | null) {
         }
 
         // Remove the player from the room
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
           [`players.${playerId}`]: deleteField(),
         };
 
@@ -184,7 +195,7 @@ export function useFirebaseRoom(roomId: string | null) {
     if (!roomId) throw new Error("No room ID provided");
 
     try {
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         [`grid.${cellId}`]: state,
       };
 
@@ -239,10 +250,24 @@ export function useFirebaseRoom(roomId: string | null) {
     }
   };
 
+  // Update room status (for puzzle completion, etc.)
+  const updateRoomStatus = async (status: Room["status"]): Promise<void> => {
+    if (!roomId) throw new Error("No room ID provided");
+
+    try {
+      await updateDoc(doc(firestore, "rooms", roomId), {
+        status: status,
+      });
+    } catch (error) {
+      console.error("Error updating room status:", error);
+      throw new Error("Failed to update room status");
+    }
+  };
+
   // Migrate game state to a room (for single player to multiplayer transition)
   const migrateGameState = async (
     targetRoomId: string,
-    migrationData: any
+    migrationData: MigrationData
   ): Promise<void> => {
     try {
       await updateDoc(doc(firestore, "rooms", targetRoomId), {
@@ -274,6 +299,7 @@ export function useFirebaseRoom(roomId: string | null) {
     updatePuzzleSelection,
     updateGridCell,
     updateClueState,
+    updateRoomStatus,
     resetRoomToWaiting,
     migrateGameState,
   };
