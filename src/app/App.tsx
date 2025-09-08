@@ -5,6 +5,7 @@ import { SinglePlayerRouter } from "../pages/SinglePlayerRouter";
 import { MultiplayerRouter } from "../pages/MultiplayerRouter";
 import { useAuth } from "../shared/hooks";
 import "./App.css";
+import styles from "./AppLoading.module.css";
 
 // Lazy load views for better performance
 const PuzzleSelectionPage = lazy(() =>
@@ -23,36 +24,11 @@ const WaitingRoomPage = lazy(() =>
 // Loading component
 function LoadingSpinner() {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        fontSize: "18px",
-      }}
-    >
-      <div
-        style={{
-          width: "40px",
-          height: "40px",
-          border: "4px solid rgba(0, 0, 0, 0.1)",
-          borderTop: "4px solid #3b82f6",
-          borderRadius: "50%",
-          animation: "spin 1s linear infinite",
-          marginBottom: "16px",
-        }}
-      ></div>
-      <div>Loading...</div>
-      <style>
-        {`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}
-      </style>
+    <div className={styles.loadingContainer}>
+      <div className={styles.loadingContent}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>Loading...</p>
+      </div>
     </div>
   );
 }
@@ -71,17 +47,20 @@ function App() {
   // Show error if authentication failed (though this shouldn't happen with anonymous auth)
   if (!isAuthenticated) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          fontSize: "18px",
-          color: "red",
-        }}
-      >
-        Authentication failed. Please refresh the page.
+      <div className={styles.errorContainer}>
+        <div className={styles.errorContent}>
+          <div className={styles.errorIcon}>⚠️</div>
+          <h2 className={styles.errorTitle}>Authentication Failed</h2>
+          <p className={styles.errorMessage}>
+            Unable to authenticate. Please refresh the page to try again.
+          </p>
+          <button
+            className={styles.refreshButton}
+            onClick={() => window.location.reload()}
+          >
+            🔄 Refresh Page
+          </button>
+        </div>
       </div>
     );
   }

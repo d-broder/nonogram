@@ -7,6 +7,7 @@ import {
   JoinRoomPage,
   WaitingRoomPage,
 } from "../views";
+import styles from "./RoomNotFound.module.css";
 
 export function MultiplayerRouter() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -43,16 +44,11 @@ export function MultiplayerRouter() {
   // Loading state
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          fontSize: "18px",
-        }}
-      >
-        Loading room...
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <div className={styles.loadingSpinner}></div>
+          <p className={styles.loadingText}>Loading room...</p>
+        </div>
       </div>
     );
   }
@@ -60,33 +56,20 @@ export function MultiplayerRouter() {
   // Room not found
   if (!room) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          fontSize: "18px",
-          gap: "16px",
-        }}
-      >
-        <h2>Room Not Found</h2>
-        <p>The room you're looking for doesn't exist or has been deleted.</p>
-        <button
-          onClick={() => (window.location.href = "/")}
-          style={{
-            padding: "12px 24px",
-            fontSize: "16px",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          Go to Home
-        </button>
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.icon}>🔍</div>
+          <h2 className={styles.title}>Room Not Found</h2>
+          <p className={styles.message}>
+            The room you're looking for doesn't exist or has been deleted.
+          </p>
+          <button
+            className={styles.homeButton}
+            onClick={() => (window.location.href = "/")}
+          >
+            🏠 Go to Home
+          </button>
+        </div>
       </div>
     );
   }
