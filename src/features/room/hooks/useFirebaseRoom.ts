@@ -7,6 +7,7 @@ import {
   serverTimestamp,
   deleteField,
   deleteDoc,
+  type FieldValue,
 } from "firebase/firestore";
 import {
   firestore,
@@ -121,7 +122,10 @@ export function useFirebaseRoom(roomId: string | null) {
         }
 
         // Remove the player from the room
-        const updateData: Record<string, unknown> = {
+        const updateData: Record<
+          string,
+          FieldValue | Partial<unknown> | undefined
+        > = {
           [`players.${playerId}`]: deleteField(),
         };
 
@@ -195,7 +199,10 @@ export function useFirebaseRoom(roomId: string | null) {
     if (!roomId) throw new Error("No room ID provided");
 
     try {
-      const updateData: Record<string, unknown> = {
+      const updateData: Record<
+        string,
+        FieldValue | Partial<unknown> | undefined
+      > = {
         [`grid.${cellId}`]: state,
       };
 
@@ -204,7 +211,7 @@ export function useFirebaseRoom(roomId: string | null) {
         updateData[`cellAuthors.${cellId}`] = playerId;
       } else if (state === "white") {
         // If cell is being cleared, remove the author
-        updateData[`cellAuthors.${cellId}`] = null;
+        updateData[`cellAuthors.${cellId}`] = deleteField();
       }
 
       await updateDoc(doc(firestore, "rooms", roomId), updateData);

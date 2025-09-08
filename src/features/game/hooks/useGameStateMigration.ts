@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { GameState, Puzzle } from "../../../shared/types";
+import type { GameState, Puzzle, CellState } from "../../../shared/types";
 import { useFirebaseRoom } from "../../room";
 
 interface MigrationData {
@@ -32,7 +32,7 @@ export function useGameStateMigration() {
         };
 
         // Prepare grid data for Firebase
-        const gridForFirebase: { [cellId: string]: string } = {};
+        const gridForFirebase: Record<string, CellState> = {};
         const cellAuthorsForFirebase: { [cellId: string]: string } = {};
 
         migrationData.gameState.grid.forEach((row, rowIndex) => {
@@ -60,7 +60,8 @@ export function useGameStateMigration() {
               {}
             ),
           },
-          puzzle: migrationData.puzzle,
+          puzzleType: migrationData.puzzleType,
+          puzzleId: migrationData.puzzleId,
           gameSettings: {
             paintMode: migrationData.uiSettings?.paintMode || "black",
             showSolution: migrationData.gameState.showSolution || false,
@@ -68,8 +69,6 @@ export function useGameStateMigration() {
           },
           // Set room status to playing and define current puzzle
           status: "playing",
-          puzzleType: migrationData.puzzleType,
-          puzzleId: migrationData.puzzleId,
         });
 
         return { success: true };
