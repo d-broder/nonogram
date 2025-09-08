@@ -1,6 +1,7 @@
 .successContent {
   text-align: center;
   position: absolute;
+  width: 90%;
 
   /* Animation properties */
   animation: successAppear 1.5s ease-out forwards;
@@ -8,13 +9,13 @@
   opacity: 0;
 
   /* Position within 10% of parent element */
-  padding-top: 10%;
+  padding-top: 5%;
 
   z-index: var(--z-index-modal);
 }
 
 .successContent p {
-  font-size: clamp(2rem, 10vw, 4rem);
+  font-size: clamp(2rem, 5vw, 4rem);
   font-weight: bold;
   color: var(--color-success, #22c55e);
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4), 0 0 15px rgba(34, 197, 94, 0.5),
@@ -61,7 +62,7 @@
 /* Responsive adjustments */
 @media (min-width: var(--breakpoint-tablet, 768px)) {
   .successContent p {
-    font-size: clamp(3rem, 8vw, 5rem);
+    font-size: clamp(3rem, 8vw, 1rem);
   }
 }
 

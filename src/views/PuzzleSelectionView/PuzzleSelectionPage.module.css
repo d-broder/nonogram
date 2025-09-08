@@ -76,7 +76,7 @@
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
   justify-items: center;
-  max-width: var(--container-wide);
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
