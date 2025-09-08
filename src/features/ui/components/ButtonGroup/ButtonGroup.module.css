@@ -30,11 +30,28 @@
   flex-wrap: nowrap;
   flex-shrink: 1;
   min-width: 0;
+  width: 100%;
+
+  /* Allow space for transform effects (translateY(-2px)) */
+  padding: 2px 0;
+  margin: 0;
+  box-sizing: border-box;
+
+  /* Enable smooth scaling of children */
+  overflow: visible;
 }
 
 .buttons > * {
   flex-shrink: 1;
   min-width: 0;
+
+  /* Proportional distribution of available space */
+  flex-basis: 0;
+  flex-grow: 1;
+
+  /* Ensure buttons maintain aspect ratio while scaling */
+  max-width: 100%;
+  height: auto;
 }
 
 /* Focus group behavior */

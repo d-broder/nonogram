@@ -15,25 +15,35 @@
   box-sizing: border-box;
   flex-shrink: 1;
   min-width: 0;
+
+  /* Container-responsive sizing with aspect ratio preservation */
+  width: min(100%, var(--button-size-xl));
+  height: auto; /* aspect-ratio will control this */
+
+  /* Absolute minimums for usability */
+  min-width: var(--button-size-sm);
+  min-height: var(--button-size-sm);
+
+  /* Allow button to grow within container constraints */
+  max-width: var(--button-size-xl);
+  max-height: var(--button-size-xl);
 }
 
 /* Size variants */
 .button.large {
-  width: var(--button-size-xl);
-  height: var(--button-size-xl);
-  min-width: var(--button-size-md);
-  min-height: var(--button-size-md);
+  /* Slightly larger than base */
   max-width: var(--button-size-2xl);
   max-height: var(--button-size-2xl);
+  min-width: var(--button-size-md);
+  min-height: var(--button-size-md);
 }
 
 .button.small {
-  width: var(--button-size-lg);
-  height: var(--button-size-lg);
-  min-width: var(--button-size-sm);
-  min-height: var(--button-size-sm);
-  max-width: var(--button-size-xl);
-  max-height: var(--button-size-xl);
+  /* Slightly smaller than base */
+  max-width: var(--button-size-lg);
+  max-height: var(--button-size-lg);
+  min-width: var(--button-size-xs);
+  min-height: var(--button-size-xs);
 }
 
 /* Icon styling */
@@ -148,24 +158,24 @@
 
 /* Mobile responsiveness - Mobile First */
 @media (max-width: var(--breakpoint-tablet)) {
-  .button.large {
-    width: 6vh;
-    height: 6vh;
-    min-width: var(--button-size-lg);
-    min-height: var(--button-size-lg);
+  .button {
+    /* Allow more flexible sizing on mobile */
+    width: min(100%, 6vh);
     max-width: var(--button-size-xl);
-    max-height: var(--button-size-xl);
+    min-width: var(--button-size-xs);
     padding: var(--spacing-xs);
   }
 
+  .button.large {
+    width: min(100%, 6vh);
+    max-width: var(--button-size-xl);
+    min-width: var(--button-size-sm);
+  }
+
   .button.small {
-    width: 5vh;
-    height: 5vh;
-    min-width: var(--button-size-md);
-    min-height: var(--button-size-md);
+    width: min(100%, 5vh);
     max-width: var(--button-size-lg);
-    max-height: var(--button-size-lg);
-    padding: var(--spacing-xs);
+    min-width: var(--button-size-xs);
   }
 
   .icon {
@@ -184,19 +194,15 @@
     font-size: var(--font-size-2xs);
   }
 
-  /* More aggressive shrinking on very small mobile */
+  /* More aggressive shrinking on very small mobile screens */
   .button.large {
-    width: var(--button-size-lg);
-    height: var(--button-size-lg);
+    max-width: var(--button-size-lg);
     min-width: var(--button-size-sm);
-    min-height: var(--button-size-sm);
   }
 
   .button.small {
-    width: var(--button-size-md);
-    height: var(--button-size-md);
-    min-width: var(--button-size-sm);
-    min-height: var(--button-size-sm);
+    max-width: var(--button-size-md);
+    min-width: var(--button-size-xs);
   }
 
   .paintIcon {
