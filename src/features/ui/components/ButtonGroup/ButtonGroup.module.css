@@ -6,6 +6,7 @@
   flex-grow: 1;
   flex-shrink: 1;
   min-width: 0;
+  height: 100%; /* Ensure full height usage */
 }
 
 .buttonGroup.row {
@@ -19,6 +20,7 @@
   margin: 0;
   color: var(--color-text-white-light);
   text-align: center;
+  flex-shrink: 0; /* Title should not shrink */
 }
 
 .buttons {
@@ -31,6 +33,7 @@
   flex-shrink: 1;
   min-width: 0;
   width: 100%;
+  flex-grow: 1; /* Take remaining space after title */
 
   /* Allow space for transform effects (translateY(-2px)) */
   padding: 2px 0;
@@ -42,9 +45,66 @@
 }
 
 /* Specific class for toggle controls (LOCK/SHOW buttons) */
+.buttonGroup.toggleButtons {
+  flex-grow: 0; /* Don't grow wider than needed */
+  flex-shrink: 1;
+  width: auto; /* Width adjusts to content */
+  align-self: center; /* Center within parent container */
+}
+
 .buttonGroup.toggleButtons .buttons {
   flex-direction: column;
   align-items: center;
+  /* height: 100% removed - let content determine height */
+  width: auto; /* Width adjusts to button content, not 100% */
+  min-width: 0; /* Allow shrinking */
+}
+
+/* Toggle buttons should grow to fill available space while maintaining aspect ratio */
+.buttonGroup.toggleButtons .buttons > * {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+
+  /* Let flexbox and aspect-ratio work together naturally */
+  width: auto !important; /* Width controlled by aspect-ratio */
+  height: auto !important; /* Height controlled by flex-grow, not forced 100% */
+  max-width: none !important; /* Remove width constraints */
+  max-height: none !important; /* Remove height constraints */
+
+  /* Ensure button is square: width = height */
+  aspect-ratio: 1;
+  min-width: var(--button-size-sm); /* Keep minimum for usability */
+  min-height: var(--button-size-sm);
+}
+
+/* Special case: When there's only one toggle button (singleplayer mode) */
+.buttonGroup.toggleButtons .buttons > *:only-child {
+  flex-grow: 0; /* Don't grow to fill all available height */
+  flex-shrink: 1;
+  flex-basis: auto;
+
+  /* Use container width as reference, height follows aspect-ratio */
+  width: 100% !important; /* Use full container width */
+  height: auto !important; /* Let aspect-ratio control height */
+  max-width: var(--button-size-xl); /* Reasonable maximum size */
+  max-height: var(--button-size-xl);
+} /* Normalize icon sizes within toggle buttons to prevent layout shifts */
+.buttonGroup.toggleButtons .buttons > * .icon {
+  width: 1.2em !important; /* Fixed width regardless of emoji */
+  height: 1.2em !important; /* Fixed height */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden; /* Crop oversized emojis */
+  flex-shrink: 0 !important;
+}
+
+/* Normalize label spacing in toggle buttons */
+.buttonGroup.toggleButtons .buttons > * .label {
+  width: 100%;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .buttons > * {
