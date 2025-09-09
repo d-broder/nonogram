@@ -1,32 +1,13 @@
-# Nonogram Puzzle Game
+# NonoParty
 
 A modern Nonogram game with singleplayer and multiplayer support, built with React 18+, TypeScript, Vite, and Firebase.
 
-## �️ **Architecture Overview (v2.0 - August 2025)**
+🌐 **Play now at: [nonoparty.vercel.app](https://nonoparty.vercel.app)**
 
-This project follows a **feature-based architecture** with modern React patterns:
-
-```
-src/
-├── app/                    # Application core
-├── shared/                 # Shared resources (components, hooks, utils)
-├── features/               # Domain-specific features (game, room, layout, ui)
-├── pages/                  # Route handlers only
-└── views/                  # Page view components
-```
-
-### **Key Architectural Patterns:**
-
-- **Feature-based organization** for scalability
-- **Container-controlled spacing** for consistent layouts
-- **Unified form logic** with shared RoomForm component
-- **Conditional synchronization** for singleplayer/multiplayer modes
-- **Barrel exports** for clean import management
-
-## �🎯 Main Features
+## 🎯 Main Features
 
 - **Singleplayer Mode**: Solve classic and super nonogram puzzles individually
-- **Multiplayer Mode**: Play with friends in real time using private rooms
+- **Multiplayer Mode**: Play with friends in real time using private rooms - **The main differentiator of NonoParty!**
 - **Responsive Design**: Mobile-first approach with desktop enhancements
 - **Modern UI Components**: Modular, reusable component system
 - **Real-time Synchronization**: Firebase-powered multiplayer experience
@@ -41,7 +22,7 @@ src/
 - Clue click system for visual assistance
 - Zoom and grid reset controls
 
-### Multiplayer
+### Multiplayer - The NonoParty Experience! 🎉
 
 - Create or join private rooms with custom room IDs
 - Real-time collaboration with other players
@@ -88,50 +69,8 @@ src/
 - **Barrel exports** for clean imports
 - **Custom hooks** for logic separation
 
-## 🚀 **Development Workflow**
-
-### Getting Started
-
-```bash
-npm install
-npm run dev     # Development server
-npm run build   # Production build
-npm run lint    # Code quality check
-```
-
-### Project Structure
-
-- **Components**: UI rendering only, composed via props
-- **Hooks**: State management and side effects
-- **Utils**: Pure functions for data manipulation
-- **Services**: External API and Firebase interactions
-- **Types**: Centralized TypeScript definitions
-
-### Multiplayer Testing
-
-1. Start dev server: `npm run dev`
-2. Create room in one browser tab
-3. Join room in incognito/different browser
-4. Test real-time synchronization
-
-## 📊 **Architecture Metrics (Post-Refactoring)**
-
-### File Size Optimization
-
-- **PageLayout**: 731 → 302 lines (-58%)
-- **CreateRoomModal**: 166 → 60 lines (-64%)
-- **JoinRoomPage**: 265 → 113 lines (-57%)
-
-### Organization Improvements
-
-- **Feature-based structure**: 95% implemented
-- **Form unification**: 3 implementations → 1 base + wrappers
-- **Constants centralization**: Complete in `shared/constants/`
-- **Barrel exports**: Fully implemented across all modules
-
 ## 🎮 Planned Future Features
 
-- Real-time chat system for multiplayer
 - Competitive ranking and scoring
 - Custom puzzle creator
 - Themes and visual customizations
@@ -139,4 +78,5 @@ npm run lint    # Code quality check
 
 ---
 
+**NonoParty - Play Nonograms with Friends! 🎉**  
 **Developed with ❤️ using React, TypeScript and Firebase**
